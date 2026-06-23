@@ -60,8 +60,8 @@ OpenHands should run or add focused tests, exercise the changed behavior, map re
 For a concrete browser-evidence example, show:
 
 - `app/web/tests/catalog-search.playwright.mjs`
-- `docs/demo-artifacts/playwright-catalog-search/qa-report.md`
-- `docs/demo-artifacts/playwright-catalog-search/catalog-search.gif`
+- the PR QA comment with an inline GIF
+- PR-branch artifact links for the screenshot, video, and report
 
 If the remote runtime lacks Playwright or BrowserToolSet, the automation should say that and fall back to deterministic checks rather than claiming browser coverage.
 

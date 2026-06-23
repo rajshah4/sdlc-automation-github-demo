@@ -22,7 +22,7 @@
 - Added SRE references and observation-summary tooling adapted from the Cloud Run incident demo pattern.
 - Added code-review risk and supply-chain references based on OpenHands code-review guidance.
 - Reworked the story-to-PR specification layer to show clear Fission-AI/OpenSpec lineage: `openspec/changes/<change-id>/proposal.md`, `design.md`, `tasks.md`, and `specs/.../spec.md`. The skill explains why the timed automation writes artifacts directly instead of installing or invoking the OpenSpec CLI live.
-- Added a checked-in Playwright UI evidence example for the Petstore web app, including screenshot/GIF/report artifact generation and fallback guidance for remote runtimes without browser tooling.
+- Added a checked-in Playwright UI evidence example for the Petstore web app, including screenshot/GIF/report generation for PR evidence and fallback guidance for remote runtimes without browser tooling.
 - Registered the four OpenHands prompt-preset automations with the Rajistics Replicated API key:
   - build: `0ce7add1-fbba-40ef-bc0d-bef77f1bd108`
   - incident: `31c15181-2c7a-446e-8156-232808e6d1fc`

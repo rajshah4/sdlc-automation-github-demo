@@ -71,9 +71,8 @@ ffmpeg -y -i input.webm -vf "fps=8,scale=960:-1:flags=lanczos" output.gif
 ```
 
 6. Write a short `qa-report.md` with scenarios, pass/fail status, and artifact paths.
-7. Commit lightweight artifacts under a demo artifact folder such as
-   `docs/demo-artifacts/pr<NUMBER>/` when they help the customer see the result
-   in GitHub.
+7. Put lightweight artifacts on the PR branch when they help the customer see
+   the result in GitHub. Avoid committing generated media to `main`.
 8. Link the report and embed the GIF in the PR comment.
 
 The repo includes a baseline example:
