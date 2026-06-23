@@ -5,7 +5,7 @@ Status: pass
 ## Target
 
 - URL: http://localhost:4173
-- PR: #9 Filter pets by family-friendly fit
+- Change: Filter pets by family-friendly fit
 
 ## Browser Scenarios
 

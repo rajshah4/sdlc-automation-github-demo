@@ -13,7 +13,7 @@ function parseArgs(argv) {
     url: process.env.PETSTORE_WEB_URL || "http://localhost:4173",
     artifactDir:
       process.env.PLAYWRIGHT_ARTIFACT_DIR ||
-      "/tmp/sdlc-petstore-playwright/pr-9-family-friendly",
+      "/tmp/sdlc-petstore-playwright/family-friendly-filter",
   };
 
   for (let index = 2; index < argv.length; index += 1) {
@@ -94,7 +94,7 @@ async function writeReport({ artifactDir, url, screenshotPath, videoPath, gifPat
     "## Target",
     "",
     `- URL: ${url}`,
-    "- PR: #9 Filter pets by family-friendly fit",
+    "- Change: Filter pets by family-friendly fit",
     "",
     "## Browser Scenarios",
     "",
