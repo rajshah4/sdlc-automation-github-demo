@@ -21,6 +21,25 @@ This skill is based on the SRE Cloud Run remediation demo pattern: observe first
 - Incident automation may post an operator report or open a small PR.
 - Incident automation must not merge, deploy, change IAM, rotate secrets, or mutate cloud resources without the bounded safe-remediation criteria.
 
+## Sparse Issue Contract
+
+Incident issues should read like real operator reports, not automation prompts.
+Assume the issue may contain only a symptom such as "`/api/status` is returning
+HTTP 500" plus impact notes. The skill provides the operating procedure:
+
+- Use the repo-local SRE flow and available Cloud Run / Cloud Logging evidence.
+- Collect read-only evidence before making any recommendation.
+- If GCP credentials, logs, or the live Cloud Run target are unavailable, do not
+  mutate cloud resources.
+- Post what evidence is missing, recommended next steps, and label the issue
+  `openhands:needs-human` when the automation cannot safely proceed.
+- Keep all secrets in the OpenHands secret store or local environment; never
+  copy secret values into issue comments, logs, screenshots, PRs, or specs.
+- When reporting missing configuration, describe missing capabilities rather
+  than sensitive secret inventory. For example, say "Cloud Logging could not be
+  queried" instead of printing token lengths, service-account metadata, or a
+  detailed yes/no list of sensitive secret variables.
+
 ## Flow
 
 1. State symptom and impact.
@@ -85,6 +104,8 @@ Automation action taken:
 - Confirmation checks from `diagnosis.confirmation_checks`.
 - Sample structured log fields without secrets.
 - Clear distinction between "observed", "inferred", and "not tested".
+- No secret values, token lengths, service-account JSON metadata, or detailed
+  sensitive secret inventory.
 
 ## Stop Conditions
 

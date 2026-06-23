@@ -23,6 +23,10 @@ Post a PR comment with status, commands run, test results, files changed, UI evi
 
 Keep result comments focused on test evidence, files changed, and human next steps.
 
+Do not include unresolved placeholders such as `${AUTOMATION_SESSION_URL}` in
+GitHub comments. Include a conversation/session link only when the runtime gives
+you the concrete URL; otherwise omit that line.
+
 ## Human Control
 
 Humans decide whether QA evidence is sufficient and whether to merge. OpenHands does not bypass CI, branch policies, review requirements, or deployment approvals.

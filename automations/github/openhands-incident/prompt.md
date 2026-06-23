@@ -22,6 +22,11 @@ Post an incident report with symptom, impact, evidence, likely root cause, confi
 
 Keep result comments focused on evidence, recommended action, and human next steps.
 
+When cloud context is incomplete, describe the missing capability at a safe
+level, such as "GCP project configuration is missing" or "Cloud Logging could
+not be queried." Do not print secret values, token lengths, service-account JSON
+metadata, or a detailed inventory of which sensitive secrets exist.
+
 ## Human Control
 
 Humans approve incident scope, production actions, PRs, merges, deployments, and rollback decisions. If cloud evidence is missing or the remediation is not bounded, report only and request human input.
