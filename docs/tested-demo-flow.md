@@ -52,12 +52,15 @@ Evidence:
 - Successful comment-trigger retest run `27996297265`: `https://github.com/rajshah4/sdlc-automation-github-demo/actions/runs/27996297265`
 - Comment-trigger acknowledgement: `https://github.com/rajshah4/sdlc-automation-github-demo/issues/1#issuecomment-4774842490`
 - Post-registration GitHub trigger run `27996464141`: `https://github.com/rajshah4/sdlc-automation-github-demo/actions/runs/27996464141`
+- Post-richer-skill registration GitHub trigger run `27997482066`: `https://github.com/rajshah4/sdlc-automation-github-demo/actions/runs/27997482066`
+- Post-richer-skill trigger comment: `https://github.com/rajshah4/sdlc-automation-github-demo/issues/1#issuecomment-4774994463`
+- Post-richer-skill GitHub Actions acknowledgement: `https://github.com/rajshah4/sdlc-automation-github-demo/issues/1#issuecomment-4774995085`
 - A skipped non-matching event confirmed the workflow boundary also skips events outside the trigger guard.
 
 Not tested live:
 
 - GCP incident remediation was not run; cloud mutation remains report-only unless the safe-remediation script reports `safe_to_remediate=true`.
-- GitHub-to-OpenHands event delivery for the new private repo did not produce an OpenHands run yet. The likely missing setup step is installing or refreshing the self-hosted OpenHands GitHub App on `rajshah4/sdlc-automation-github-demo`.
+- GitHub-to-OpenHands event delivery for the new private repo did not produce an OpenHands run yet, including after the richer four-skill automation re-registration. The likely missing setup step is installing or refreshing the self-hosted OpenHands GitHub App on `rajshah4/sdlc-automation-github-demo`.
 
 ## Registered OpenHands Automations
 
@@ -80,6 +83,8 @@ python3 scripts/list_openhands_automation_runs.py \
 ```
 
 Result after the post-registration issue comment: `[]`.
+
+Result after the post-richer-skill registration issue comment on 2026-06-23: `[]`.
 
 The earlier registrations that referenced the hidden skill path were disabled after the skills moved to the first-class `skills/` directory. The second set of lightweight prompt registrations was disabled after the richer four-skill prompts were added.
 
