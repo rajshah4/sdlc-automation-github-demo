@@ -23,17 +23,33 @@ This skill is based on the automated QA demo pattern: understand the changed beh
 
 ## Strategy
 
-1. Read the PR goal, diff, linked issue, open spec, and existing test evidence.
+1. Read the PR diff, changed files, linked issue, open spec, and existing test evidence. Treat the diff as the source of truth; the PR body may be sparse.
 2. Classify the change as backend, UI, automation, docs, SRE, or mixed.
 3. Read the relevant reference:
    - `references/api-qa-conventions.md` for Python behavior/API changes.
    - `references/webapp-testing.md` for UI-visible changes.
 4. Add tests only for changed behavior that lacks coverage.
 5. Run the smallest useful validation before broad validation.
-6. For UI changes, serve `app/web` and capture browser, screenshot, DOM, or deterministic smoke evidence.
-7. Report honestly when a dependency, browser, credential, or service is missing.
+6. For UI changes, infer browser scenarios from the diff and run the real UI through Playwright or BrowserToolSet when available.
+7. Capture browser evidence: screenshot, video, GIF preview when possible, selectors/roles used, and a concise summary report.
+8. Report honestly when a dependency, browser, credential, or service is missing.
 
 Do not run `pip install` or add new QA dependencies during the demo. If a browser or package is missing, fall back to dependency-free smoke checks and document the gap.
+
+## Diff-Driven UI Inference
+
+The PR author should not have to write test instructions. For UI-visible changes,
+derive scenarios from:
+
+- changed labels, controls, buttons, validation messages, and aria-live regions
+- changed selectors or element IDs
+- changed fixture/data values and rendered states
+- changed product rules from the linked issue or open spec
+- existing Petstore rules such as available-only default search and integer-cent fees
+
+When a PR adds a UI control, test the natural workflow for that control:
+default state, one successful interaction, one boundary/empty state when
+applicable, and one validation/error path when applicable.
 
 ## Petstore QA Contracts
 
@@ -43,6 +59,22 @@ Do not run `pip install` or add new QA dependencies during the demo. If a browse
 - Fees use integer cents, never floats.
 - UI-visible changes need UI evidence.
 - Incident remediation must prove pending pets are no longer visible in the available-pet experience.
+
+## UI Artifact Contract
+
+For UI-visible PRs, aim for the automated QA demo shape:
+
+- generate or update a Playwright spec/smoke script under the relevant UI test folder
+- run the static UI with `skills/sdlc-qa/scripts/with_server.py`
+- capture a screenshot
+- record browser video when Playwright supports it
+- convert video to a small GIF when `ffmpeg` is available
+- write a `qa-report.md` summary
+- commit lightweight generated specs and demo artifacts to the PR branch when useful
+- post a PR comment with inline GIF or artifact links, commands run, pass/fail status, and residual risk
+
+If Playwright is unavailable, use dependency-free DOM/static checks as fallback
+evidence, but say clearly that browser interaction was not exercised.
 
 ## Useful Commands
 
@@ -61,7 +93,7 @@ python3 skills/sdlc-qa/scripts/with_server.py --server "python3 -m http.server 4
 - Prefer pytest tests in `app/tests/`.
 - Use direct function tests for catalog/adoption behavior.
 - Use HTTP or server-level tests only when the changed behavior lives at the boundary.
-- Add UI smoke evidence for static UI changes; do not claim visual coverage from unit tests alone.
+- Add Playwright/browser evidence for static UI changes when available; do not claim visual coverage from unit tests or DOM inspection alone.
 - Keep tests focused on behavior, not implementation details.
 
 ## Report Requirements
@@ -69,6 +101,6 @@ python3 skills/sdlc-qa/scripts/with_server.py --server "python3 -m http.server 4
 - commands run
 - tests added or changed
 - result summary
-- UI evidence for UI behavior
+- UI evidence for UI behavior, including GIF/screenshot/report links when available
 - remaining risk
 - whether the open spec acceptance criteria were satisfied

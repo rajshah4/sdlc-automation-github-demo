@@ -5,14 +5,28 @@ Use this reference when a PR changes `app/web/` or a backend change affects user
 ## Decision Tree
 
 1. If the app is static HTML/JS/CSS, serve `app/web` with Python's built-in HTTP server.
-2. If Playwright is already available in the environment, use it to inspect the page, interact with controls, and capture screenshots.
-3. If Playwright is not available, use dependency-free checks:
+2. Infer browser scenarios from the diff. Do not depend on PR text listing exact test steps.
+3. If Playwright is already available in the environment, use it to inspect the page, interact with controls, record video, capture screenshots, and produce a GIF preview when possible.
+4. If Playwright is not available, use dependency-free checks:
    - `skills/sdlc-qa/scripts/static_ui_smoke.py`
    - targeted HTML/JS inspection
    - `urllib` checks against the served app
-4. If the UI depends on a live backend not available in the test environment, document the missing service and test the boundary that is available.
+5. If the UI depends on a live backend not available in the test environment, document the missing service and test the boundary that is available.
 
 Do not install browsers or Python packages during the demo.
+
+## Scenario Inference
+
+For static Petstore UI changes, infer scenarios from the changed surface:
+
+- New input/select/button: test default state, one successful interaction, and one boundary or validation path.
+- New validation text or aria-live region: trigger the invalid state and assert the message appears.
+- New filtering/sorting behavior: assert included and excluded pet names, including pending-pet exclusion where relevant.
+- Fee or money changes: assert integer-cent data paths and user-facing formatted values.
+- Empty-state changes: trigger the no-results state and assert the displayed message.
+
+The PR body may be intentionally short. It is acceptable to read it for intent,
+but the browser test plan should come from the diff plus existing product rules.
 
 ## Server Harness
 
@@ -27,14 +41,39 @@ python3 skills/sdlc-qa/scripts/with_server.py \
 
 ## UI Evidence Expectations
 
-For UI-visible changes, collect at least one of:
+For UI-visible changes, prefer the full browser evidence bundle:
 
-- screenshot path
-- DOM assertion output
-- static smoke output
-- browser interaction notes with selectors used
+- Playwright/spec file committed to the PR branch
+- screenshot path or committed screenshot
+- `.webm` video path when available
+- GIF preview converted from the browser video when `ffmpeg` is available
+- `qa-report.md` summary
+- PR comment with inline GIF or artifact links
+- browser interaction notes with selectors/roles used
 
-Do not report "UI passed" unless you opened or served the UI surface.
+Do not report "UI passed" unless you opened or served the UI surface. Do not
+present DOM/static checks as equivalent to browser interaction; label them as
+fallback evidence.
+
+## Playwright Artifact Pattern
+
+When generating a Playwright smoke for a static UI PR:
+
+1. Put the script near the UI, for example `app/web/tests/<feature>.playwright.mjs`.
+2. Use accessible selectors such as labels and roles before brittle CSS selectors.
+3. Record video with Playwright `recordVideo`.
+4. Capture a full-page screenshot.
+5. If `ffmpeg` exists, convert the video to a small GIF:
+
+```bash
+ffmpeg -y -i input.webm -vf "fps=8,scale=960:-1:flags=lanczos" output.gif
+```
+
+6. Write a short `qa-report.md` with scenarios, pass/fail status, and artifact paths.
+7. Commit lightweight artifacts under a demo artifact folder such as
+   `docs/demo-artifacts/pr<NUMBER>/` when they help the customer see the result
+   in GitHub.
+8. Link the report and embed the GIF in the PR comment.
 
 ## Static Petstore Checks
 
