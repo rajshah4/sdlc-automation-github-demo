@@ -4,24 +4,23 @@
   "repository": {
     "id": 1001,
     "name": "sdlc-automation-github-demo",
-    "full_name": "rajistics/sdlc-automation-github-demo",
-    "clone_url": "https://github.com/rajistics/sdlc-automation-github-demo.git",
-    "html_url": "https://github.com/rajistics/sdlc-automation-github-demo",
-    "owner": {"login": "rajistics"}
+    "full_name": "rajshah4/sdlc-automation-github-demo",
+    "clone_url": "https://github.com/rajshah4/sdlc-automation-github-demo.git",
+    "html_url": "https://github.com/rajshah4/sdlc-automation-github-demo",
+    "owner": {"login": "rajshah4"}
   },
   "issue": {
     "id": 2001,
     "number": 7,
     "title": "Filter pets by max adoption fee",
     "body": "",
-    "html_url": "https://github.com/rajistics/sdlc-automation-github-demo/issues/7",
+    "html_url": "https://github.com/rajshah4/sdlc-automation-github-demo/issues/7",
     "labels": [{"name": "type:story"}]
   },
   "comment": {
     "id": 3001,
     "body": "openhands-build",
-    "html_url": "https://github.com/rajistics/sdlc-automation-github-demo/issues/7#issuecomment-3001",
+    "html_url": "https://github.com/rajshah4/sdlc-automation-github-demo/issues/7#issuecomment-3001",
     "user": {"login": "demo-user"}
   }
 }
-
