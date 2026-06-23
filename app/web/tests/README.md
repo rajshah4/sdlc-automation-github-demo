@@ -12,7 +12,12 @@ python3 skills/sdlc-qa/scripts/with_server.py \
 ```
 
 The script uses Playwright directly, interacts with the page through labels and
-roles, and writes a screenshot to `/tmp/sdlc-petstore-playwright/`.
+roles, and writes browser artifacts to `/tmp/sdlc-petstore-playwright/`:
+
+- `adoption-fee-filter.png`
+- `adoption-fee-filter.gif` when `ffmpeg` is available
+- `videos/*.webm`
+- `qa-report.md`
 
 For local machines that have the Playwright package but not its browser cache,
 set an installed browser channel:
