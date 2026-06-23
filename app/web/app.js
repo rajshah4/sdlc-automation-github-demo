@@ -8,12 +8,14 @@ const pets = [
 function renderResults() {
   const query = document.querySelector("#query").value.trim().toLowerCase();
   const species = document.querySelector("#species").value;
+  const familyFriendlyOnly = document.querySelector("#family-friendly").checked;
   const list = document.querySelector("#results");
   list.innerHTML = "";
 
   const matches = pets.filter((pet) => {
     return pet.name.toLowerCase().includes(query)
       && (species === "" || pet.species === species)
+      && (!familyFriendlyOnly || pet.tags.includes("family"))
       && pet.status === "available";
   });
 
@@ -34,4 +36,5 @@ function renderResults() {
 }
 
 document.querySelector("#search-button").addEventListener("click", renderResults);
+document.querySelector("#family-friendly").addEventListener("change", renderResults);
 renderResults();

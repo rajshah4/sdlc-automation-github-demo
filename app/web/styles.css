@@ -17,7 +17,7 @@ body {
 
 .toolbar {
   display: grid;
-  grid-template-columns: 1fr minmax(180px, 240px) minmax(120px, 160px) auto;
+  grid-template-columns: 1fr minmax(180px, 240px) minmax(120px, 160px) auto auto;
   gap: 16px;
   align-items: end;
 }
@@ -42,6 +42,18 @@ button {
   border-radius: 6px;
   padding: 0 12px;
   font: inherit;
+}
+
+input[type="checkbox"] {
+  min-height: auto;
+}
+
+.checkbox-control {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
 }
 
 button {
