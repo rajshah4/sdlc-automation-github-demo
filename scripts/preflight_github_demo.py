@@ -13,6 +13,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 AUTOMATION_ROOT = REPO_ROOT / "automations" / "github"
 LABELS_PATH = REPO_ROOT / "config" / "github-labels.json"
+SKILLS_ROOT = REPO_ROOT / "skills"
 REQUIRED_LABELS = {
     "openhands-build",
     "openhands-review",
@@ -22,6 +23,12 @@ REQUIRED_LABELS = {
     "openhands:in-progress",
     "openhands:needs-human",
     "openhands:done",
+}
+REQUIRED_SKILLS = {
+    "sdlc-story",
+    "sdlc-qa",
+    "sdlc-incident",
+    "sdlc-code-review",
 }
 REQUIRED_ENV = [
     ("OPENHANDS_HOST_GITHUB", "OPENHANDS_HOST"),
@@ -104,6 +111,18 @@ def validate_automation_specs(failures: list[str]) -> None:
         ok("all GitHub automation specs are present")
 
 
+def validate_skills(failures: list[str]) -> None:
+    found = {path.parent.name for path in SKILLS_ROOT.glob("*/SKILL.md")}
+    missing = REQUIRED_SKILLS - found
+    unexpected = found - REQUIRED_SKILLS
+    if missing:
+        fail(f"missing primary skills: {', '.join(sorted(missing))}", failures)
+    if unexpected:
+        fail(f"unexpected top-level skills: {', '.join(sorted(unexpected))}", failures)
+    if not missing and not unexpected:
+        ok("four primary repo-local skills are present")
+
+
 def validate_env(offline: bool, failures: list[str]) -> None:
     if offline:
         ok("offline mode skips secret/env presence checks")
@@ -137,6 +156,7 @@ def main() -> int:
     failures: list[str] = []
     validate_labels(failures)
     validate_automation_specs(failures)
+    validate_skills(failures)
     validate_env(args.offline, failures)
     if failures:
         print(f"Preflight failed with {len(failures)} issue(s).", file=sys.stderr)

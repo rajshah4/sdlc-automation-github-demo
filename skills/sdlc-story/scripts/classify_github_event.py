@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Classify a GitHub webhook fixture using the repo provider adapter."""
+"""Classify a GitHub webhook fixture using the demo provider adapter."""
 
 from __future__ import annotations
 
 import json
 import sys
 from pathlib import Path
+
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT))

@@ -10,11 +10,12 @@ This automation runs when a GitHub PR receives the `openhands-qa` label or a hum
 
 1. Read the PR diff, PR body, linked issue, and existing tests.
 2. Use `skills/sdlc-qa/SKILL.md` and, when available, the official OpenHands QA changes behavior.
-3. Identify changed behavior and decide whether it is backend-only, UI-visible, or both.
-4. Add or update focused tests when coverage is missing.
-5. Run focused validation before broad validation.
-6. For UI changes, run the static UI and capture browser evidence where possible.
-7. Post a QA report and push any test/evidence commits to the PR branch when permitted.
+3. Identify changed behavior and decide whether it is backend, UI-visible, automation, SRE, docs, or mixed.
+4. Map tests to the open spec acceptance criteria when a spec exists.
+5. Add or update focused tests when coverage is missing.
+6. Run focused validation before broad validation.
+7. For UI changes, run the static UI and capture browser, screenshot, DOM, or deterministic smoke evidence where possible.
+8. Post a QA report and push any test/evidence commits to the PR branch when permitted.
 
 ## What You Post Back To GitHub
 
@@ -28,4 +29,4 @@ Humans decide whether QA evidence is sufficient and whether to merge. OpenHands 
 
 ## Cost And Security Notes
 
-Use deterministic tests and scripts before spending exploratory LLM calls. For expensive UI QA, keep the scope to changed behavior. Secrets stay out of the repo and out of screenshots/logs.
+Use deterministic tests and scripts before spending exploratory LLM calls. For expensive UI QA, keep the scope to changed behavior. Do not run `pip install` during the demo; use existing dependencies or report the gap. Secrets stay out of the repo and out of screenshots/logs.

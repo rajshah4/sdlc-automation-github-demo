@@ -11,12 +11,18 @@ from urllib.request import urlopen
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", default="http://localhost:4173")
+    parser.add_argument(
+        "--expect",
+        action="append",
+        default=[],
+        help="Additional case-insensitive text that must appear in the page.",
+    )
     args = parser.parse_args()
 
     with urlopen(args.url, timeout=5) as response:
         html = response.read().decode("utf-8", errors="replace")
 
-    required = ["Petstore", "Search", "adoption"]
+    required = ["Petstore", "Find Pets", "Available Pets", *args.expect]
     missing = [text for text in required if text.lower() not in html.lower()]
     if missing:
         print(f"Missing expected UI text: {', '.join(missing)}", file=sys.stderr)
@@ -27,4 +33,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
