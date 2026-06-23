@@ -1,0 +1,20 @@
+{
+  "preset": "prompt",
+  "name": "SDLC Demo - GitHub OpenHands Incident",
+  "prompt_file": "prompt.md",
+  "trigger": {
+    "type": "event",
+    "source": "github",
+    "on": ["issues.labeled", "issue_comment.created"],
+    "filter": "repository.full_name == '${GITHUB_DEMO_REPOSITORY}' && issue.pull_request == null && (contains(issue.labels[].name, 'openhands-incident') || icontains(comment.body, 'openhands-incident')) && !contains(issue.labels[].name, 'openhands:in-progress')"
+  },
+  "repos": [
+    {
+      "url": "${GITHUB_DEMO_REPO_URL}",
+      "provider": "github",
+      "ref": "main"
+    }
+  ],
+  "timeout": 600,
+  "llm_profile": "sdlc-ops"
+}

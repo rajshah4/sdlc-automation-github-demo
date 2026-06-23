@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SDLC Automation Petstore</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="toolbar" aria-label="Pet search controls">
+        <h1>Petstore SDLC Demo</h1>
+        <label>
+          Pet name
+          <input id="query" type="search" value="">
+        </label>
+        <label>
+          Species
+          <select id="species">
+            <option value="">Any</option>
+            <option>cat</option>
+            <option>dog</option>
+            <option>rabbit</option>
+          </select>
+        </label>
+        <button id="search-button">Find Pets</button>
+      </section>
+      <section>
+        <h2>Available Pets</h2>
+        <ul id="results" class="results"></ul>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

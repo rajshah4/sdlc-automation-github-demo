@@ -1,0 +1,52 @@
+{
+  "$schema": "https://openhands.dev/demo/sdlc-automation/provider-runtime-manifest.schema.json",
+  "version": "0.1.0",
+  "providers": {
+    "github": {
+      "login_provider": "github",
+      "display_name": "GitHub",
+      "openhands": {
+        "host_env": "OPENHANDS_HOST_GITHUB",
+        "api_key_env": "OPENHANDS_API_KEY_GITHUB",
+        "secret_namespace": "github",
+        "automation_namespace": "github"
+      },
+      "provider_credentials": {
+        "primary_token_env": "GITHUB_TOKEN",
+        "webhook_secret_env": "GITHUB_WEBHOOK_SECRET"
+      },
+      "chain_transport": "pull_request_labels",
+      "automation_id_env": {
+        "review": "GITHUB_OPENHANDS_REVIEW_AUTOMATION_ID",
+        "qa": "GITHUB_OPENHANDS_QA_AUTOMATION_ID",
+        "build": "GITHUB_OPENHANDS_BUILD_AUTOMATION_ID",
+        "secure": "GITHUB_OPENHANDS_SECURE_AUTOMATION_ID",
+        "release": "GITHUB_OPENHANDS_RELEASE_AUTOMATION_ID",
+        "docs": "GITHUB_OPENHANDS_DOCS_AUTOMATION_ID",
+        "incident": "GITHUB_OPENHANDS_INCIDENT_AUTOMATION_ID"
+      }
+    }
+  },
+  "shared_integrations": {
+    "slack": {
+      "secret_env": [
+        "SLACK_WEBHOOK_URL",
+        "SLACK_BOT_TOKEN",
+        "SLACK_CHANNEL_ID"
+      ],
+      "provisioning_note": "Store these in the GitHub OpenHands secret namespace unless the OpenHands instance supports instance-level shared secrets."
+    },
+    "gcp": {
+      "config_env": [
+        "GCP_PROJECT",
+        "GCP_REGION",
+        "GCP_SERVICE",
+        "GCP_LOG_NAME"
+      ],
+      "secret_env": [
+        "GOOGLE_APPLICATION_CREDENTIALS_JSON_B64"
+      ],
+      "provisioning_note": "Store read-only observability credentials in the GitHub OpenHands secret namespace only if the automation runtime lacks gcloud auth."
+    }
+  }
+}

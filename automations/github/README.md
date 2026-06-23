@@ -1,0 +1,29 @@
+# GitHub OpenHands Automations
+
+This folder contains the GitHub-native automation package set for the SDLC Automation Demo.
+
+The packages use the OpenHands Automations prompt preset API instead of custom SDK tarballs. That keeps registration simple, avoids ad hoc dependency installation, and makes the prompt visible in the OpenHands UI.
+
+## Work Cells
+
+| Work cell | GitHub trigger | Human boundary |
+| --- | --- | --- |
+| `openhands-build` | issue label or issue comment | OpenHands opens or updates a PR; humans review and merge |
+| `openhands-review` | PR label or PR comment | OpenHands posts review findings; humans decide what blocks |
+| `openhands-qa` | PR label or PR comment | OpenHands adds/runs QA evidence; humans judge readiness |
+| `openhands-incident` | issue label or issue comment | OpenHands posts incident report or small fix PR; humans approve production actions |
+
+## Registration
+
+Dry-run:
+
+```bash
+python3 scripts/register_github_automations.py --dry-run
+```
+
+Apply:
+
+```bash
+python3 scripts/register_github_automations.py --apply
+```
+

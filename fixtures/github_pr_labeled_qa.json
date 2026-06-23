@@ -1,0 +1,23 @@
+{
+  "_event_name": "pull_request",
+  "action": "labeled",
+  "repository": {
+    "id": 1001,
+    "name": "sdlc-automation-github-demo",
+    "full_name": "rajistics/sdlc-automation-github-demo",
+    "clone_url": "https://github.com/rajistics/sdlc-automation-github-demo.git",
+    "html_url": "https://github.com/rajistics/sdlc-automation-github-demo",
+    "owner": {"login": "rajistics"}
+  },
+  "label": {"name": "openhands-qa"},
+  "pull_request": {
+    "id": 4001,
+    "number": 12,
+    "title": "Add max adoption fee filter",
+    "html_url": "https://github.com/rajistics/sdlc-automation-github-demo/pull/12",
+    "head": {"ref": "openhands/issue-7-max-fee"},
+    "base": {"ref": "main"},
+    "labels": [{"name": "openhands-qa"}]
+  }
+}
+

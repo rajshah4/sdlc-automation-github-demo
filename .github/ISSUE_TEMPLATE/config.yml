@@ -1,0 +1,6 @@
+blank_issues_enabled: true
+contact_links:
+  - name: SDLC Automation Demo setup checklist
+    url: https://github.com/
+    about: Use docs/setup-checklist.md in this repository before live demos.
+

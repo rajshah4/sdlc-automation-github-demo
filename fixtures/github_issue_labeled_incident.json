@@ -1,0 +1,22 @@
+{
+  "_event_name": "issues",
+  "action": "labeled",
+  "repository": {
+    "id": 1001,
+    "name": "sdlc-automation-github-demo",
+    "full_name": "rajistics/sdlc-automation-github-demo",
+    "clone_url": "https://github.com/rajistics/sdlc-automation-github-demo.git",
+    "html_url": "https://github.com/rajistics/sdlc-automation-github-demo",
+    "owner": {"login": "rajistics"}
+  },
+  "label": {"name": "openhands-incident"},
+  "issue": {
+    "id": 2002,
+    "number": 8,
+    "title": "[incident] Pending pets visible in available-pet page",
+    "body": "The Petstore website is showing pending pets in the available-pets experience.",
+    "html_url": "https://github.com/rajistics/sdlc-automation-github-demo/issues/8",
+    "labels": [{"name": "type:incident"}, {"name": "openhands-incident"}]
+  }
+}
+

@@ -1,0 +1,53 @@
+{
+  "text": "OpenHands SDLC Automation update",
+  "blocks": [
+    {
+      "type": "header",
+      "text": {
+        "type": "plain_text",
+        "text": "OpenHands SDLC Automation"
+      }
+    },
+    {
+      "type": "section",
+      "fields": [
+        {
+          "type": "mrkdwn",
+          "text": "*Stage:* {{stage}}"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Status:* {{status}}"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Automation:* {{automation}}"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Goal-Critic:* {{critic_verdict}}"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "{{summary}}"
+      }
+    },
+    {
+      "type": "actions",
+      "elements": [
+        {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "text": "Open Evidence"
+          },
+          "url": "{{evidence_url}}"
+        }
+      ]
+    }
+  ]
+}

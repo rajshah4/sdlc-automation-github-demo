@@ -1,0 +1,15 @@
+[project]
+name = "sdlc-automation-github-demo"
+version = "0.1.0"
+description = "OpenHands SDLC automation Petstore demo application and automations"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+test = [
+  "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["app/tests", "tests"]
+pythonpath = ["app", "."]

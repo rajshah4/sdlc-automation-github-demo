@@ -1,0 +1,53 @@
+[
+  {
+    "name": "openhands-build",
+    "color": "1f6feb",
+    "description": "Trigger OpenHands to clarify a sparse issue and create a PR"
+  },
+  {
+    "name": "openhands-review",
+    "color": "8957e5",
+    "description": "Trigger OpenHands automated PR review"
+  },
+  {
+    "name": "openhands-qa",
+    "color": "2da44e",
+    "description": "Trigger OpenHands QA and test generation"
+  },
+  {
+    "name": "openhands-incident",
+    "color": "cf222e",
+    "description": "Trigger OpenHands SRE incident triage"
+  },
+  {
+    "name": "openhands:ready",
+    "color": "54aeff",
+    "description": "Automation is eligible to run"
+  },
+  {
+    "name": "openhands:in-progress",
+    "color": "bf8700",
+    "description": "Automation is currently running"
+  },
+  {
+    "name": "openhands:needs-human",
+    "color": "fbca04",
+    "description": "Automation needs human decision or credentials"
+  },
+  {
+    "name": "openhands:done",
+    "color": "2da44e",
+    "description": "Automation finished and posted evidence"
+  },
+  {
+    "name": "type:story",
+    "color": "d0e2ff",
+    "description": "Feature or story request"
+  },
+  {
+    "name": "type:incident",
+    "color": "ffebe9",
+    "description": "Operational incident or production symptom"
+  }
+]
+
