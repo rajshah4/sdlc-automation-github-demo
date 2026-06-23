@@ -12,3 +12,4 @@
 - Created labels from `config/github-labels.json` and opened safe test issue #1.
 - Validated the GitHub label path with the deterministic `OpenHands Label Demo` workflow. Two work-cell/status label events initially ran, which exposed an important retrigger risk before OpenHands automation registration.
 - Fixed the GitHub Actions and OpenHands preset filters so only the four work-cell labels (`openhands-build`, `openhands-review`, `openhands-qa`, `openhands-incident`) trigger work. Status labels such as `openhands:ready` no longer retrigger automations.
+- Re-tested the issue-comment path after the guard fix; run `27996297265` completed successfully and posted a single acknowledgement comment.

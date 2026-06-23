@@ -41,11 +41,14 @@ Validated:
 - Issue #1 was labeled with `type:story`, `openhands-build`, and `openhands:ready`.
 - The deterministic GitHub Actions workflow ran successfully for work-cell label events.
 - The test exposed a duplicate-trigger risk from status labels; filters were tightened so status labels no longer trigger work cells.
+- After the guard fix, an `issue_comment` retest using `openhands-build` produced one successful deterministic workflow run.
 
 Evidence:
 
 - Successful run `27996217965`: `https://github.com/rajshah4/sdlc-automation-github-demo/actions/runs/27996217965`
 - Successful run `27996217942`: `https://github.com/rajshah4/sdlc-automation-github-demo/actions/runs/27996217942`
+- Successful comment-trigger retest run `27996297265`: `https://github.com/rajshah4/sdlc-automation-github-demo/actions/runs/27996297265`
+- Comment-trigger acknowledgement: `https://github.com/rajshah4/sdlc-automation-github-demo/issues/1#issuecomment-4774842490`
 - A skipped non-matching event confirmed the workflow boundary also skips events outside the trigger guard.
 
 Not tested live:
