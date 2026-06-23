@@ -9,3 +9,6 @@
 - Added GitHub labels, issue templates, prompt-preset automation packages, setup docs, and deterministic preflight scripts.
 - Added repo-local OpenHands skills under `.agents/skills/` so automation behavior is version controlled and visible in the OpenHands UI.
 - Created and pushed the private GitHub repo `rajshah4/sdlc-automation-github-demo` for safe GitHub-native validation.
+- Created labels from `config/github-labels.json` and opened safe test issue #1.
+- Validated the GitHub label path with the deterministic `OpenHands Label Demo` workflow. Two work-cell/status label events initially ran, which exposed an important retrigger risk before OpenHands automation registration.
+- Fixed the GitHub Actions and OpenHands preset filters so only the four work-cell labels (`openhands-build`, `openhands-review`, `openhands-qa`, `openhands-incident`) trigger work. Status labels such as `openhands:ready` no longer retrigger automations.
