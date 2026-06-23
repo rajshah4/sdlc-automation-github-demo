@@ -17,9 +17,13 @@ body {
 
 .toolbar {
   display: grid;
-  grid-template-columns: 1fr minmax(180px, 240px) minmax(120px, 160px) auto;
+  grid-template-columns: minmax(180px, 1fr) minmax(120px, 160px) minmax(140px, 180px) auto;
   gap: 16px;
   align-items: end;
+}
+
+.toolbar h1 {
+  grid-column: 1 / -1;
 }
 
 h1,
@@ -57,6 +61,22 @@ button {
   padding: 0;
   margin: 20px 0 0;
   list-style: none;
+}
+
+.summary,
+.error {
+  min-height: 20px;
+  margin: 8px 0 0;
+  font-size: 14px;
+}
+
+.summary {
+  color: #5c6670;
+}
+
+.error {
+  color: #b42318;
+  font-weight: 650;
 }
 
 .pet,

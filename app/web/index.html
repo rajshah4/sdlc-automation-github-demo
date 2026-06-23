@@ -23,10 +23,16 @@
             <option>rabbit</option>
           </select>
         </label>
+        <label>
+          Max adoption fee
+          <input id="max-fee" type="number" min="0" step="5" placeholder="Any">
+        </label>
         <button id="search-button">Find Pets</button>
       </section>
       <section>
         <h2>Available Pets</h2>
+        <p id="result-summary" class="summary" aria-live="polite"></p>
+        <p id="fee-error" class="error" aria-live="polite"></p>
         <ul id="results" class="results"></ul>
       </section>
     </main>
