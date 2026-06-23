@@ -24,7 +24,7 @@ Sparse issues are acceptable when the title maps to an existing Petstore behavio
 ## Workflow
 
 1. Read `README.md`, `AGENTS.md`, and the issue context.
-2. Run `python3 .agents/skills/sdlc-story/scripts/extract_acceptance_criteria.py` on the issue body when useful.
+2. Run `python3 skills/sdlc-story/scripts/extract_acceptance_criteria.py` on the issue body when useful.
 3. Write assumptions, non-goals, acceptance criteria, and validation plan before editing.
 4. Search existing app code and tests.
 5. Implement a narrow change.
@@ -51,4 +51,3 @@ Sparse issues are acceptable when the title maps to an existing Petstore behavio
 ## Stop Conditions
 
 Ask for human input if the issue requires a product decision, schema migration, auth change, new dependency, environment change, secret access, or production mutation.
-

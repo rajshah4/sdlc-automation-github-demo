@@ -8,7 +8,7 @@ This is the GitHub-native SDLC Automation Demo. Customer-facing language should 
 - Backend tests: `app/tests/`
 - Static UI: `app/web/`
 - GitHub automations: `automations/github/`
-- Repo-local OpenHands skills: `.agents/skills/`
+- Repo-local OpenHands skills: `skills/`
 - Setup and registration scripts: `scripts/`
 - Demo docs: `docs/`
 
@@ -28,4 +28,3 @@ This is the GitHub-native SDLC Automation Demo. Customer-facing language should 
 - Pending pets can be shown only when explicitly requested and cannot be adopted.
 - Money is represented as integer cents.
 - UI-visible changes need UI evidence, not only unit tests.
-

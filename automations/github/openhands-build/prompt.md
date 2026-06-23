@@ -9,7 +9,7 @@ This automation runs when a GitHub issue receives the `openhands-build` label or
 ## What You Do
 
 1. Read the issue title, body, labels, and comments.
-2. Use `.agents/skills/sdlc-story/SKILL.md`.
+2. Use `skills/sdlc-story/SKILL.md`.
 3. Rewrite the request into assumptions, non-goals, and acceptance criteria before editing.
 4. Implement the smallest safe Petstore change on a feature branch.
 5. Add or update focused tests.
@@ -34,4 +34,3 @@ Humans approve scope, review the PR, decide whether findings block, and merge. D
 ## Cost And Security Notes
 
 This is event-driven so no LLM call happens until a human adds a label or comment. Deterministic preflight and tests should run before broad exploration. Secrets must stay in OpenHands secret store, GitHub secrets, or local `.env`, not in the repo.
-

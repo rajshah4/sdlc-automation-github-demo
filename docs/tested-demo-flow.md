@@ -64,18 +64,20 @@ Prompt-preset automations were registered through `scripts/register_github_autom
 
 | Work cell | Automation ID |
 | --- | --- |
-| `openhands-build` | `e1fdf4a7-8735-4b58-bc76-eb1ff937aa6e` |
-| `openhands-incident` | `91134259-a0f4-41bb-adf9-b1484bd013e7` |
-| `openhands-qa` | `33fada53-9c8f-4151-bf61-83486a947121` |
-| `openhands-review` | `64bb781d-81f7-415e-b7f6-fa7134b477ec` |
+| `openhands-build` | `843a19a5-25c5-493e-b253-746678362dc8` |
+| `openhands-incident` | `6875f016-92c6-4d71-bcb6-c65805f5e858` |
+| `openhands-qa` | `6be9edc4-8ef1-4d5f-a5ad-4e26ff278a13` |
+| `openhands-review` | `311d2a61-9eee-4d32-93a6-ee7c6f49c9a4` |
 
 Run-list check:
 
 ```bash
 python3 scripts/list_openhands_automation_runs.py \
   --env-file /Users/rajiv.shah/Code/software-factory-demo/.env \
-  --automation-id e1fdf4a7-8735-4b58-bc76-eb1ff937aa6e \
+  --automation-id 843a19a5-25c5-493e-b253-746678362dc8 \
   --limit 5
 ```
 
 Result after the post-registration issue comment: `[]`.
+
+The earlier registrations that referenced the hidden skill path were disabled after the skills moved to the first-class `skills/` directory.

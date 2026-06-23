@@ -27,7 +27,7 @@ python3 -m pytest -q app/tests/test_pet_catalog.py
 python3 -m pytest -q app/tests/test_adoptions.py
 python3 -m pytest -q
 python3 -m http.server 4173 --directory app/web
-python3 .agents/skills/sdlc-qa/scripts/static_ui_smoke.py --url http://localhost:4173
+python3 skills/sdlc-qa/scripts/static_ui_smoke.py --url http://localhost:4173
 ```
 
 ## Report Requirements
@@ -37,4 +37,3 @@ python3 .agents/skills/sdlc-qa/scripts/static_ui_smoke.py --url http://localhost
 - result summary
 - UI evidence for UI behavior
 - remaining risk
-

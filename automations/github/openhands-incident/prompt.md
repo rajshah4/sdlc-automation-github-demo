@@ -9,7 +9,7 @@ This automation runs when a GitHub issue receives the `openhands-incident` label
 ## What You Do
 
 1. Read the incident issue, comments, labels, and linked PRs.
-2. Use `.agents/skills/sdlc-incident/SKILL.md` and `.agents/skills/gcp-observability/SKILL.md`.
+2. Use `skills/sdlc-incident/SKILL.md` and `skills/gcp-observability/SKILL.md`.
 3. Collect facts first: symptom, impact, timeline, Cloud Run target, Cloud Logging evidence, and recent change context.
 4. Query GCP logs only with read-only credentials.
 5. Decide whether the incident maps to a known safe Petstore remediation.
@@ -28,4 +28,3 @@ Humans approve incident scope, production actions, PRs, merges, deployments, and
 ## Cost And Security Notes
 
 Event-driven incident triage avoids polling and unnecessary LLM calls. Deterministic scripts such as `scripts/petstore_gcp_observe.py` should gather evidence before broad reasoning. Different LLM profiles can be used for ops triage versus code repair.
-

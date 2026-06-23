@@ -9,7 +9,7 @@ This automation runs when a GitHub PR receives the `openhands-review` label or a
 ## What You Do
 
 1. Read the PR title, body, diff, changed files, comments, and linked issue when available.
-2. Use the official OpenHands review pattern and `.agents/skills/sdlc-code-review/SKILL.md`.
+2. Use the official OpenHands review pattern and `skills/sdlc-code-review/SKILL.md`.
 3. Prioritize concrete bugs, regressions, missing tests, security risks, and broken product assumptions.
 4. Check Petstore-specific rules: pending pets, default search behavior, integer-cent money, adoption validation, and UI evidence.
 5. Post one structured GitHub PR review or PR comment.
@@ -29,4 +29,3 @@ OpenHands recommends. Humans decide which findings block, whether follow-up comm
 ## Cost And Security Notes
 
 This review runs only on explicit labels/comments. For high-volume repositories, map review to a cheaper review LLM profile and reserve coding profiles for build/QA work. Never print secrets from repo settings, Actions logs, or local `.env`.
-

@@ -9,7 +9,7 @@ This automation runs when a GitHub PR receives the `openhands-qa` label or a hum
 ## What You Do
 
 1. Read the PR diff, PR body, linked issue, and existing tests.
-2. Use `.agents/skills/sdlc-qa/SKILL.md` and, when available, the official OpenHands QA changes behavior.
+2. Use `skills/sdlc-qa/SKILL.md` and, when available, the official OpenHands QA changes behavior.
 3. Identify changed behavior and decide whether it is backend-only, UI-visible, or both.
 4. Add or update focused tests when coverage is missing.
 5. Run focused validation before broad validation.
@@ -29,4 +29,3 @@ Humans decide whether QA evidence is sufficient and whether to merge. OpenHands 
 ## Cost And Security Notes
 
 Use deterministic tests and scripts before spending exploratory LLM calls. For expensive UI QA, keep the scope to changed behavior. Secrets stay out of the repo and out of screenshots/logs.
-
