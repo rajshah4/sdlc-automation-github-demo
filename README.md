@@ -1,17 +1,69 @@
 # SDLC Automation Demo for GitHub
 
-This repository is a GitHub-native version of the SDLC Automation Demo. It shows how OpenHands can turn sparse GitHub issues and PR signals into controlled SDLC work cells while humans keep final authority through GitHub issues, labels, comments, reviews, checks, and merge decisions.
+**Sparse GitHub request -> OpenHands automation -> spec, code, tests, review, and incident evidence back in GitHub.**
 
-The demo uses a small Petstore application so the automation output is concrete:
+This repo is a customer-facing GitHub-native SDLC Automation Demo. It shows how
+OpenHands can turn lightweight GitHub signals into controlled engineering work
+while humans keep authority through issues, PRs, labels, comments, reviews, and
+merge decisions.
 
-- `openhands-build`: issue label -> clarified spec -> implementation branch -> PR
-- `openhands-review`: PR label -> code review comment
-- `openhands-qa`: PR label -> generated QA/test evidence, including UI checks when relevant
-- `openhands-incident`: incident issue label -> GCP log analysis -> report or small fix PR
+The target app is intentionally small: a Petstore catalog and adoption service.
+That keeps the demo easy to follow while still producing real artifacts: code
+diffs, tests, UI checks, review comments, incident notes, and PRs.
 
-## Why This Repo Exists
+The Azure DevOps demo remains preserved in its original repository. This repo is
+GitHub-first: labels are the automation boundary, GitHub remains the system of
+record, and OpenHands does the agent work only when a human asks for it.
 
-The Azure DevOps demo remains preserved in its original repository. This repo is intentionally GitHub-first: GitHub issues, PRs, labels, comments, and OpenHands event automations are the demo boundary.
+## What Problem This Solves
+
+Teams want agentic SDLC automation, but they do not want a parallel workflow
+where requests disappear into a black box. The common bottleneck is:
+
+1. A product request starts as a sparse issue or comment.
+2. Engineers need a spec, implementation, tests, review, and rollout judgment.
+3. Incident follow-up needs logs, evidence, and safe remediation without giving
+   an agent unlimited production authority.
+
+This demo keeps that loop inside GitHub. A human applies a label, OpenHands runs
+one bounded automation, then posts evidence back where the team already works.
+
+## The Four Work Cells
+
+| Work cell | Trigger | What OpenHands does | What humans control |
+| --- | --- | --- | --- |
+| **Story to PR** | Apply `openhands-build` to a sparse issue | Clarifies the request, writes an open specification, implements the change, runs tests, and opens a PR | Scope, review, approval, and merge |
+| **Code Review** | Apply `openhands-review` to a PR | Reads the diff, checks risk areas, and posts review findings as a PR comment | Which findings block the PR |
+| **Automated QA** | Apply `openhands-qa` to a PR | Builds or updates test coverage, runs deterministic checks, and includes UI test evidence where applicable | Test acceptance and merge readiness |
+| **SRE Incident** | Apply `openhands-incident` to an incident issue | Gathers Cloud Run / Cloud Logging evidence, diagnoses likely cause, and proposes a fix or asks for human help | Production credentials, remediation approval, and merge |
+
+## What You'll See
+
+- A sparse issue becomes a PR with an implementation branch and a visible spec.
+- A PR receives an automated review comment rather than a silent background score.
+- QA output lands on the PR with concrete test files and command results.
+- An incident issue receives an evidence-first triage response; if cloud context
+  is unavailable, the automation should say so and mark the item for humans.
+- Status labels such as `openhands:in-progress`, `openhands:needs-human`, and
+  `openhands:done` make the automation state visible without leaving GitHub.
+
+## How It's Built
+
+This repo is intentionally composed from OpenHands platform features and
+repo-local knowledge, not a custom agent runtime.
+
+| Capability | Where it lives | Why it matters |
+| --- | --- | --- |
+| OpenHands Automations | `automations/github/` | Four label-triggered prompt presets registered in the Rajistics OpenHands instance. No polling and no GitHub Actions required for the live flow. |
+| Repo-local skills | `skills/` | Four reusable skills encode story/spec, QA, SRE, and code-review behavior with scripts and references that customers can inspect. |
+| Deterministic scripts | `scripts/` | Preflight, label setup, fixture simulation, Petstore checks, and GCP helpers run before broader model reasoning where possible. |
+| GitHub templates and labels | `.github/` | Issues, PRs, and labels define the human approval boundaries. |
+| Petstore app | `app/` | A small API/UI surface gives the automations realistic code, tests, and incident paths to work on. |
+
+Cost and security are part of the demo design: event-driven labels avoid
+unnecessary LLM calls, preflight scripts catch configuration issues without
+using a model, different LLM profiles can be used for coding/review/ops, and
+secrets stay in the OpenHands secret store or local `.env`, never in the repo.
 
 ## Fast Local Validation
 
