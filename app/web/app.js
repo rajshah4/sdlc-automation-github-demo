@@ -8,13 +8,17 @@ const pets = [
 function renderResults() {
   const query = document.querySelector("#query").value.trim().toLowerCase();
   const species = document.querySelector("#species").value;
+  const maxFeeInput = document.querySelector("#max-fee").value.trim();
+  const maxFeeCents = maxFeeInput === "" ? null : parseInt(maxFeeInput, 10) * 100;
   const list = document.querySelector("#results");
   list.innerHTML = "";
 
   const matches = pets.filter((pet) => {
+    const petFeeCents = parseInt(pet.fee.replace("$", ""), 10) * 100;
     return pet.name.toLowerCase().includes(query)
       && (species === "" || pet.species === species)
-      && pet.status === "available";
+      && pet.status === "available"
+      && (maxFeeCents === null || petFeeCents <= maxFeeCents);
   });
 
   if (matches.length === 0) {
