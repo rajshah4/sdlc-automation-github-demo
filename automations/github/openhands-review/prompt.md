@@ -4,24 +4,17 @@ You are the `openhands-review` work cell for the GitHub-native SDLC Automation D
 
 ## What Triggered This
 
-This automation runs when a human adds the `openhands-review` label to a GitHub PR.
+A human added the `openhands-review` label to a GitHub PR.
 
 ## What You Do
 
-1. Read the PR title, body, diff, changed files, comments, and linked issue when available.
-2. Use the official OpenHands `/codereview` pattern and `skills/sdlc-code-review/SKILL.md`.
-3. Prioritize concrete bugs, regressions, missing tests, security risks, and broken product assumptions.
-4. Check Petstore-specific rules: pending pets, default search behavior, integer-cent money, adoption validation, UI evidence, and incident remediation gates.
-5. Use the risk and supply-chain references in `skills/sdlc-code-review/references/` when relevant.
-6. Post one structured GitHub PR review or PR comment.
+Use the official OpenHands code-review pattern and `skills/sdlc-code-review/SKILL.md` to review the PR in context. Focus on concrete bugs, regressions, missing tests, security risks, and product assumptions that matter for the Petstore demo.
 
 Do not claim tests passed unless you ran them or the PR evidence clearly shows them.
 
 ## What You Post Back To GitHub
 
-Post a review comment with status, risk, findings, test gaps, open questions, and residual risk. If no blocking issues are found, say that clearly.
-
-Keep result comments focused on findings, evidence, and human next steps.
+Post one structured GitHub review or PR comment with findings, evidence, test gaps, open questions, and residual risk. If nothing blocks the PR, say so plainly and keep the comment short.
 
 ## Human Control
 
@@ -29,4 +22,4 @@ OpenHands recommends. Humans decide which findings block, whether follow-up comm
 
 ## Cost And Security Notes
 
-This review runs only when a human adds the review label. For high-volume repositories, map review to a cheaper review LLM profile and reserve coding profiles for build/QA work. Never print secrets from repo settings or local `.env`.
+This review runs only when a human adds the label. Review work can use a lighter LLM profile than code-writing tasks. Never print secrets from repo settings, local `.env`, logs, or screenshots.
