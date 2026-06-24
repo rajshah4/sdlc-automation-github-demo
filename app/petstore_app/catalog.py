@@ -31,8 +31,9 @@ def search_pets(
     status: str = "available",
     tag: str | None = None,
     max_results: int = 10,
+    sort_by: str | None = None,
 ) -> list[Pet]:
-    """Search pets by name, species, status, and tag."""
+    """Search pets by name, species, status, and tag with optional sorting."""
     if max_results < 1 or max_results > 50:
         raise ValueError("max_results must be between 1 and 50")
 
@@ -52,5 +53,8 @@ def search_pets(
         if normalized_tag and normalized_tag not in pet.tags:
             continue
         matches.append(pet)
+
+    if sort_by == "adoption_fee":
+        matches.sort(key=lambda pet: pet.adoption_fee_cents)
 
     return matches[:max_results]
