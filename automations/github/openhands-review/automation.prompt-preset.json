@@ -6,7 +6,7 @@
     "type": "event",
     "source": "github",
     "on": ["pull_request.labeled"],
-    "filter": "repository.full_name == '${GITHUB_DEMO_REPOSITORY}' && pull_request != null && label.name == 'openhands-review' && !contains(pull_request.labels[].name, 'openhands:in-progress') && !contains(pull_request.labels[].name, 'openhands:done')"
+    "filter": "repository.full_name == '${GITHUB_DEMO_REPOSITORY}' && pull_request != null && label.name == 'openhands-review' && !contains(pull_request.labels[].name, 'openhands:in-progress')"
   },
   "repos": [
     {

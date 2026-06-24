@@ -2,9 +2,11 @@
 
 Use this reference for the optional SRE incident flow in the SDLC Automation Demo.
 
-## Required Configuration
+## Internal Configuration
 
-The automation may read these values from OpenHands secrets or local environment:
+The automation may read these values from OpenHands secrets or local environment,
+but these names are for operators and scripts only. Do not echo this list in a
+GitHub issue, PR, log excerpt, screenshot, or customer-facing report.
 
 - `GCP_PROJECT`
 - `GCP_REGION`
@@ -12,7 +14,14 @@ The automation may read these values from OpenHands secrets or local environment
 - `GOOGLE_APPLICATION_CREDENTIALS_JSON_B64`
 - `DEMO_ADMIN_TOKEN` only when the approved runtime remediation is explicitly allowed
 
-Never print service-account JSON, API tokens, admin tokens, or raw secret values.
+Never print service-account JSON, API tokens, admin tokens, raw secret values,
+token lengths, or a detailed inventory of which configuration keys exist.
+When a report needs to explain what blocked live evidence collection, use
+capability-level wording:
+
+- "Cloud Logging could not be queried."
+- "The live Cloud Run service endpoint could not be reached."
+- "Approved remediation credentials were unavailable."
 
 ## Observe First
 
@@ -79,7 +88,9 @@ After remediation, include:
 
 Use report-only mode when:
 
-- GCP credentials are unavailable
+- Cloud Logging cannot be queried
+- the live Cloud Run service endpoint cannot be reached
+- approved runtime remediation credentials are unavailable
 - the GitHub issue lacks enough incident context
 - the incident class is unknown
 - remediation requires IAM, secrets, billing, deployment, data, or schema decisions

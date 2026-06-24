@@ -39,6 +39,10 @@ HTTP 500" plus impact notes. The skill provides the operating procedure:
   than sensitive secret inventory. For example, say "Cloud Logging could not be
   queried" instead of printing token lengths, service-account metadata, or a
   detailed yes/no list of sensitive secret variables.
+- Do not name individual environment variables or secret keys in GitHub issue
+  comments. Use capability-level wording such as "Cloud Logging could not be
+  queried", "the live service endpoint could not be reached", or "approved
+  remediation credentials were unavailable."
 
 ## Flow
 
@@ -106,6 +110,8 @@ Automation action taken:
 - Clear distinction between "observed", "inferred", and "not tested".
 - No secret values, token lengths, service-account JSON metadata, or detailed
   sensitive secret inventory.
+- No environment variable names or secret key names in GitHub comments; keep
+  those names in setup docs and scripts only.
 
 ## Stop Conditions
 

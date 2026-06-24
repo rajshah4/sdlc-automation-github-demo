@@ -102,8 +102,10 @@ def validate_automation_specs(failures: list[str]) -> None:
             fail(f"{spec_path} filter must gate label events on label.name == '{folder}'", failures)
         if "issue_comment.created" in trigger_events:
             fail(f"{spec_path} must be label-only for the live demo", failures)
-        if "openhands:done" not in trigger_filter:
-            fail(f"{spec_path} must skip items already marked openhands:done", failures)
+        if "issues.labeled" in trigger_events and "openhands:done" not in trigger_filter:
+            fail(f"{spec_path} must skip issues already marked openhands:done", failures)
+        if "pull_request.labeled" in trigger_events and "openhands:done" in trigger_filter:
+            fail(f"{spec_path} must not let a completed PR work cell block another PR work cell", failures)
         for phrase in ["Human Control", "Cost And Security", "What You Post Back To GitHub"]:
             if phrase not in prompt:
                 fail(f"{prompt_path} missing demo-friendly section: {phrase}", failures)
