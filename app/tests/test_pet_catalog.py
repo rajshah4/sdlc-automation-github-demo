@@ -25,3 +25,27 @@ def test_search_pets_filters_by_tag() -> None:
 def test_search_pets_validates_max_results(max_results: int) -> None:
     with pytest.raises(ValueError, match="max_results"):
         search_pets(max_results=max_results)
+
+
+def test_search_pets_filters_by_max_adoption_fee() -> None:
+    results = search_pets(max_adoption_fee_cents=10000)
+
+    assert [pet.name for pet in results] == ["Mochi", "Pip"]
+
+
+def test_search_pets_excludes_pets_above_max_fee() -> None:
+    results = search_pets(max_adoption_fee_cents=5000)
+
+    assert [pet.name for pet in results] == ["Pip"]
+
+
+def test_search_pets_rejects_negative_max_fee() -> None:
+    with pytest.raises(ValueError, match="max_adoption_fee_cents must be non-negative"):
+        search_pets(max_adoption_fee_cents=-1)
+
+
+def test_search_pets_without_max_fee_returns_all_matching() -> None:
+    results = search_pets()
+
+    assert len(results) == 3
+    assert [pet.name for pet in results] == ["Mochi", "Scout", "Pip"]
