@@ -1,6 +1,6 @@
 ---
 name: SDLC story request
-about: Create a simple story request, then add openhands-build when ready
+about: Request a small product change for the Petstore demo
 title: ""
 labels: type:story
 assignees: ""

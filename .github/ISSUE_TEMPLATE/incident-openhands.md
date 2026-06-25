@@ -1,6 +1,6 @@
 ---
 name: SDLC incident report
-about: Create a simple incident report, then add openhands-incident when ready
+about: Report an operational symptom for triage
 title: "[incident] "
 labels: type:incident
 assignees: ""
