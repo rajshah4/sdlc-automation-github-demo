@@ -15,6 +15,14 @@ Use this reference when a sparse GitHub request needs to be grounded in the demo
 
 ### Max Adoption Fee
 
+Business-language aliases:
+
+- "families need to find pets in their budget"
+- "show pets people can afford"
+- "fee cap"
+- "cost range"
+- "budget limit"
+
 Implementation intent:
 
 - Add optional max-fee filtering using integer cents.

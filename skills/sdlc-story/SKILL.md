@@ -37,6 +37,8 @@ If the OpenSpec CLI is preinstalled and the operator explicitly asks to use it, 
 
 Sparse issues are acceptable when the title maps to an existing Petstore behavior. Infer the smallest safe implementation, but write the assumptions, spec delta, task list, and human gates into the OpenSpec-style change folder before editing code.
 
+Jira demo issues may use everyday business language instead of engineering terms. For example, `Families need to find pets in their budget` should be treated as a sparse affordability request, not as a literal UI copy change. Use docs, logs, and repo-local references to connect business phrases such as `budget`, `affordable`, `fee cap`, and `cost range` to the Petstore adoption-fee search behavior.
+
 ## GitHub Boundaries
 
 - Trigger label: `openhands-build`
@@ -91,6 +93,14 @@ If a request has unresolved product, security, data, or environment questions, p
 - expose a simple static UI input only if the issue or PR scope includes UI
 - add focused backend tests for match, exclusion, and invalid negative fees
 - do not add payment processing, persistence, billing, auth, or dependencies
+
+`Families need to find pets in their budget` means the same bounded feature slice when context confirms that adoption counselors are asking for affordability-based search:
+
+- map "budget" and "afford" to adoption fee filtering
+- add an optional maximum adoption fee filter using integer cents
+- preserve default available-pet search behavior
+- add focused backend tests
+- record the business-language interpretation in the OpenSpec-style proposal and PR
 
 `Let adopters search by age range` means:
 

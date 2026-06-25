@@ -11,9 +11,31 @@ import sys
 CHECKBOX_RE = re.compile(r"^\s*[-*]\s+\[(?: |x|X)\]\s+(?P<text>.+?)\s*$")
 
 
-def infer_from_title(title: str) -> list[str]:
-    normalized = title.lower()
-    if "max adoption fee" in normalized or "maximum adoption fee" in normalized:
+def infer_from_request(title: str, body: str = "") -> list[str]:
+    normalized = f"{title}\n{body}".lower()
+    mentions_fee_cap = (
+        "max adoption fee" in normalized
+        or "maximum adoption fee" in normalized
+        or "fee cap" in normalized
+        or "adoption fee" in normalized
+    )
+    mentions_budget_language = any(
+        phrase in normalized
+        for phrase in (
+            "in their budget",
+            "within budget",
+            "fit their budget",
+            "families can afford",
+            "pets they can afford",
+            "affordable pets",
+            "cost range",
+        )
+    )
+    mentions_pet_context = any(
+        phrase in normalized
+        for phrase in ("pet", "pets", "adoption", "adopter", "families", "counselor")
+    )
+    if mentions_fee_cap or (mentions_budget_language and mentions_pet_context):
         return [
             "Catalog search accepts an optional max adoption fee in cents.",
             "Pets above the maximum fee are excluded.",
@@ -37,7 +59,7 @@ def main() -> int:
         for line in body.splitlines()
         if (match := CHECKBOX_RE.match(line))
     ]
-    inferred = infer_from_title(title)
+    inferred = infer_from_request(title, body)
     print(
         json.dumps(
             {
@@ -55,4 +77,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

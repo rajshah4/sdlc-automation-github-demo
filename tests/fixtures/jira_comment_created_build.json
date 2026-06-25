@@ -1,0 +1,10 @@
+{
+  "webhookEvent": "comment_created",
+  "source": "jira-automation",
+  "site": "https://rajiv-shah.atlassian.net",
+  "projectKey": "KAN",
+  "issueKey": "KAN-1",
+  "issueUrl": "https://rajiv-shah.atlassian.net/browse/KAN-1",
+  "trigger": "comment",
+  "commentId": "10001"
+}
