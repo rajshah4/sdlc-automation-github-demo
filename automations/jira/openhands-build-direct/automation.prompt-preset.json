@@ -1,0 +1,20 @@
+{
+  "preset": "prompt",
+  "name": "SDLC Demo - Jira Direct OpenHands Build",
+  "prompt_file": "prompt.md",
+  "trigger": {
+    "type": "event",
+    "source": "jira-direct",
+    "on": "jira:issue_created",
+    "filter": "issue.fields.project.key == '${JIRA_DEMO_PROJECT_KEY}' && issue.fields.issuetype.name == 'Task'"
+  },
+  "repos": [
+    {
+      "url": "${GITHUB_DEMO_REPO_URL}",
+      "provider": "github",
+      "ref": "main"
+    }
+  ],
+  "timeout": 900,
+  "llm_profile": "sdlc-coding"
+}

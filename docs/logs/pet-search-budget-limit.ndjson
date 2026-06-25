@@ -1,0 +1,5 @@
+{"timestamp":"2026-06-24T15:02:17Z","service":"customer-intake-ui","event":"search_submitted","jira":"KAN-demo","query":"family friendly","budget_limit_dollars":75}
+{"timestamp":"2026-06-24T15:02:17Z","service":"pet-search-api","event":"request_received","query":"family friendly","max_adoption_fee_cents":7500}
+{"timestamp":"2026-06-24T15:02:18Z","service":"pet-search-api","event":"response_item","pet_id":"pet-100","pet_name":"Mochi","adoption_fee_cents":7500}
+{"timestamp":"2026-06-24T15:02:18Z","service":"pet-search-api","event":"response_item","pet_id":"pet-101","pet_name":"Scout","adoption_fee_cents":12500}
+{"timestamp":"2026-06-24T15:02:18Z","service":"pet-search-api","event":"demo_observation","message":"Result contained a pet above the requested family budget limit."}

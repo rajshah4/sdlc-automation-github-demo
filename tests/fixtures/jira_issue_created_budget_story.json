@@ -1,0 +1,34 @@
+{
+  "webhookEvent": "jira:issue_created",
+  "issue_event_type_name": "issue_created",
+  "timestamp": 1782331200000,
+  "issue": {
+    "id": "10042",
+    "key": "KAN-42",
+    "fields": {
+      "project": {
+        "key": "KAN",
+        "name": "Tracking Issues"
+      },
+      "issuetype": {
+        "name": "Task"
+      },
+      "summary": "Families need to find pets in their budget",
+      "description": "Adoption counselors say families keep asking to see pets they can afford before they visit. Can we make search support that?",
+      "labels": [
+        "customer-intake",
+        "business-language"
+      ],
+      "attachment": [
+        {
+          "filename": "pet-search-budget-limit.ndjson",
+          "mimeType": "application/x-ndjson",
+          "content": "docs/logs/pet-search-budget-limit.ndjson"
+        }
+      ]
+    }
+  },
+  "user": {
+    "displayName": "Rajiv Shah"
+  }
+}

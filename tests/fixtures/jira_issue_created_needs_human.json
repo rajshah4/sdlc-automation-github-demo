@@ -1,0 +1,27 @@
+{
+  "webhookEvent": "jira:issue_created",
+  "issue_event_type_name": "issue_created",
+  "timestamp": 1782331260000,
+  "issue": {
+    "id": "10043",
+    "key": "KAN-43",
+    "fields": {
+      "project": {
+        "key": "KAN",
+        "name": "Tracking Issues"
+      },
+      "issuetype": {
+        "name": "Task"
+      },
+      "summary": "People are confused by pet prices",
+      "description": "This came up in the intake review. Can we fix it?",
+      "labels": [
+        "customer-intake",
+        "needs-clarification"
+      ]
+    }
+  },
+  "user": {
+    "displayName": "Rajiv Shah"
+  }
+}
