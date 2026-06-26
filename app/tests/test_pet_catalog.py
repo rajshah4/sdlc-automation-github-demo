@@ -25,3 +25,42 @@ def test_search_pets_filters_by_tag() -> None:
 def test_search_pets_validates_max_results(max_results: int) -> None:
     with pytest.raises(ValueError, match="max_results"):
         search_pets(max_results=max_results)
+
+
+def test_search_pets_filters_by_min_age() -> None:
+    results = search_pets(min_age=15)
+
+    assert [pet.name for pet in results] == ["Mochi", "Scout"]
+
+
+def test_search_pets_filters_by_max_age() -> None:
+    results = search_pets(max_age=20)
+
+    assert [pet.name for pet in results] == ["Mochi", "Pip"]
+
+
+def test_search_pets_filters_by_age_range() -> None:
+    results = search_pets(min_age=10, max_age=25)
+
+    assert [pet.name for pet in results] == ["Mochi"]
+
+
+def test_search_pets_filters_by_exact_age() -> None:
+    results = search_pets(min_age=18, max_age=18)
+
+    assert [pet.name for pet in results] == ["Mochi"]
+
+
+def test_search_pets_rejects_negative_min_age() -> None:
+    with pytest.raises(ValueError, match="min_age must be non-negative"):
+        search_pets(min_age=-1)
+
+
+def test_search_pets_rejects_negative_max_age() -> None:
+    with pytest.raises(ValueError, match="max_age must be non-negative"):
+        search_pets(max_age=-5)
+
+
+def test_search_pets_rejects_inverted_age_range() -> None:
+    with pytest.raises(ValueError, match="min_age must not be greater than max_age"):
+        search_pets(min_age=25, max_age=10)

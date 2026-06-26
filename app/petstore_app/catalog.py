@@ -30,11 +30,22 @@ def search_pets(
     species: str | None = None,
     status: str = "available",
     tag: str | None = None,
+    min_age: int | None = None,
+    max_age: int | None = None,
     max_results: int = 10,
 ) -> list[Pet]:
-    """Search pets by name, species, status, and tag."""
+    """Search pets by name, species, status, tag, and age range."""
     if max_results < 1 or max_results > 50:
         raise ValueError("max_results must be between 1 and 50")
+    
+    if min_age is not None and min_age < 0:
+        raise ValueError("min_age must be non-negative")
+    
+    if max_age is not None and max_age < 0:
+        raise ValueError("max_age must be non-negative")
+    
+    if min_age is not None and max_age is not None and min_age > max_age:
+        raise ValueError("min_age must not be greater than max_age")
 
     normalized_query = query.strip().lower()
     normalized_species = species.strip().lower() if species else None
@@ -50,6 +61,10 @@ def search_pets(
         if normalized_status and normalized_status != pet.status:
             continue
         if normalized_tag and normalized_tag not in pet.tags:
+            continue
+        if min_age is not None and pet.age_months < min_age:
+            continue
+        if max_age is not None and pet.age_months > max_age:
             continue
         matches.append(pet)
 
