@@ -19,6 +19,7 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
 - Repo search works in OpenHands.
 - Adding the `openhands-build` label to a clean issue creates a conversation in the self-hosted instance.
 - Automations are registered from `automations/github/*/automation.prompt-preset.json`.
+- Jira demo automation is defined in `automations/jira/jira-to-story/`; it uses the `jira-direct` webhook source and keeps implementation details in `skills/sdlc-story/`.
 - Story-to-PR artifacts follow Fission-AI/OpenSpec lineage, with change folders under `openspec/changes/`.
 - The live automation does not install or run the OpenSpec CLI during the timed label-triggered flow; use preinstalled CLI setup/archive commands outside the demo run when needed.
 - Only one OpenHands GitHub App should respond on this repo; duplicate public/self-hosted installs can create confusing duplicate runs.
@@ -27,6 +28,15 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
   - `skills/sdlc-qa`
   - `skills/sdlc-incident`
   - `skills/sdlc-code-review`
+
+## Jira
+
+- Jira admin webhook points to the Rajistics `jira-direct` webhook URL.
+- Jira webhook secret matches the Rajistics `jira-direct` signing secret.
+- Jira webhook sends issue-created events with body included.
+- Jira webhook JQL is limited to `project = KAN AND issuetype = Task`.
+- Demo Jira tickets are sparse business-language reports. Do not include repo names, file paths, log codes, or implementation clues in the ticket.
+- Suggested labels are `bug`, `jira-to-story-demo`, and `openhands-demo`; labels are for operator search, not the trigger boundary.
 
 ## Slack
 
