@@ -22,7 +22,8 @@ def test_bad_catalog_filter_exposes_pending_pet(monkeypatch, tmp_path) -> None:
     pets = cloud_run_app.visible_pets()
     payload = cloud_run_app.status_payload()
 
-    assert "Nova" in {pet.name for pet in pets}
+    assert "Nova" not in {pet.name for pet in pets}
+    assert {pet.status for pet in pets} == {"available"}
     assert payload["status"] == "degraded"
     assert payload["incident"]["error_code"] == "PENDING_PET_VISIBLE"
 
