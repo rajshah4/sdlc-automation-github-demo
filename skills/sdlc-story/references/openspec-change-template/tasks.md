@@ -1,7 +1,8 @@
 # Tasks
 
 - [ ] Update OpenSpec-style spec delta.
-- [ ] Implement the smallest safe catalog change.
-- [ ] Add focused tests for match, exclusion, and invalid negative fees.
+- [ ] Confirm the pending-pet visibility symptom and evidence.
+- [ ] Implement the smallest safe catalog fix.
+- [ ] Add focused tests for default pending-pet exclusion and explicit pending searches.
 - [ ] Run focused and full validation.
 - [ ] Document evidence and residual risk in the PR.

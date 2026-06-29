@@ -39,3 +39,11 @@
 - Simplified issue #1 so it reads like a normal product request and pruned the old test/acknowledgement comments, leaving the OpenHands completion summary and PR link.
 - Verified through the Rajistics API that the active automation set is enabled, label-only, and guarded against items already marked `openhands:done`.
 - Simplified the tracked repo layout for customer-facing use by removing the temporary provider abstraction, top-level event fixtures, and duplicate integrations samples. Test fixtures now live under `tests/fixtures`.
+
+## 2026-06-29
+
+- Pivoted the build/demo assets from a feature-request hero story to a bug-first path: customers are seeing pets that are not available.
+- Added repo-local wiki and log evidence for the pending-pet visibility bug:
+  - `docs/wiki/petstore-catalog-availability.md`
+  - `docs/logs/pending-pet-visible.ndjson`
+- Updated the build automation prompt, story skill, OpenSpec-style templates, simulation fixture, and walkthrough so sparse incoming work looks like a bug/regression rather than a new feature.

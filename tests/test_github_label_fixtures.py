@@ -17,14 +17,15 @@ def load_fixture(name: str) -> dict:
     return json.loads((FIXTURES / name).read_text(encoding="utf-8"))
 
 
-def test_issue_label_build_fixture_is_sparse_story() -> None:
+def test_issue_label_build_fixture_is_sparse_bug() -> None:
     payload = load_fixture("github_issue_labeled_build.json")
 
     assert payload["_event_name"] == "issues"
     assert payload["action"] == "labeled"
     assert payload["label"]["name"] == "openhands-build"
     assert payload["issue"]["number"] == 7
-    assert payload["issue"]["title"] == "Filter pets by max adoption fee"
+    assert payload["issue"]["title"] == "Customers are seeing pets that are not available"
+    assert "type:bug" in {label["name"] for label in payload["issue"]["labels"]}
 
 
 def test_pull_request_label_qa_fixture_is_pr_event() -> None:
@@ -32,7 +33,7 @@ def test_pull_request_label_qa_fixture_is_pr_event() -> None:
 
     assert payload["_event_name"] == "pull_request"
     assert payload["label"]["name"] == "openhands-qa"
-    assert payload["pull_request"]["head"]["ref"] == "openhands/issue-7-max-fee"
+    assert payload["pull_request"]["head"]["ref"] == "openhands/issue-7-pending-pet-visibility"
     assert payload["pull_request"]["base"]["ref"] == "main"
 
 

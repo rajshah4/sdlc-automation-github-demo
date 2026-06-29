@@ -13,9 +13,9 @@
   "issue": {
     "id": 2001,
     "number": 7,
-    "title": "Filter pets by max adoption fee",
-    "body": "As an adopter, I want to filter pets by maximum adoption fee so I can find pets within my budget.",
+    "title": "Customers are seeing pets that are not available",
+    "body": "Support says Nova is showing up in the available pets list even though she should not be adoptable.\n\nLogs mention PENDING_PET_VISIBLE.",
     "html_url": "https://github.com/rajshah4/sdlc-automation-github-demo/issues/7",
-    "labels": [{"name": "type:story"}, {"name": "openhands-build"}]
+    "labels": [{"name": "type:bug"}, {"name": "openhands-build"}]
   }
 }

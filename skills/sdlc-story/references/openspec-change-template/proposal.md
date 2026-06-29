@@ -1,34 +1,36 @@
-# Change: Filter pets by max adoption fee
+# Change: Fix unavailable pets appearing in available catalog
 
 ## Why
 
-Adopters need a quick way to find pets whose adoption fees fit their budget.
+Support reports that Nova appears in the available-pets experience even though she is not adoptable. The catalog should not show pending pets in default available results.
 
 ## Source
 
 - GitHub issue: https://github.com/example-org/sdlc-automation-github-demo/issues/123
 - Trigger label: `openhands-build`
 - Automation: `sdlc-story`
+- Evidence: `PENDING_PET_VISIBLE` log or fixture signal
 
 ## Assumptions
 
-- Adoption fees are represented as integer cents in the Petstore domain model.
-- The request is limited to catalog search behavior.
+- Nova maps to `pet-103` and has `status="pending"` in the Petstore seed data.
+- The request is limited to default catalog availability behavior.
+- Explicit pending-pet searches should continue to work when callers request `status="pending"`.
 
 ## Non-Goals
 
-- Payment processing, billing, discounts, and persistence changes are out of scope.
+- Runtime remediation, deployment changes, cloud resource changes, auth, persistence, and unrelated UI changes are out of scope.
 
 ## What Changes
 
-- Catalog search accepts an optional maximum adoption fee.
-- Pets with fees above the maximum are excluded.
-- Negative maximum fees are rejected.
+- Default available-pets search excludes pending pets.
+- Explicit pending-pet searches still return pending pets when requested.
+- Focused regression tests cover the pending-pet visibility bug.
 
 ## Impact
 
-- App behavior: adopters can narrow search results by budget.
-- Tests: catalog tests cover matching, exclusion, and validation.
+- App behavior: adopters see only adoptable pets by default.
+- Tests: catalog tests cover default available behavior and explicit pending searches.
 - Humans: reviewers approve the product scope and merge decision.
 
 ## Human Gates

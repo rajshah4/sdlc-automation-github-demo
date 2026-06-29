@@ -1,6 +1,6 @@
 # SDLC Automation Demo for GitHub
 
-**Sparse GitHub request -> OpenHands automation -> spec, code, tests, review, and incident evidence back in GitHub.**
+**Sparse GitHub bug -> OpenHands automation -> spec, code, tests, review, and evidence back in GitHub.**
 
 This repo is a customer-facing GitHub-native SDLC Automation Demo. It shows how
 OpenHands can turn lightweight GitHub signals into controlled engineering work
@@ -20,8 +20,8 @@ record, and OpenHands does the agent work only when a human asks for it.
 Teams want agentic SDLC automation, but they do not want a parallel workflow
 where requests disappear into a black box. The common bottleneck is:
 
-1. A product request starts as a sparse issue or comment.
-2. Engineers need a spec, implementation, tests, review, and rollout judgment.
+1. A bug or product request starts as a sparse issue or comment.
+2. Engineers need to understand the issue, find the right code, implement a fix, add tests, and preserve review judgment.
 3. Incident follow-up needs logs, evidence, and safe remediation without giving
    an agent unlimited production authority.
 
@@ -32,14 +32,14 @@ one bounded automation, then posts evidence back where the team already works.
 
 | Work cell | Trigger | What OpenHands does | What humans control |
 | --- | --- | --- | --- |
-| **Story to PR** | Apply `openhands-build` to a sparse issue | Clarifies the request, writes OpenSpec-style change artifacts, implements the change, runs tests, and opens a PR | Scope, review, approval, and merge |
+| **Bug to PR** | Apply `openhands-build` to a sparse bug issue | Clarifies the bug, checks repo-local docs and evidence, writes OpenSpec-style change artifacts, implements the fix, runs tests, and opens a PR | Scope, review, approval, and merge |
 | **Code Review** | Apply `openhands-review` to a PR | Reads the diff, checks risk areas, and posts review findings as a PR comment | Which findings block the PR |
 | **Automated QA** | Apply `openhands-qa` to a PR | Builds or updates test coverage, runs deterministic checks, and includes UI test evidence where applicable | Test acceptance and merge readiness |
 | **SRE Incident** | Apply `openhands-incident` to an incident issue | Gathers Cloud Run / Cloud Logging evidence, diagnoses likely cause, and proposes a fix or asks for human help | Production credentials, remediation approval, and merge |
 
 ## What You'll See
 
-- A sparse issue becomes a PR with an implementation branch and visible OpenSpec-style proposal/spec/design/task artifacts.
+- A sparse bug issue becomes a PR with an implementation branch and visible OpenSpec-style proposal/spec/design/task artifacts.
 - A PR receives an automated review comment rather than a silent background score.
 - QA output lands on the PR with concrete test files and command results. The repo also includes a Playwright browser-evidence example with screenshot, GIF, video, and report generation.
 - An incident issue receives an evidence-first triage response; if cloud context

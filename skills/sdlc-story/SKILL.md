@@ -1,10 +1,11 @@
 ---
 name: sdlc-story
-description: Turn sparse GitHub issues into OpenSpec-style change artifacts, scoped Petstore implementation, tests, and a human-reviewable PR for the SDLC Automation Demo.
+description: Turn sparse GitHub bug reports or requests into OpenSpec-style change artifacts, scoped Petstore implementation, tests, and a human-reviewable PR for the SDLC Automation Demo.
 triggers:
   - openhands-build
   - open spec
   - open specification
+  - bug to pr
   - story to pr
   - sparse issue
 ---
@@ -13,7 +14,7 @@ triggers:
 
 Use this skill when OpenHands turns a GitHub issue into a small reviewable PR.
 
-The customer-facing story is: a sparse GitHub request becomes an OpenSpec-style change proposal, spec delta, design, and task list, then an implementation branch, then a PR that humans review and merge.
+The customer-facing story is: a sparse GitHub bug report becomes an OpenSpec-style change proposal, spec delta, design, and task list, then an implementation branch, then a PR that humans review and merge.
 
 ## OpenSpec Lineage
 
@@ -35,7 +36,7 @@ If the OpenSpec CLI is preinstalled and the operator explicitly asks to use it, 
 - acceptance criteria when present
 - linked PRs or previous automation comments when present
 
-Sparse issues are acceptable when the title maps to an existing Petstore behavior. Infer the smallest safe implementation, but write the assumptions, spec delta, task list, and human gates into the OpenSpec-style change folder before editing code.
+Sparse issues are acceptable when the title maps to an existing Petstore behavior. For bug-shaped issues, first identify the violated behavior, repo-local docs, and any fixture/log evidence before editing code. Infer the smallest safe implementation, but write the assumptions, spec delta, task list, and human gates into the OpenSpec-style change folder before editing code.
 
 ## GitHub Boundaries
 
@@ -83,7 +84,24 @@ If a request has unresolved product, security, data, or environment questions, p
 - Tests: `app/tests/`
 - OpenSpec-style changes: `openspec/changes/github-issue-<number>-<slug>/`
 
-## Sparse Story Examples
+## Sparse Bug Examples
+
+`Customers are seeing pets that are not available` means:
+
+- default available-pets search must exclude pets with `status="pending"`
+- correlate the symptom with `PENDING_PET_VISIBLE` evidence when logs or fixtures are present
+- inspect `app/petstore_app/catalog.py`, `app/petstore_app/cloud_run_app.py`, and existing tests before changing behavior
+- add or repair focused tests proving pending pets stay out of default available results
+- do not mutate cloud resources, deployment settings, secrets, auth, or unrelated UI behavior
+
+`Nova is showing up as adoptable` means:
+
+- map Nova to `pet-103` and confirm her status is `pending`
+- preserve explicit pending searches when the caller asks for `status="pending"`
+- keep the default catalog path available-only
+- add focused regression coverage
+
+## Sparse Feature Examples
 
 `Filter pets by max adoption fee` means:
 

@@ -2,24 +2,24 @@
 
 ## ADDED Requirements
 
-### Requirement: Search by maximum adoption fee
+### Requirement: Default catalog search excludes unavailable pets
 
-Catalog search MUST accept an optional maximum adoption fee expressed in integer cents.
+Catalog search MUST exclude pending pets from the default available-pets experience.
 
-#### Scenario: Matching pets at or below the maximum fee
+#### Scenario: Default available-pets search excludes pending pets
 
-- Given available pets with adoption fees
-- When a maximum adoption fee is supplied
-- Then pets at or below that fee are included
+- Given Nova has status `pending`
+- When catalog search is called with default options
+- Then Nova is not included in the results
 
-#### Scenario: Excluding pets above the maximum fee
+#### Scenario: Explicit pending-pet search still works
 
-- Given available pets with adoption fees
-- When a maximum adoption fee is supplied
-- Then pets above that fee are excluded
+- Given Nova has status `pending`
+- When catalog search is called with `status="pending"`
+- Then Nova is included in the results
 
-#### Scenario: Rejecting negative maximum fees
+#### Scenario: Available dog search excludes pending dogs
 
-- Given a negative maximum adoption fee
-- When catalog search is called
-- Then the search is rejected with a validation error
+- Given Scout is available and Nova is pending
+- When catalog search is called for available dogs
+- Then Scout is included and Nova is excluded

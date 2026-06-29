@@ -13,6 +13,18 @@ CHECKBOX_RE = re.compile(r"^\s*[-*]\s+\[(?: |x|X)\]\s+(?P<text>.+?)\s*$")
 
 def infer_from_title(title: str) -> list[str]:
     normalized = title.lower()
+    if (
+        "not available" in normalized
+        or "pending pets" in normalized
+        or "pending pet" in normalized
+        or "nova" in normalized
+    ):
+        return [
+            "Default available-pets search excludes pending pets.",
+            "Explicit pending-pet searches still work when status is requested.",
+            "Focused regression tests cover pending pet exclusion.",
+            "The PR documents any log evidence such as PENDING_PET_VISIBLE.",
+        ]
     if "max adoption fee" in normalized or "maximum adoption fee" in normalized:
         return [
             "Catalog search accepts an optional max adoption fee in cents.",
@@ -55,4 +67,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

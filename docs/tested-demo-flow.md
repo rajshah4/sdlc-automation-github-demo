@@ -13,7 +13,9 @@ python3 skills/sdlc-qa/scripts/with_server.py --server "python3 -m http.server 4
 NODE_PATH=/path/to/node_modules PLAYWRIGHT_BROWSER_CHANNEL=chrome python3 skills/sdlc-qa/scripts/with_server.py --server "python3 -m http.server 4173 --directory app/web" --port 4173 -- python3 skills/sdlc-qa/scripts/run_playwright_ui_demo.py --url http://localhost:4173 --artifact-dir /tmp/sdlc-petstore-playwright/catalog-search
 ```
 
-## Successful Build Result
+The build fixture now represents the bug-first demo path: a sparse issue reports that customers are seeing pets that are not available, with `PENDING_PET_VISIBLE` as the log clue.
+
+## Historical Successful Build Result
 
 Repository:
 
@@ -31,7 +33,7 @@ Result:
 - OpenHands opened PR #2: `https://github.com/rajshah4/sdlc-automation-github-demo/pull/2`
 - Issue #1 now has `openhands:done`.
 
-Note: this successful build result happened before the final label-only cleanup. The active automation set is now label-only and was not re-triggered on issue #1 to avoid creating duplicate work from a completed issue.
+Note: this successful build result used the earlier max-adoption-fee feature story before the demo assets were pivoted to bug-first examples. The active automation set is label-only and should use the current bug fixture for new dry runs.
 
 ## Registered OpenHands Automations
 

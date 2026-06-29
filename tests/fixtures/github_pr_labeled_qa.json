@@ -13,9 +13,9 @@
   "pull_request": {
     "id": 4001,
     "number": 12,
-    "title": "Add max adoption fee filter",
+    "title": "Fix unavailable pets appearing in available catalog",
     "html_url": "https://github.com/rajshah4/sdlc-automation-github-demo/pull/12",
-    "head": {"ref": "openhands/issue-7-max-fee"},
+    "head": {"ref": "openhands/issue-7-pending-pet-visibility"},
     "base": {"ref": "main"},
     "labels": [{"name": "openhands-qa"}]
   }

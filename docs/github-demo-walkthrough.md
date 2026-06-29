@@ -2,17 +2,24 @@
 
 This is the live flow for the GitHub-native SDLC Automation Demo.
 
-## 1. Create An Issue
+## 1. Create A Bug Issue
 
-Create a GitHub issue with a sparse title such as:
+Create a GitHub issue with a sparse, business-language bug title such as:
 
 ```text
-Filter pets by max adoption fee
+Customers are seeing pets that are not available
+```
+
+Use a short body, for example:
+
+```text
+Support says Nova is showing up in the available pets list even though she should not be adoptable.
+Logs mention PENDING_PET_VISIBLE.
 ```
 
 Add the label `openhands-build`.
 
-OpenHands should clarify the request inside the conversation, infer the smallest safe Petstore change, create a feature branch, run focused tests, and open a draft PR. The PR should document assumptions, acceptance criteria, evidence, and human review notes.
+OpenHands should clarify the bug inside the conversation, use repo-local docs and log evidence, find the Petstore catalog code, create a fix branch, run focused tests, and open a draft PR. The PR should document assumptions, acceptance criteria, evidence, and human review notes.
 
 ## 2. Automation Creates OpenSpec-Style Artifacts And PR
 
@@ -22,7 +29,7 @@ Show the generated OpenSpec-style change folder, usually:
 openspec/changes/github-issue-<number>-<slug>/
 ```
 
-Call out how the sparse issue became:
+Call out how the sparse bug became:
 
 - `proposal.md`
 - `design.md`
@@ -36,7 +43,7 @@ Call out how the sparse issue became:
 
 Lineage note: this demo follows the Fission-AI/OpenSpec change-folder model. The live automation writes the artifacts directly instead of installing or invoking the OpenSpec CLI during the timed label-triggered run, which keeps the customer demo deterministic.
 
-Then show the generated PR.
+Then show the generated PR, including the regression test that proves pending pets stay out of the default available-pets experience.
 
 Call out the human controls:
 

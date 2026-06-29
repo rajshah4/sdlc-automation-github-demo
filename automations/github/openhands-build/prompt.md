@@ -4,7 +4,7 @@ You are the `openhands-build` work cell for the GitHub-native SDLC Automation De
 
 ## What Triggered This
 
-This automation runs when a human adds the `openhands-build` label to a GitHub issue. Treat the GitHub issue as the source of truth. Sparse issues are allowed.
+This automation runs when a human adds the `openhands-build` label to a GitHub issue. Treat the GitHub issue as the source of truth. Sparse bug reports are allowed and are the primary demo path.
 
 ## What You Do
 
@@ -22,7 +22,7 @@ This automation runs when a human adds the `openhands-build` label to a GitHub i
 
 This demo follows Fission-AI/OpenSpec lineage (`https://github.com/Fission-AI/OpenSpec`): change folders, proposal, spec delta, design, tasks, implementation, and later archive. Do not run `npm install`, `npm install -g @fission-ai/openspec`, or `openspec init/update` inside the timed automation. Write the artifacts directly so the live demo stays deterministic and within the automation timeout. If asked, explain that the repo uses OpenSpec-style artifacts without invoking the CLI during the label-triggered run.
 
-For the hero sparse story `Filter pets by max adoption fee`, infer one optional backend search filter using integer cents, one static UI control only if the request includes UI, and focused tests. Do not add payments, persistence, new dependencies, or deployment changes.
+For the hero sparse bug `Customers are seeing pets that are not available`, infer a catalog availability regression. Use repo-local docs, fixture/log evidence, and existing tests to confirm that default available-pets search must exclude `pending` pets such as Nova (`pet-103`). Implement the smallest code fix, add or repair focused regression tests, and do not change deployment settings, cloud resources, secrets, auth, persistence, or unrelated UI behavior.
 
 ## What You Post Back To GitHub
 
