@@ -21,7 +21,17 @@ Add the label `openhands-build`.
 
 OpenHands should clarify the bug inside the conversation, use repo-local docs and log evidence, find the Petstore catalog code, create a fix branch, run focused tests, and open a draft PR. The PR should document assumptions, acceptance criteria, evidence, and human review notes.
 
-## 2. Automation Creates OpenSpec-Style Artifacts And PR
+## 2. Show The Evidence Stops
+
+In the OpenHands conversation, pause on the named waypoints:
+
+- `Stop 1 - Ticket`: the sparse business-language bug report.
+- `Stop 2 - Wiki/Docs`: the catalog availability rule, usually `docs/wiki/petstore-catalog-availability.md`.
+- `Stop 3 - Logs`: the log clue, usually `docs/logs/pending-pet-visible.ndjson` with `PENDING_PET_VISIBLE`.
+- `Stop 4 - Repo/Files`: the Petstore files the agent identified for the fix.
+- `Stop 5 - Tests/PR`: the regression test, validation result, and draft PR link.
+
+## 3. Automation Creates OpenSpec-Style Artifacts And PR
 
 Show the generated OpenSpec-style change folder, usually:
 
@@ -52,13 +62,13 @@ Call out the human controls:
 - CI and branch protections still apply.
 - Humans choose whether to merge.
 
-## 3. Trigger Code Review
+## 4. Trigger Code Review
 
 On the PR, add the label `openhands-review`.
 
 OpenHands should inspect the diff, apply the repo-local `sdlc-code-review` skill, classify risk, check Petstore contracts, and post a structured code review comment. It should not claim tests passed unless it ran them or verified evidence.
 
-## 4. Trigger QA And Test Generation
+## 5. Trigger QA And Test Generation
 
 On the PR, add the label `openhands-qa`.
 
@@ -72,7 +82,7 @@ For a concrete browser-evidence example, show:
 
 If the remote runtime lacks Playwright or BrowserToolSet, the automation should say that and fall back to deterministic checks rather than claiming browser coverage.
 
-## 5. Human Review And Merge
+## 6. Human Review And Merge
 
 Show the normal GitHub review path:
 
@@ -80,7 +90,7 @@ Show the normal GitHub review path:
 - humans resolve findings or ask follow-up questions
 - humans approve and merge only when ready
 
-## 6. Optional SRE Incident Flow
+## 7. Optional SRE Incident Flow
 
 Create an incident issue and add the label `openhands-incident`.
 

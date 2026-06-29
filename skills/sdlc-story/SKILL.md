@@ -59,6 +59,16 @@ Sparse issues are acceptable when the title maps to an existing Petstore behavio
 9. Run the narrowest useful validation first.
 10. Open a draft PR with OpenSpec change link, evidence, and human-review notes.
 
+## Evidence Waypoints
+
+For bug-first demos, make the reasoning path visible. The conversation, PR body, and final issue comment should include these waypoints:
+
+- `Stop 1 - Ticket`: the sparse issue and the business-language clues used.
+- `Stop 2 - Wiki/Docs`: the wiki or docs checked, with paths such as `docs/wiki/petstore-catalog-availability.md`; if none are relevant or accessible, say so.
+- `Stop 3 - Logs`: log attachments or fixtures checked, with paths such as `docs/logs/pending-pet-visible.ndjson` and error codes such as `PENDING_PET_VISIBLE`; if no logs are available, say so.
+- `Stop 4 - Repo/Files`: the repo and files that explain the bug and fix.
+- `Stop 5 - Tests/PR`: tests added or run, validation result, and draft PR link.
+
 ## OpenSpec-Style Change Artifacts
 
 Use `references/open-spec-template.md` for the required folder shape, headings, and demo-friendly language. The artifacts are not ceremony; they are the contract that connects the request, implementation, QA, review, and incident follow-up.
@@ -73,6 +83,7 @@ The change folder must include:
 - human gates
 - validation plan
 - evidence checklist
+- evidence waypoints for wiki/docs, logs, repo/files, tests, and PR
 
 If a request has unresolved product, security, data, or environment questions, post the partial OpenSpec-style change and label `openhands:needs-human` instead of guessing.
 
@@ -126,6 +137,7 @@ Ask for human input if the issue requires a product decision, schema migration, 
 The PR body must show:
 
 - OpenSpec change path
+- evidence waypoints, including wiki/docs and logs checked
 - assumptions and non-goals
 - acceptance criteria status
 - files changed

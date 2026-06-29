@@ -27,3 +27,21 @@ def test_all_github_automation_packages_have_visible_demo_prompts() -> None:
         assert "Human Control" in prompt
         assert "Cost And Security" in prompt
 
+
+def test_build_prompt_makes_bug_evidence_stops_visible() -> None:
+    prompt = (AUTOMATIONS / "openhands-build" / "prompt.md").read_text(
+        encoding="utf-8"
+    )
+
+    for waypoint in [
+        "Stop 1 - Ticket",
+        "Stop 2 - Wiki/Docs",
+        "Stop 3 - Logs",
+        "Stop 4 - Repo/Files",
+        "Stop 5 - Tests/PR",
+    ]:
+        assert waypoint in prompt
+
+    assert "docs/wiki/" in prompt
+    assert "docs/logs/" in prompt
+    assert "PENDING_PET_VISIBLE" in prompt

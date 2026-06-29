@@ -27,6 +27,14 @@ Support reports that Nova appears in the available-pets experience even though s
 - Explicit pending-pet searches still return pending pets when requested.
 - Focused regression tests cover the pending-pet visibility bug.
 
+## Evidence Waypoints
+
+- `Stop 1 - Ticket`: sparse bug report says customers are seeing pets that are not available.
+- `Stop 2 - Wiki/Docs`: `docs/wiki/petstore-catalog-availability.md`.
+- `Stop 3 - Logs`: `docs/logs/pending-pet-visible.ndjson`, error code `PENDING_PET_VISIBLE`.
+- `Stop 4 - Repo/Files`: catalog and Cloud Run surfaces plus focused tests.
+- `Stop 5 - Tests/PR`: regression tests and draft PR for human review.
+
 ## Impact
 
 - App behavior: adopters see only adoptable pets by default.
