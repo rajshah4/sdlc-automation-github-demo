@@ -1,0 +1,21 @@
+# Tasks
+
+- [x] Parse Jira issue and map business language to technical requirement
+- [x] Review `docs/wiki/pet-discovery-affordability.md` to confirm affordability mapping
+- [x] Verify backend implementation in `app/petstore_app/catalog.py`
+- [x] Verify existing test coverage in `app/tests/test_pet_catalog.py`
+- [x] Create OpenSpec-style change folder at `openspec/changes/jira-KAN-18-budget-filter/`
+- [x] Write proposal.md with source, assumptions, and human gates
+- [x] Write specs/petstore-catalog/spec.md with UI requirements
+- [x] Write design.md with implementation approach and risks
+- [x] Write tasks.md (this file)
+- [ ] Validate OpenSpec-style artifacts with validation script
+- [ ] Add `feeCents` property to frontend pet data in `app/web/app.js`
+- [ ] Add "Max Budget" input field to `app/web/index.html`
+- [ ] Update `renderResults()` filter logic to apply budget constraint
+- [ ] Run backend tests to confirm no regression
+- [ ] Manual UI validation with test scenarios from design.md
+- [ ] Create feature branch from main
+- [ ] Commit OpenSpec artifacts and implementation changes
+- [ ] Open draft PR with link to OpenSpec change folder
+- [ ] Post Jira comment with PR link, assumptions, and evidence
