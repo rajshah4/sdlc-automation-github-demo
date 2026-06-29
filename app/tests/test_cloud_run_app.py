@@ -36,3 +36,19 @@ def test_runtime_remediation_restores_healthy_mode(monkeypatch, tmp_path) -> Non
 
     assert cloud_run_app.current_mode() == "healthy"
     assert cloud_run_app.status_payload()["status"] == "healthy"
+
+
+def test_api_pets_endpoint_excludes_pending_pets(monkeypatch, tmp_path) -> None:
+    """Regression test for KAN-22: /api/pets must exclude pending pets by default."""
+    monkeypatch.setattr(cloud_run_app, "RUNTIME_CONFIG_PATH", tmp_path / "runtime.json")
+    monkeypatch.setenv("INCIDENT_MODE", "healthy")
+    
+    from petstore_app.catalog import search_pets
+    
+    pets = search_pets()
+    pet_names = {pet.name for pet in pets}
+    pet_statuses = {pet.status for pet in pets}
+    
+    assert "Nova" not in pet_names, "Nova (pending pet) should not be in default search results"
+    assert pet_statuses == {"available"}, "Only available pets should be returned"
+    assert "Scout" in pet_names, "Scout (available dog) should be in results"
