@@ -235,8 +235,10 @@ class PetstoreHandler(BaseHTTPRequestHandler):
                 return 500, status_payload(), "application/json"
             return 200, status_payload(), "application/json"
         if path == "/api/pets":
-            log_catalog_regression_if_present(request_id)
-            return 200, {"pets": [pet_to_dict(pet) for pet in visible_pets()]}, "application/json"
+            from .catalog import search_pets
+            status = (query.get("status") or ["available"])[0]
+            pets = search_pets(status=status)
+            return 200, {"pets": [pet_to_dict(pet) for pet in pets]}, "application/json"
         if path == "/api/adoptions":
             pet_id = (query.get("pet_id") or [""])[0]
             try:
