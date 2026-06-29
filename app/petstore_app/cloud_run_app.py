@@ -90,9 +90,8 @@ def incident() -> dict[str, Any] | None:
 
 
 def visible_pets() -> list[Pet]:
-    if current_mode() == INCIDENT_MODE:
-        return list(PETS)
-    return [pet for pet in PETS if pet.status == "available"]
+    from .catalog import search_pets
+    return search_pets(status="available")
 
 
 def pet_to_dict(pet: Pet) -> dict[str, Any]:
