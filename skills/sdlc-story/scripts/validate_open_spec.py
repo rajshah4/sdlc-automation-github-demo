@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -55,9 +56,18 @@ SPEC_DELTA_MARKERS = [
     "## REMOVED Requirements",
 ]
 
+SOURCE_LINK_PATTERNS = [
+    re.compile(r"GitHub issue:\s+https://github\.com/[^\s]+/[^\s]+/issues/\d+"),
+    re.compile(r"Jira issue:\s+https://[A-Za-z0-9.-]+\.atlassian\.net/browse/[A-Z][A-Z0-9]+-\d+"),
+]
+
 
 def has_checkbox(text: str) -> bool:
     return "- [ ]" in text or "- [x]" in text.lower()
+
+
+def has_source_issue_link(text: str) -> bool:
+    return any(pattern.search(text) for pattern in SOURCE_LINK_PATTERNS)
 
 
 def validate_legacy_file(path: Path) -> list[str]:
@@ -70,8 +80,8 @@ def validate_legacy_file(path: Path) -> list[str]:
             errors.append(f"missing heading: {heading}")
     if not has_checkbox(text):
         errors.append("acceptance/evidence checklist should include markdown checkboxes")
-    if "GitHub issue:" not in text:
-        errors.append("source section should include a GitHub issue link")
+    if not has_source_issue_link(text):
+        errors.append("source section should include a GitHub or Jira issue link")
     return errors
 
 
@@ -86,8 +96,8 @@ def validate_change_dir(path: Path) -> list[str]:
         for heading in headings:
             if heading not in text:
                 errors.append(f"{relative}: missing heading: {heading}")
-        if relative == "proposal.md" and "GitHub issue:" not in text:
-            errors.append("proposal.md: source section should include a GitHub issue link")
+        if relative == "proposal.md" and not has_source_issue_link(text):
+            errors.append("proposal.md: source section should include a GitHub or Jira issue link")
         if relative == "tasks.md" and not has_checkbox(text):
             errors.append("tasks.md: task list should include markdown checkboxes")
 

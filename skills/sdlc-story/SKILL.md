@@ -1,6 +1,6 @@
 ---
 name: sdlc-story
-description: Turn sparse GitHub bug reports or requests into OpenSpec-style change artifacts, scoped Petstore implementation, tests, and a human-reviewable PR for the SDLC Automation Demo.
+description: Turn sparse GitHub or Jira bug reports and requests into OpenSpec-style change artifacts, scoped Petstore implementation, tests, and a human-reviewable PR for the SDLC Automation Demo.
 triggers:
   - openhands-build
   - open spec
@@ -12,9 +12,9 @@ triggers:
 
 # SDLC Request To PR
 
-Use this skill when OpenHands turns a GitHub issue into a small reviewable PR.
+Use this skill when OpenHands turns a GitHub or Jira issue into a small reviewable PR.
 
-The customer-facing story is: a sparse GitHub bug report becomes an OpenSpec-style change proposal, spec delta, design, and task list, then an implementation branch, then a PR that humans review and merge.
+The customer-facing story is: a sparse business-language bug report becomes an OpenSpec-style change proposal, spec delta, design, and task list, then an implementation branch, then a PR that humans review and merge.
 
 ## OpenSpec Lineage
 
@@ -30,13 +30,13 @@ If the OpenSpec CLI is preinstalled and the operator explicitly asks to use it, 
 
 ## Inputs
 
-- GitHub issue title, body, labels, and comments
+- GitHub or Jira issue title, body, labels, and comments
 - repository default branch
 - target source branch
 - acceptance criteria when present
 - linked PRs or previous automation comments when present
 
-Sparse issues are acceptable when the title maps to an existing Petstore behavior. For bug-shaped issues, first identify the violated behavior, repo-local docs, and any fixture/log evidence before editing code. Infer the smallest safe implementation, but write the assumptions, spec delta, task list, and human gates into the OpenSpec-style change folder before editing code.
+Sparse issues are the primary demo path. The ticket should not need repo names, file paths, log codes, or implementation clues. For bug-shaped issues, first identify the violated behavior, repo-local docs, and any fixture/log evidence before editing code. Infer the smallest safe implementation, but write the assumptions, spec delta, task list, and human gates into the OpenSpec-style change folder before editing code.
 
 ## GitHub Boundaries
 
@@ -46,18 +46,27 @@ Sparse issues are acceptable when the title maps to an existing Petstore behavio
 - Avoid result comments that repeat the exact trigger text.
 - Never merge, bypass review, change branch protection, or alter deployment settings.
 
+## Jira Boundaries
+
+- Treat Jira Tasks as source issues when the automation starts from a Jira webhook.
+- Use the Jira issue key and URL in artifacts and comments.
+- Keep Jira comments concise: status, evidence waypoints, PR link, tests, and any human questions.
+- Do not require the Jira ticket to mention logs, docs, repository names, file paths, or error codes.
+
 ## Workflow
 
 1. Read `README.md`, `AGENTS.md`, and the issue context.
-2. Run `python3 skills/sdlc-story/scripts/extract_acceptance_criteria.py "<issue title>"` with the issue body on stdin when useful.
-3. Create or update an OpenSpec-style change folder at `openspec/changes/github-issue-<number>-<slug>/`.
-4. Include `proposal.md`, `design.md`, `tasks.md`, and at least one `specs/<capability>/spec.md` file.
-5. Validate the change folder with `python3 skills/sdlc-story/scripts/validate_open_spec.py openspec/changes/github-issue-<number>-<slug>`.
-6. Search existing app code and tests.
-7. Implement a narrow change that satisfies the spec delta.
-8. Add or update focused tests.
-9. Run the narrowest useful validation first.
-10. Open a draft PR with OpenSpec change link, evidence, and human-review notes.
+2. Read `references/story-artifacts.md`, `references/open-spec-template.md`, and `references/petstore-implementation-map.md`.
+3. Run `python3 skills/sdlc-story/scripts/extract_acceptance_criteria.py "<issue title>"` with the issue body on stdin when useful.
+4. Create or update an OpenSpec-style change folder at `openspec/changes/github-issue-<number>-<slug>/` or `openspec/changes/jira-<issue-key>-<slug>/`.
+5. Include `proposal.md`, `design.md`, `tasks.md`, and at least one `specs/<capability>/spec.md` file.
+6. Validate the change folder with `python3 skills/sdlc-story/scripts/validate_open_spec.py <change-folder>`.
+7. Search docs, logs, app code, and tests to find the smallest safe code change.
+8. Implement the narrow change that satisfies the spec delta.
+9. Add or update focused tests.
+10. Run the narrowest useful validation first.
+11. Open a draft PR with OpenSpec change link, evidence, and human-review notes.
+12. Hand off to QA/review by adding the appropriate automation label when that is available and safe.
 
 ## Evidence Waypoints
 
@@ -71,7 +80,7 @@ For bug-first demos, make the reasoning path visible. The conversation, PR body,
 
 ## OpenSpec-Style Change Artifacts
 
-Use `references/open-spec-template.md` for the required folder shape, headings, and demo-friendly language. The artifacts are not ceremony; they are the contract that connects the request, implementation, QA, review, and incident follow-up.
+Use `references/open-spec-template.md` and `references/story-artifacts.md` for the required folder shape, headings, and demo-friendly language. The artifacts are not ceremony; they are the contract that connects the request, implementation, QA, review, and incident follow-up.
 
 The change folder must include:
 
@@ -94,6 +103,7 @@ If a request has unresolved product, security, data, or environment questions, p
 - Static UI: `app/web/`
 - Tests: `app/tests/`
 - OpenSpec-style changes: `openspec/changes/github-issue-<number>-<slug>/`
+- Jira OpenSpec-style changes: `openspec/changes/jira-<issue-key>-<slug>/`
 
 ## Sparse Bug Examples
 

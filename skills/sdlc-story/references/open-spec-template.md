@@ -1,6 +1,6 @@
 # OpenSpec-Style Change Template
 
-Use this template when `sdlc-story` converts a sparse GitHub issue into implementation work.
+Use this template when `sdlc-story` converts a sparse GitHub or Jira issue into implementation work.
 
 ## Lineage
 
@@ -20,6 +20,7 @@ operators can use it outside the timed run to initialize, update, or archive.
 
 ```text
 openspec/changes/github-issue-<issue-number>-<short-slug>/
+openspec/changes/jira-<issue-key>-<short-slug>/
 ```
 
 ## Required Files
@@ -50,8 +51,9 @@ python3 skills/sdlc-story/scripts/validate_open_spec.py \
 
 ## Source
 
-- GitHub issue:
-- Trigger label:
+- GitHub issue: <GitHub issue URL, when GitHub-triggered>
+- Jira issue: <Jira issue URL, when Jira-triggered>
+- Trigger:
 - Automation:
 
 ## Assumptions

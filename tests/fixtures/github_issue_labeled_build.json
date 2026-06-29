@@ -14,7 +14,7 @@
     "id": 2001,
     "number": 7,
     "title": "Customers are seeing pets that are not available",
-    "body": "Support says Nova is showing up in the available pets list even though she should not be adoptable.\n\nLogs mention PENDING_PET_VISIBLE.",
+    "body": "Support reports that some customers are able to see and start adoption flows for pets that should not be available yet. This is confusing customers and creating extra work for operations.",
     "html_url": "https://github.com/rajshah4/sdlc-automation-github-demo/issues/7",
     "labels": [{"name": "type:bug"}, {"name": "openhands-build"}]
   }

@@ -1,0 +1,18 @@
+{
+  "name": "Jira Bug to PR - KAN Task to PR",
+  "preset": "prompt",
+  "prompt_file": "prompt.md",
+  "trigger": {
+    "type": "event",
+    "source": "jira-direct",
+    "on": "jira:issue_created",
+    "filter": "issue.fields.project.key == '${JIRA_DEMO_PROJECT_KEY}' && issue.fields.issuetype.name == 'Task'"
+  },
+  "repos": [
+    {
+      "url": "${GITHUB_DEMO_REPO_URL}",
+      "ref": "main"
+    }
+  ],
+  "timeout": 900
+}

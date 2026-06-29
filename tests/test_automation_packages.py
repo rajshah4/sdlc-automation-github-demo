@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 AUTOMATIONS = ROOT / "automations" / "github"
+JIRA_AUTOMATIONS = ROOT / "automations" / "jira"
 
 
 def test_all_github_automation_packages_have_visible_demo_prompts() -> None:
@@ -28,10 +29,42 @@ def test_all_github_automation_packages_have_visible_demo_prompts() -> None:
         assert "Cost And Security" in prompt
 
 
-def test_build_prompt_makes_bug_evidence_stops_visible() -> None:
+def test_build_prompt_is_a_short_orchestrator() -> None:
     prompt = (AUTOMATIONS / "openhands-build" / "prompt.md").read_text(
         encoding="utf-8"
     )
+
+    assert "skills/sdlc-story/SKILL.md" in prompt
+    assert "PENDING_PET_VISIBLE" not in prompt
+    assert "docs/wiki/" not in prompt
+    assert "docs/logs/" not in prompt
+    assert "Stop 1 - Ticket" not in prompt
+    assert len(prompt.split()) < 220
+
+
+def test_jira_prompt_is_a_short_orchestrator() -> None:
+    spec_path = JIRA_AUTOMATIONS / "jira-to-story" / "automation.prompt-preset.json"
+    spec = json.loads(spec_path.read_text(encoding="utf-8"))
+    prompt = (spec_path.parent / spec["prompt_file"]).read_text(encoding="utf-8")
+
+    assert spec["preset"] == "prompt"
+    assert spec["trigger"]["source"] == "jira-direct"
+    assert spec["trigger"]["on"] == "jira:issue_created"
+    assert "JIRA_DEMO_PROJECT_KEY" in spec["trigger"]["filter"]
+    assert "skills/sdlc-story/SKILL.md" in prompt
+    assert "PENDING_PET_VISIBLE" not in prompt
+    assert "docs/wiki/" not in prompt
+    assert "docs/logs/" not in prompt
+    assert len(prompt.split()) < 220
+
+
+def test_story_skill_owns_bug_evidence_and_artifact_details() -> None:
+    skill = (ROOT / "skills" / "sdlc-story" / "SKILL.md").read_text(
+        encoding="utf-8"
+    )
+    artifacts = (
+        ROOT / "skills" / "sdlc-story" / "references" / "story-artifacts.md"
+    ).read_text(encoding="utf-8")
 
     for waypoint in [
         "Stop 1 - Ticket",
@@ -40,8 +73,9 @@ def test_build_prompt_makes_bug_evidence_stops_visible() -> None:
         "Stop 4 - Repo/Files",
         "Stop 5 - Tests/PR",
     ]:
-        assert waypoint in prompt
+        assert waypoint in artifacts
 
-    assert "docs/wiki/" in prompt
-    assert "docs/logs/" in prompt
-    assert "PENDING_PET_VISIBLE" in prompt
+    assert "PENDING_PET_VISIBLE" in skill
+    assert "docs/wiki/" in artifacts
+    assert "docs/logs/" in artifacts
+    assert "Jira issue URL" in artifacts

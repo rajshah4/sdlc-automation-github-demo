@@ -54,7 +54,7 @@ repo-local knowledge, not a custom agent runtime.
 
 | Capability | Where it lives | Why it matters |
 | --- | --- | --- |
-| OpenHands Automations | `automations/github/` | Four label-triggered prompt presets registered in the Rajistics OpenHands instance. No polling and no GitHub Actions required for the live flow. |
+| OpenHands Automations | `automations/github/`, `automations/jira/` | Prompt presets registered in the Rajistics OpenHands instance. GitHub uses label-triggered work cells; Jira uses the `jira-direct` webhook for sparse task-to-PR demos. |
 | Repo-local skills | `skills/` | Four reusable skills encode story/spec, QA, SRE, and code-review behavior with scripts and references that customers can inspect. The story skill follows Fission-AI/OpenSpec lineage while avoiding live package installs during timed automation runs. |
 | OpenSpec-style artifacts | `openspec/` | Repo-local context and generated change folders keep request, proposal, spec delta, design, and tasks version controlled. |
 | Deterministic scripts | `scripts/` | Preflight, label setup, fixture simulation, Petstore checks, and GCP helpers run before broader model reasoning where possible. |
@@ -80,7 +80,7 @@ python3 scripts/simulate_github_event.py --fixture tests/fixtures/github_issue_l
 | Folder | Purpose |
 | --- | --- |
 | `app/` | Small Petstore app, static UI, Cloud Run surface, and app tests. |
-| `automations/` | Four OpenHands prompt-preset automations registered in Rajistics. |
+| `automations/` | OpenHands prompt-preset automation packages for GitHub and Jira. |
 | `openspec/` | OpenSpec-style project context and generated change folders for story-to-PR work. |
 | `skills/` | Four repo-local OpenHands skills with scripts and references. |
 | `scripts/` | Deterministic setup, registration, preflight, QA, and SRE helpers. |
@@ -89,7 +89,7 @@ python3 scripts/simulate_github_event.py --fixture tests/fixtures/github_issue_l
 
 ## Register OpenHands Automations
 
-OpenHands Automations should be registered with the prompt preset API. The checked-in package specs live under `automations/github/`.
+OpenHands Automations should be registered with the prompt preset API. The GitHub package specs live under `automations/github/`; the Jira package spec lives under `automations/jira/jira-to-story/`.
 
 Dry-run the registration payloads:
 
