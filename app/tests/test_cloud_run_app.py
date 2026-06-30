@@ -13,7 +13,8 @@ def test_visible_pets_excludes_pending_by_default(monkeypatch, tmp_path) -> None
     assert "Nova" not in {pet.name for pet in pets}
 
 
-def test_bad_catalog_filter_exposes_pending_pet(monkeypatch, tmp_path) -> None:
+def test_visible_pets_never_exposes_pending_even_in_incident_mode(monkeypatch, tmp_path) -> None:
+    """Regression test for KAN-41: pending pets must never appear in visible_pets()"""
     config_path = tmp_path / "runtime.json"
     config_path.write_text(json.dumps({"mode": cloud_run_app.INCIDENT_MODE}))
     monkeypatch.setattr(cloud_run_app, "RUNTIME_CONFIG_PATH", config_path)
@@ -22,7 +23,10 @@ def test_bad_catalog_filter_exposes_pending_pet(monkeypatch, tmp_path) -> None:
     pets = cloud_run_app.visible_pets()
     payload = cloud_run_app.status_payload()
 
-    assert "Nova" in {pet.name for pet in pets}
+    # After KAN-41 fix: visible_pets() always filters by status, even in incident mode
+    assert "Nova" not in {pet.name for pet in pets}
+    assert {pet.status for pet in pets} == {"available"}
+    # Incident detection still works for observability
     assert payload["status"] == "degraded"
     assert payload["incident"]["error_code"] == "PENDING_PET_VISIBLE"
 
