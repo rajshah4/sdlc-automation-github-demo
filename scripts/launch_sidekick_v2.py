@@ -20,7 +20,7 @@ import json
 import os
 import sys
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed, wait
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -69,6 +69,16 @@ class ConversationResult:
     elapsed_to_ready_seconds: float | None
     elapsed_to_finished_seconds: float | None
     output: str = ""
+
+
+@dataclass(frozen=True)
+class StartedScout:
+    spec: ScoutSpec
+    title: str
+    start_task: dict[str, Any]
+    ready_task: dict[str, Any]
+    ready_started_at: str
+    conversation_id: str
 
 
 SCOUTS = (
@@ -286,9 +296,11 @@ def main_prompt(ticket: Ticket, scout_results: list[ConversationResult]) -> str:
     )
     return f"""You are the main Jira-to-PR implementation agent in a sidekick demo.
 
-The read-only side agents have already searched context. Do not repeat a broad
-docs/logs/project search. Use the scout results first, then inspect only likely
-implementation and test files before editing.
+The read-only side agents are searching context in separate conversations. Some
+may already have returned briefs; others may still be running. Do not repeat a
+broad docs/logs/project search. Use completed scout results first, follow any
+linked scout conversations when useful, then inspect only likely implementation
+and test files before editing.
 
 Ticket: {ticket.key}
 Ticket URL: {ticket.url}
@@ -479,6 +491,16 @@ def launch_one_scout(
     parent_id: str,
     args: argparse.Namespace,
 ) -> ConversationResult:
+    started = start_one_scout(scout, ticket, parent_id, args)
+    return finish_scout(started, args.scout_timeout_seconds)
+
+
+def start_one_scout(
+    scout: ScoutSpec,
+    ticket: Ticket,
+    parent_id: str,
+    args: argparse.Namespace,
+) -> StartedScout:
     start_at = utc_now()
     title = f"Sidekick V2 {ticket.key} {scout.name}"
     payload = start_payload(
@@ -494,18 +516,55 @@ def launch_one_scout(
     ready_task, ready_started_at = wait_for_ready(start_task, args.start_timeout_seconds)
     conversation_id = ready_task["app_conversation_id"]
     update_conversation_title(conversation_id, title)
-    conversation = wait_for_terminal(conversation_id, args.scout_timeout_seconds)
-    update_conversation_title(conversation_id, title)
-    conversation = get_conversation(conversation_id)
+    return StartedScout(
+        spec=scout,
+        title=title,
+        start_task=start_task,
+        ready_task=ready_task,
+        ready_started_at=ready_started_at or start_at,
+        conversation_id=conversation_id,
+    )
+
+
+def finish_scout(started: StartedScout, timeout_seconds: int) -> ConversationResult:
+    conversation = wait_for_terminal(started.conversation_id, timeout_seconds)
+    update_conversation_title(started.conversation_id, started.title)
+    conversation = get_conversation(started.conversation_id)
     finished_at = utc_now()
+    output = extract_scout_result(fetch_events(started.conversation_id), started.spec.name)
     return conversation_result(
-        scout.name,
-        start_task,
-        ready_task,
-        ready_started_at or start_at,
+        started.spec.name,
+        started.start_task,
+        started.ready_task,
+        started.ready_started_at,
         conversation,
         finished_at,
-        output="",
+        output=output,
+    )
+
+
+def pending_scout_result(started: StartedScout) -> ConversationResult:
+    conversation = get_conversation(started.conversation_id)
+    output = f"""SCOUT_RESULT {started.spec.name}
+FILES_CHECKED:
+- pending: scout was still running when the main implementation started
+EVIDENCE:
+- pending: use the scout conversation link if additional evidence is needed
+LIKELY_NEXT_FILES:
+- pending
+MISSING_INFO:
+- scout result pending at main-start barrier
+CONFIDENCE:
+- pending; main should use completed scout briefs first and inspect likely files
+"""
+    return conversation_result(
+        started.spec.name,
+        started.start_task,
+        started.ready_task,
+        started.ready_started_at,
+        conversation,
+        None,
+        output=output,
     )
 
 
@@ -571,44 +630,80 @@ def run_live(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]:
     )
 
     with ThreadPoolExecutor(max_workers=len(SCOUTS)) as executor:
-        futures = [
-            executor.submit(launch_one_scout, scout, ticket, parent_id, args)
+        start_futures = [
+            executor.submit(start_one_scout, scout, ticket, parent_id, args)
             for scout in SCOUTS
         ]
-        scout_results = [future.result() for future in as_completed(futures)]
-    scout_results.sort(key=lambda result: result.name)
-    for result in scout_results:
-        result.output = extract_scout_result(fetch_events(result.conversation_id), result.name)
-        time.sleep(1)
+        started_scouts = [future.result() for future in as_completed(start_futures)]
 
-    main_result = None
-    if args.full:
-        main_title = f"Sidekick V2 {ticket.key} main Jira-to-PR"
-        main_task = start_conversation(
-            start_payload(
-                title=main_title,
-                message=main_prompt(ticket, scout_results),
-                run=True,
-                repository=args.repository,
-                branch=args.branch,
-                model=args.main_model,
-                parent_id=parent_id,
+    started_scouts.sort(key=lambda scout: scout.spec.name)
+    scout_results: list[ConversationResult] = []
+    scout_future_by_name: dict[Any, str] = {}
+    with ThreadPoolExecutor(max_workers=len(started_scouts)) as executor:
+        finish_futures = [
+            executor.submit(finish_scout, started, args.scout_timeout_seconds)
+            for started in started_scouts
+        ]
+        scout_future_by_name = {
+            future: started.spec.name
+            for future, started in zip(finish_futures, started_scouts, strict=True)
+        }
+        if args.full and args.main_start_barrier_seconds > 0:
+            done, pending = wait(
+                finish_futures,
+                timeout=args.main_start_barrier_seconds,
             )
-        )
-        main_ready, main_started_at = wait_for_ready(main_task, args.start_timeout_seconds)
-        main_id = main_ready["app_conversation_id"]
-        update_conversation_title(main_id, main_title)
-        main_conversation = wait_for_terminal(main_id, args.main_timeout_seconds)
-        update_conversation_title(main_id, main_title)
-        main_conversation = get_conversation(main_id)
-        main_result = conversation_result(
-            "main-jira-to-pr",
-            main_task,
-            main_ready,
-            main_started_at,
-            main_conversation,
-            utc_now(),
-        )
+            scout_results.extend(future.result() for future in done)
+            finished_names = {result.name for result in scout_results}
+            scout_results.extend(
+                pending_scout_result(started)
+                for started in started_scouts
+                if started.spec.name not in finished_names
+            )
+        else:
+            pending = set()
+            scout_results = [future.result() for future in as_completed(finish_futures)]
+        scout_results.sort(key=lambda result: result.name)
+
+        main_result = None
+        if args.full:
+            main_title = f"Sidekick V2 {ticket.key} main Jira-to-PR"
+            main_task = start_conversation(
+                start_payload(
+                    title=main_title,
+                    message=main_prompt(ticket, scout_results),
+                    run=True,
+                    repository=args.repository,
+                    branch=args.branch,
+                    model=args.main_model,
+                    parent_id=parent_id,
+                )
+            )
+            main_ready, main_started_at = wait_for_ready(main_task, args.start_timeout_seconds)
+            main_id = main_ready["app_conversation_id"]
+            update_conversation_title(main_id, main_title)
+            main_conversation = wait_for_terminal(main_id, args.main_timeout_seconds)
+            update_conversation_title(main_id, main_title)
+            main_conversation = get_conversation(main_id)
+            main_result = conversation_result(
+                "main-jira-to-pr",
+                main_task,
+                main_ready,
+                main_started_at,
+                main_conversation,
+                utc_now(),
+            )
+
+        if args.full and args.main_start_barrier_seconds > 0:
+            completed_results = {
+                result.name: result
+                for result in scout_results
+                if result.finished_at is not None
+            }
+            for future in as_completed(finish_futures):
+                name = scout_future_by_name[future]
+                completed_results[name] = future.result()
+            scout_results = sorted(completed_results.values(), key=lambda result: result.name)
 
     finished_at = utc_now()
     return {
@@ -651,6 +746,12 @@ def main() -> int:
     parser.add_argument("--main-model", default=os.getenv("OPENHANDS_MAIN_LLM_MODEL", DEFAULT_MAIN_MODEL))
     parser.add_argument("--start-timeout-seconds", type=int, default=240)
     parser.add_argument("--scout-timeout-seconds", type=int, default=180)
+    parser.add_argument(
+        "--main-start-barrier-seconds",
+        type=int,
+        default=90,
+        help="when --full is set, start main after this scout-result barrier; use 0 to wait for all scouts",
+    )
     parser.add_argument("--main-timeout-seconds", type=int, default=900)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--full", action="store_true", help="launch main Jira-to-PR child after scouts")

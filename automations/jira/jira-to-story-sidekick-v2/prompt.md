@@ -19,12 +19,16 @@ Jira issue as source of truth.
      --fetch-jira \
      --full \
      --scout-timeout-seconds 180 \
+     --main-start-barrier-seconds 90 \
      --main-timeout-seconds 900
    ```
 
-4. Print the launcher JSON summary with parent, scout, main, PR, and QA trigger
+4. The launcher should overlap the main implementation with scout completion:
+   use completed scout briefs after the 90-second barrier and pass links for any
+   scouts still running.
+5. Print the launcher JSON summary with parent, scout, main, PR, and QA trigger
    links when available.
-5. If a required secret or API setting is missing, stop and report the missing
+6. If a required secret or API setting is missing, stop and report the missing
    setting name only. Do not print secret values.
 
 ## Expected Demo Shape

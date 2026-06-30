@@ -91,7 +91,8 @@ def test_main_prompt_consumes_scout_results_and_triggers_qa_label() -> None:
 
     prompt = module.main_prompt(ticket, [scout])
 
-    assert "Do not repeat a broad" in prompt
+    assert "Do not repeat a" in prompt
+    assert "broad docs/logs/project search" in prompt
     assert "SCOUT_RESULT docs-scout" in prompt
     assert "skills/sdlc-story/SKILL.md" in prompt
     assert "openhands-qa" in prompt

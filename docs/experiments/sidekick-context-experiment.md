@@ -335,6 +335,10 @@ What still needs optimization:
 - The prompt-preset launcher costs time and tokens because it starts a full
   agent just to run the launcher script. In this run, that overhead pushed the
   true Jira-webhook path past the five-minute target.
+- After this run, the launcher was updated to start the main implementation
+  after a 90-second scout-result barrier instead of waiting for every scout as a
+  hard gate. Completed briefs are passed into the main prompt; still-running
+  scouts are passed as links and are collected in the final JSON summary.
 - The parent/scout conversations still pay repo startup/context cost because
   they use `selected_repository`. That makes the UI simple and reliable, but it
   is not the cheapest sidekick design.
