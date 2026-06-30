@@ -89,3 +89,11 @@
   - Added read-only skill `skills/sdlc-context-sidekick/`.
   - Added label-gated Jira experiment packages `jira-to-story-control` and `jira-to-story-sidekick`.
   - Added `docs/experiments/sidekick-context-experiment.md` and `scripts/compare_sidekick_experiment.py` to compare time to PR, token/model cost, success rate, and conversation readability.
+- Ran the first live sidekick A/B test:
+  - Pushed branch `sidekick-context-experiment` so Rajistics automations could clone it.
+  - Registered control automation `b12d471e-797b-4010-bef7-c02fbb3c8bed` and sidekick automation `0aad5e83-1b19-49f8-a985-da459b0c4112`.
+  - Temporarily disabled the broad Enterprise Jira automation during the test, then re-enabled it afterward.
+  - Control ticket `KAN-29` opened PR #39 in 4.88 minutes and completed in 6.26 minutes.
+  - Sidekick ticket `KAN-30` opened PR #40 in 6.19 minutes and completed in 7.84 minutes.
+  - Disabled the temporary experiment automations after the run so the main Jira demo path remains clean.
+  - Initial conclusion: sidekick is more explainable but too slow for the main five-minute live demo unless optimized.

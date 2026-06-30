@@ -166,6 +166,20 @@ The sidekick experiment lives on branch `sidekick-context-experiment`.
 The experiment packages are label-gated with `control-experiment` and
 `sidekick-experiment` so the normal Jira demo can stay separate.
 
+First live A/B result on 2026-06-30 UTC:
+
+- Control: Jira `KAN-29`, run `09bf9e2a-26a7-4b9f-a1ec-0d59cd30cb55`, conversation
+  `https://app.replicated.rajistics.com/conversations/2bfaf1bb-2ce7-4fa9-8b6a-14bad473f807`,
+  PR `https://github.com/rajshah4/sdlc-automation-github-demo/pull/39`, time to PR
+  4.88 minutes, run completion 6.26 minutes.
+- Sidekick: Jira `KAN-30`, run `cbaa0fc7-a671-4676-be23-3294e01c888d`, conversation
+  `https://app.replicated.rajistics.com/conversations/9b361dd2-f2ac-4f24-afdb-b48b2d5f8b10`,
+  PR `https://github.com/rajshah4/sdlc-automation-github-demo/pull/40`, time to PR
+  6.19 minutes, run completion 7.84 minutes.
+- Interpretation: sidekick assistance improves the architecture story and evidence
+  readability, but the first run missed the five-minute target. Keep the
+  single-agent Jira-to-PR path for the main live demo.
+
 ## Playwright Status
 
 PR #36 is mostly a backend/catalog-filter fix. It has user-visible impact, but it does not add a new UI control. The QA conversation therefore ran backend/API checks plus static UI validation.

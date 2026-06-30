@@ -59,3 +59,24 @@ Use the sidekick in the live demo only if it consistently keeps time to PR withi
 the five-minute window and makes the conversation easier to explain. Otherwise,
 keep it as an optional architecture slide and use the current Jira-to-PR path for
 the live run.
+
+## First Live A/B Result
+
+Date: 2026-06-30 UTC
+
+| Variant | Jira | Automation run | Conversation | PR | Time to PR | Completion time | Result |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Control | `KAN-29` | `09bf9e2a-26a7-4b9f-a1ec-0d59cd30cb55` | `https://app.replicated.rajistics.com/conversations/2bfaf1bb-2ce7-4fa9-8b6a-14bad473f807` | `https://github.com/rajshah4/sdlc-automation-github-demo/pull/39` | 4.88 min | 6.26 min | PR opened inside the five-minute target; run completed successfully. |
+| Sidekick | `KAN-30` | `cbaa0fc7-a671-4676-be23-3294e01c888d` | `https://app.replicated.rajistics.com/conversations/9b361dd2-f2ac-4f24-afdb-b48b2d5f8b10` | `https://github.com/rajshah4/sdlc-automation-github-demo/pull/40` | 6.19 min | 7.84 min | PR opened successfully, but missed the five-minute target. |
+
+Readability judgment from PR bodies:
+
+- Control PR is clear and direct, but the context discovery path is mostly folded into the implementation narrative.
+- Sidekick PR foregrounds evidence waypoints more clearly and is easier to explain as architecture, but it costs live-demo time.
+
+Initial decision: keep the single-agent Jira-to-PR path for the main five-minute
+demo. Present the sidekick as an optional architecture experiment or use it only
+when the demo slot can tolerate roughly two extra minutes.
+
+Cleanup: after the first live A/B run, the temporary experiment automations were
+disabled and the normal Enterprise Jira automation was re-enabled.
