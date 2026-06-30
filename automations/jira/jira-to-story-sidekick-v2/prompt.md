@@ -28,6 +28,7 @@ Jira issue as source of truth.
      --title "<ISSUE_SUMMARY>" \
      --body "<ISSUE_DESCRIPTION_PLAIN_TEXT>" \
      --full \
+     --scout-model litellm_proxy/us.anthropic.claude-haiku-4-5-20251001-v1:0 \
      --scout-timeout-seconds 180 \
      --main-start-barrier-seconds 90 \
      --main-timeout-seconds 900
@@ -44,7 +45,8 @@ Jira issue as source of truth.
 ## Expected Demo Shape
 
 - Parent orchestrator conversation.
-- Three visible read-only scout child conversations: docs, logs, and repo.
+- Three visible read-only scout child conversations: docs, logs, and repo. These
+  scouts run on Haiku because they are bounded context search agents.
 - Main implementation child conversation opens the PR and adds `openhands-qa`.
 - The GitHub QA automation runs as the post-PR validation conversation.
 

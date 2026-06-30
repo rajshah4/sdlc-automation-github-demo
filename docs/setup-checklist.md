@@ -113,6 +113,10 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
 - Event-driven triggers avoid unnecessary LLM calls.
 - `scripts/preflight_github_demo.py`, OpenSpec-style validation, label setup, and Petstore SRE observation scripts are deterministic and do not call an LLM.
 - Desired LLM profiles are documented in the automation JSON files with the `model` field. In the Rajistics automation API, `model` means the saved model profile name for automation runs.
-- Current Enterprise Org model split: Jira and QA use `Bedrock-Claude-Sonnet-4-5-fast`, build/incident use `Bedrock-Claude-Sonnet-4-5`, and review uses `Bedrock-Claude-Haiku-4-5`.
+- Current Enterprise Org model split: Jira launcher, main implementation, and QA
+  use `Bedrock-Claude-Sonnet-4-5-fast`; visible sidekick scouts use the concrete
+  Haiku child-conversation model
+  `litellm_proxy/us.anthropic.claude-haiku-4-5-20251001-v1:0`; build/incident
+  use `Bedrock-Claude-Sonnet-4-5`; review uses `Bedrock-Claude-Haiku-4-5`.
 - Secrets stay in OpenHands secret store or local `.env`.
 - Humans approve PRs, reviews, merges, deployments, and production-facing fixes.

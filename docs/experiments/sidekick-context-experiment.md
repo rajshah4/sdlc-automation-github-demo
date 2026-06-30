@@ -343,7 +343,9 @@ What this proves:
   the parent is Step 1, the scouts are Step 2A/2B/2C, the main implementation is
   Step 3, and QA is Step 4.
 - The current live v2 registration for that step-labeled path is
-  `add32647-efc4-42ef-adc1-93c5db211991`.
+  `a159704a-7b4a-4b6d-b17b-ec201b5abb64`. This registration keeps the launcher
+  and main implementation on Sonnet fast and runs the read-only sidekick scouts
+  on Haiku.
 
 ### QA And UI Evidence
 

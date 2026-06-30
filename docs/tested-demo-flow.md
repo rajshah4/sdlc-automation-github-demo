@@ -42,7 +42,7 @@ Prompt-preset automations are registered with the Rajistics Enterprise Org API k
 | Work cell | Automation ID | Model profile | Trigger |
 | --- | --- | --- | --- |
 | `jira-to-story` | `a22f4cfd-d194-4566-b773-89fc903fd9d6` | `Bedrock-Claude-Sonnet-4-5-fast` | `jira:issue_created` from `jira-direct` |
-| `jira-to-story-sidekick-v2` | `add32647-efc4-42ef-adc1-93c5db211991` | `Bedrock-Claude-Sonnet-4-5-fast` | `jira:issue_created` from `jira-direct`, label `sidekick-v2` |
+| `jira-to-story-sidekick-v2` | `a159704a-7b4a-4b6d-b17b-ec201b5abb64` | `Bedrock-Claude-Sonnet-4-5-fast` launcher; Haiku scouts | `jira:issue_created` from `jira-direct`, label `sidekick-v2` |
 | `openhands-build` | `1d97b79d-7bb6-4b67-969d-7f0182c416a5` | `Bedrock-Claude-Sonnet-4-5` | `issues.labeled` |
 | `openhands-incident` | `bbff1a54-fe12-43fd-85b6-b1add7f6ca84` | `Bedrock-Claude-Sonnet-4-5` | `issues.labeled` |
 | `openhands-qa` | `b3192e16-171a-4ec3-8028-9514a7f372fe` | `Bedrock-Claude-Sonnet-4-5-fast` | `pull_request.labeled`, `issues.labeled` |
@@ -241,6 +241,11 @@ Follow-up sidekick-v2 checks on 2026-06-30 UTC:
   corrected v2 automation `3ed7bd14-e35a-4fb4-b111-2efc0c739f1d` was later
   replaced by the step-labeled v2 automation
   `add32647-efc4-42ef-adc1-93c5db211991`.
+- On 2026-06-30, the step-labeled v2 automation was replaced by
+  `a159704a-7b4a-4b6d-b17b-ec201b5abb64` so the read-only docs/logs/repo scouts
+  run on the concrete Haiku child-conversation model
+  `litellm_proxy/us.anthropic.claude-haiku-4-5-20251001-v1:0` while the launcher
+  and main implementation remain on Sonnet fast.
 - KAN-44 was created against the corrected v2 automation as run
   `5c5c528d-882e-400d-8cf2-57748443a6e1`. The run completed after roughly 15.3
   minutes with no `conversation_id`, no error detail, and no KAN-44 PR. During
