@@ -40,6 +40,7 @@ class AutomationIds:
     jira_main: str
     jira_control: str
     jira_sidekick: str
+    jira_sidekick_v2: str
     github_qa: str
 
 
@@ -47,6 +48,7 @@ DEFAULT_AUTOMATION_IDS = AutomationIds(
     jira_main="a22f4cfd-d194-4566-b773-89fc903fd9d6",
     jira_control="b12d471e-797b-4010-bef7-c02fbb3c8bed",
     jira_sidekick="0aad5e83-1b19-49f8-a985-da459b0c4112",
+    jira_sidekick_v2="ca0ddf76-bafe-4c3e-803a-1612eaed74de",
     github_qa="b3192e16-171a-4ec3-8028-9514a7f372fe",
 )
 
@@ -112,6 +114,10 @@ def automation_ids_from_env() -> AutomationIds:
         jira_sidekick=os.getenv(
             "JIRA_SIDEKICK_AUTOMATION_ID", DEFAULT_AUTOMATION_IDS.jira_sidekick
         ),
+        jira_sidekick_v2=os.getenv(
+            "JIRA_SIDEKICK_V2_AUTOMATION_ID",
+            DEFAULT_AUTOMATION_IDS.jira_sidekick_v2,
+        ),
         github_qa=os.getenv("GITHUB_QA_AUTOMATION_ID", DEFAULT_AUTOMATION_IDS.github_qa),
     )
 
@@ -122,6 +128,7 @@ def expected_automation_states(mode: str, ids: AutomationIds) -> dict[str, bool]
             ids.jira_main: True,
             ids.jira_control: False,
             ids.jira_sidekick: False,
+            ids.jira_sidekick_v2: True,
             ids.github_qa: True,
         }
     if mode == "sidekick-experiment":
@@ -129,6 +136,15 @@ def expected_automation_states(mode: str, ids: AutomationIds) -> dict[str, bool]
             ids.jira_main: False,
             ids.jira_control: True,
             ids.jira_sidekick: True,
+            ids.jira_sidekick_v2: False,
+            ids.github_qa: True,
+        }
+    if mode == "sidekick-v2":
+        return {
+            ids.jira_main: True,
+            ids.jira_control: False,
+            ids.jira_sidekick: False,
+            ids.jira_sidekick_v2: True,
             ids.github_qa: True,
         }
     raise ValueError(f"unsupported mode: {mode}")
@@ -139,6 +155,7 @@ def expected_models(ids: AutomationIds) -> dict[str, str]:
         ids.jira_main: "Bedrock-Claude-Sonnet-4-5-fast",
         ids.jira_control: "Bedrock-Claude-Sonnet-4-5",
         ids.jira_sidekick: "Bedrock-Claude-Sonnet-4-5",
+        ids.jira_sidekick_v2: "Bedrock-Claude-Sonnet-4-5-fast",
         ids.github_qa: "Bedrock-Claude-Sonnet-4-5-fast",
     }
 
@@ -298,7 +315,7 @@ def main() -> int:
     parser.add_argument("--env-file", type=Path, help="load KEY=value entries")
     parser.add_argument(
         "--mode",
-        choices=("main", "sidekick-experiment"),
+        choices=("main", "sidekick-experiment", "sidekick-v2"),
         default="main",
         help="expected live automation state",
     )

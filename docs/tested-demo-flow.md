@@ -1,6 +1,6 @@
 # Tested Demo Flow
 
-Last updated: 2026-06-29 UTC.
+Last updated: 2026-06-30 UTC.
 
 ## Local Validation
 
@@ -41,10 +41,11 @@ Prompt-preset automations are registered with the Rajistics Enterprise Org API k
 
 | Work cell | Automation ID | Model profile | Trigger |
 | --- | --- | --- | --- |
-| `jira-to-story` | `a22f4cfd-d194-4566-b773-89fc903fd9d6` | `Bedrock-Claude-Sonnet-4-5` | `jira:issue_created` from `jira-direct` |
+| `jira-to-story` | `a22f4cfd-d194-4566-b773-89fc903fd9d6` | `Bedrock-Claude-Sonnet-4-5-fast` | `jira:issue_created` from `jira-direct` |
+| `jira-to-story-sidekick-v2` | `ca0ddf76-bafe-4c3e-803a-1612eaed74de` | `Bedrock-Claude-Sonnet-4-5-fast` | `jira:issue_created` from `jira-direct`, label `sidekick-v2` |
 | `openhands-build` | `1d97b79d-7bb6-4b67-969d-7f0182c416a5` | `Bedrock-Claude-Sonnet-4-5` | `issues.labeled` |
 | `openhands-incident` | `bbff1a54-fe12-43fd-85b6-b1add7f6ca84` | `Bedrock-Claude-Sonnet-4-5` | `issues.labeled` |
-| `openhands-qa` | `b3192e16-171a-4ec3-8028-9514a7f372fe` | `Bedrock-Qwen3-Coder-30B` | `pull_request.labeled`, `issues.labeled` |
+| `openhands-qa` | `b3192e16-171a-4ec3-8028-9514a7f372fe` | `Bedrock-Claude-Sonnet-4-5-fast` | `pull_request.labeled`, `issues.labeled` |
 | `openhands-review` | `912cfa7e-2390-4a5c-bd27-5f6d75861030` | `Bedrock-Claude-Haiku-4-5` | `pull_request.labeled` |
 
 Run-list check:
@@ -57,6 +58,11 @@ python3 scripts/list_openhands_automation_runs.py \
 ```
 
 The Jira automation opens or updates a draft PR and adds `openhands-qa`. That label intentionally starts a second QA conversation. Humans still approve review, merge, deployment, and production-facing changes.
+
+For the visible multi-agent customer demo, create the Jira Task with label
+`sidekick-v2`. The normal Jira automation excludes that label and the
+sidekick-v2 automation starts visible docs/logs/repo scout conversations before
+the main implementation conversation.
 
 The Rajistics API was checked after registration and returned the active set as enabled. The Jira custom webhook source is `jira-direct`.
 
@@ -160,6 +166,8 @@ The sidekick experiment lives on branch `sidekick-context-experiment`.
 - Read-only sidekick skill: `skills/sdlc-context-sidekick/`
 - Single-agent control package: `automations/jira/jira-to-story-control/`
 - Sidekick-assisted package: `automations/jira/jira-to-story-sidekick/`
+- Visible child-conversation package:
+  `automations/jira/jira-to-story-sidekick-v2/`
 - Experiment plan: `docs/experiments/sidekick-context-experiment.md`
 - Comparison helper: `scripts/compare_sidekick_experiment.py`
 
@@ -179,6 +187,37 @@ First live A/B result on 2026-06-30 UTC:
 - Interpretation: sidekick assistance improves the architecture story and evidence
   readability, but the first run missed the five-minute target. Keep the
   single-agent Jira-to-PR path for the main live demo.
+
+Visible Sidekick V2 live result on 2026-06-30 UTC:
+
+- Jira: `https://rajiv-shah.atlassian.net/browse/KAN-41`
+- Sidekick-v2 automation run:
+  `0b60432b-5065-445c-b731-d494af8f60c7`
+- Launcher automation conversation:
+  `https://app.replicated.rajistics.com/conversations/34bfd883-8520-4276-9891-87ab9c679bf8`
+- Parent sidekick conversation:
+  `https://app.replicated.rajistics.com/conversations/4a96f19d97354f2f9acaf12f82341a1c`
+- Scout conversations:
+  `logs-scout` `https://app.replicated.rajistics.com/conversations/0b1436fec56a4411b011477d57c537ad`,
+  `docs-scout` `https://app.replicated.rajistics.com/conversations/5813c3c4970f4c4f9d62264791e43022`,
+  `repo-scout` `https://app.replicated.rajistics.com/conversations/897a9a5c6cb14765982d381fa4a7551d`
+- Main implementation conversation:
+  `https://app.replicated.rajistics.com/conversations/f5f758a453a247cb9146f088d61548d0`
+- PR:
+  `https://github.com/rajshah4/sdlc-automation-github-demo/pull/48`
+- QA run:
+  `361bb50f-1f5b-47ca-b442-b842448eff84`
+- QA conversation:
+  `https://app.replicated.rajistics.com/conversations/3fa9264a-fab9-4381-a37a-fc5e0f7bee1a`
+- QA comment:
+  `https://github.com/rajshah4/sdlc-automation-github-demo/pull/48#issuecomment-4839894899`
+
+Timing: Jira automation run to PR opened was about 7.3 minutes. The visible
+sidekick tree to PR opened was about 5.4 minutes. The main implementation child
+to PR opened was about 4.5 minutes. QA label to QA comment was about 4.0
+minutes. This proves the customer-visible architecture, but the prompt-preset
+launcher still adds enough overhead that a strict five-minute Jira-to-PR demo
+should use the normal path or a future deterministic custom launcher.
 
 ## Playwright Status
 

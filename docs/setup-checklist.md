@@ -18,6 +18,9 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
   `python3 scripts/preflight_live_connections.py --env-file /Users/rajiv.shah/Code/install_replicate/.env --mode main`
 - Before the sidekick A/B timing demo, switch automation state intentionally and
   run: `python3 scripts/preflight_live_connections.py --env-file /Users/rajiv.shah/Code/install_replicate/.env --mode sidekick-experiment`
+- Before the visible sidekick customer demo, keep the normal Jira automation and
+  `sidekick-v2` automation enabled, then run:
+  `python3 scripts/preflight_live_connections.py --env-file /Users/rajiv.shah/Code/install_replicate/.env --mode sidekick-v2`
 - For the Rajistics Replicated instance, verify the app URL, GitHub App slug, client ID, app ID, webhook secret, and private key are configured in the Replicated admin console.
 - GitHub sign-in works in OpenHands.
 - Repo search works in OpenHands.
@@ -36,6 +39,10 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
 - The sidekick A/B experiment is isolated on branch `sidekick-context-experiment`
   with label-gated Jira packages under `automations/jira/jira-to-story-control/`
   and `automations/jira/jira-to-story-sidekick/`.
+- The visible sidekick V2 customer path is label-gated under
+  `automations/jira/jira-to-story-sidekick-v2/`. Add Jira label `sidekick-v2`
+  when you want separate docs/logs/repo scout conversations before the main
+  Jira-to-PR implementation conversation.
 - Story-to-PR artifacts follow Fission-AI/OpenSpec lineage, with change folders under `openspec/changes/`.
 - The live automation does not install or run the OpenSpec CLI during the timed label-triggered flow; use preinstalled CLI setup/archive commands outside the demo run when needed.
 - Only one OpenHands GitHub App should respond on this repo; duplicate public/self-hosted installs can create confusing duplicate runs.
@@ -65,7 +72,9 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
   delivery history/configuration still needs review.
 - Old app.all-hands Cloud Jira webhooks or Jira automation rules are disabled, not deleted, during the Rajistics demo.
 - Demo Jira tickets are sparse business-language reports. Do not include repo names, file paths, log codes, or implementation clues in the ticket.
-- Suggested labels are `bug`, `jira-to-story-demo`, and `openhands-demo`; labels are for operator search, not the trigger boundary.
+- Suggested labels for the normal path are `bug`, `jira-to-story-demo`, and
+  `openhands-demo`; labels are for operator search, not the trigger boundary.
+- For the visible sidekick customer demo, add `sidekick-v2` to the Jira Task.
 
 ## Slack
 

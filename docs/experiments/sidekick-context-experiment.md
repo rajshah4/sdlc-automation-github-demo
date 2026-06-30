@@ -18,10 +18,12 @@ time. This experiment checks whether that trade-off fits a five-minute demo.
 | --- | --- | --- | --- |
 | Control | `control-experiment` | `automations/jira/jira-to-story-control/` | Current single-agent Jira-to-PR path using `skills/sdlc-story`. |
 | Sidekick | `sidekick-experiment` | `automations/jira/jira-to-story-sidekick/` | Runs `skills/sdlc-context-sidekick` first, then hands the brief to `skills/sdlc-story`. |
+| Visible Sidekick V2 | `sidekick-v2` | `automations/jira/jira-to-story-sidekick-v2/` | Starts visible docs/logs/repo scout conversations, then starts the main Jira-to-PR implementation conversation and the separate QA agent. |
 
-Keep the normal Jira automation paused during A/B tests, or update its filter to
-exclude `control-experiment` and `sidekick-experiment`, so each ticket wakes only
-one experiment automation.
+The normal Jira automation should exclude `control-experiment`,
+`sidekick-experiment`, and `sidekick-v2`, so each ticket wakes only one Jira
+implementation automation. The `sidekick-v2` path can stay enabled in normal
+demo posture because it is gated by the explicit Jira label.
 
 ## Sidekick Constraints
 
@@ -214,7 +216,7 @@ Compare:
 Do not use true child-agent sidekicks in the five-minute live demo until they
 beat or match the deterministic fan-out baseline on elapsed time and readability.
 
-## Sidekick V2 Live Result
+## Sidekick V2 Manual Launcher Result
 
 Date: 2026-06-30 UTC
 
@@ -279,5 +281,73 @@ Observed tradeoffs:
 
 Decision after KAN-39: the sidekick architecture is demo-worthy if the goal is to
 show multi-agent orchestration. The normal single-agent Jira-to-PR path is still
-simpler for a pure speed demo, but Sidekick V2 is now within the five-minute
-PR-opening target and tells the customer story much better.
+simpler for a pure speed demo, but Sidekick V2 is within the five-minute
+PR-opening target when the launcher starts directly and tells the customer story
+much better.
+
+## Sidekick V2 Webhook Result
+
+Date: 2026-06-30 UTC
+
+This run proves the full event path: Jira webhook to OpenHands automation,
+visible sidekick scout conversations, main implementation conversation, GitHub
+PR, then the separate GitHub QA conversation.
+
+| Role | Link | Result | Cost |
+| --- | --- | --- | ---: |
+| Jira ticket | `https://rajiv-shah.atlassian.net/browse/KAN-41` | Sparse bug ticket labeled `sidekick-v2`. | n/a |
+| Jira launcher automation | `https://app.replicated.rajistics.com/conversations/34bfd883-8520-4276-9891-87ab9c679bf8` | Prompt-preset automation cloned the repo and ran `scripts/launch_sidekick_v2.py`. | $0.3642 |
+| Parent orchestrator | `https://app.replicated.rajistics.com/conversations/4a96f19d97354f2f9acaf12f82341a1c` | Grouped the visible side-agent child conversations. | $0.3453 |
+| `logs-scout` | `https://app.replicated.rajistics.com/conversations/0b1436fec56a4411b011477d57c537ad` | Found log evidence for pending pets leaking into available listings. | $0.2239 |
+| `docs-scout` | `https://app.replicated.rajistics.com/conversations/5813c3c4970f4c4f9d62264791e43022` | Found product availability guidance in repo docs/wiki context. | $0.2493 |
+| `repo-scout` | `https://app.replicated.rajistics.com/conversations/897a9a5c6cb14765982d381fa4a7551d` | Identified the catalog implementation and regression-test files. | $0.2576 |
+| Main implementation | `https://app.replicated.rajistics.com/conversations/f5f758a453a247cb9146f088d61548d0` | Opened PR #48 and added `openhands-qa`. | $1.1110 |
+| PR | `https://github.com/rajshah4/sdlc-automation-github-demo/pull/48` | `Fix KAN-41: Pending pets showing in available pets list`. | n/a |
+| QA automation | `https://app.replicated.rajistics.com/conversations/3fa9264a-fab9-4381-a37a-fc5e0f7bee1a` | Posted a passing QA report on PR #48. | $0.9879 |
+| QA comment | `https://github.com/rajshah4/sdlc-automation-github-demo/pull/48#issuecomment-4839894899` | Reported PASS with backend tests and static UI validation; Playwright unavailable in the runtime. | n/a |
+
+Timing from the webhook-triggered run:
+
+| Segment | Start | End | Duration |
+| --- | --- | --- | ---: |
+| Jira automation run created to PR opened | 04:22:48 | 04:30:08 | ~7.3 min |
+| Jira automation run total | 04:22:48 | 04:31:09 | ~8.3 min |
+| Visible sidekick tree to PR opened | 04:24:43 | 04:30:08 | ~5.4 min |
+| Scout conversation timelines | n/a | n/a | ~1.7-2.1 min each |
+| Main implementation child to PR opened | 04:25:36 | 04:30:08 | ~4.5 min |
+| Main implementation child total | n/a | n/a | ~5.1 min |
+| QA label to QA comment | 04:30:15 | 04:34:17 | ~4.0 min |
+| QA automation total | 04:30:15 | 04:35:02 | ~4.8 min |
+
+What this proves:
+
+- The customer-visible architecture now exists: Jira starts a launcher, the
+  launcher starts separate side-agent conversations for docs/logs/repo context,
+  the main implementation agent owns the code and PR, and QA is a separate
+  post-PR conversation.
+- The scouts are easy to point to in the UI and are no longer just a long prompt
+  section inside the main implementation conversation.
+- The GitHub QA handoff is working from the PR label and remains human-reviewed:
+  QA reports evidence, but does not approve, merge, or deploy.
+
+What still needs optimization:
+
+- The prompt-preset launcher costs time and tokens because it starts a full
+  agent just to run the launcher script. In this run, that overhead pushed the
+  true Jira-webhook path past the five-minute target.
+- The parent/scout conversations still pay repo startup/context cost because
+  they use `selected_repository`. That makes the UI simple and reliable, but it
+  is not the cheapest sidekick design.
+- Saved OpenHands profile names work for automations, but app-conversation child
+  starts need the concrete LiteLLM model string. The launcher uses
+  `litellm_proxy/us.anthropic.claude-sonnet-4-5-20250929-v1:0` directly.
+
+Current recommendation:
+
+- Use `sidekick-v2` for the impressive customer demo when the point is
+  multi-agent orchestration and explainability.
+- Use the normal Jira-to-PR path for the tightest speed demo.
+- If Sidekick V2 must stay under five minutes from Jira ticket creation, convert
+  `jira-to-story-sidekick-v2` from a prompt-preset launcher into a deterministic
+  custom automation that calls `scripts/launch_sidekick_v2.py` directly and skips
+  the extra launcher-agent conversation.

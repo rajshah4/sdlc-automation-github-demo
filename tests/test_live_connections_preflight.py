@@ -42,6 +42,12 @@ def test_main_mode_requires_broad_jira_enabled_and_experiments_disabled() -> Non
             "model": "Bedrock-Claude-Sonnet-4-5",
         },
         {
+            "id": ids.jira_sidekick_v2,
+            "name": "Jira sidekick v2",
+            "enabled": True,
+            "model": "Bedrock-Claude-Sonnet-4-5-fast",
+        },
+        {
             "id": ids.github_qa,
             "name": "GitHub QA",
             "enabled": True,
@@ -75,6 +81,12 @@ def test_sidekick_mode_catches_broad_jira_still_enabled() -> None:
             "model": "Bedrock-Claude-Sonnet-4-5",
         },
         {
+            "id": ids.jira_sidekick_v2,
+            "name": "Jira sidekick v2",
+            "enabled": False,
+            "model": "Bedrock-Claude-Sonnet-4-5-fast",
+        },
+        {
             "id": ids.github_qa,
             "name": "GitHub QA",
             "enabled": True,
@@ -89,6 +101,45 @@ def test_sidekick_mode_catches_broad_jira_still_enabled() -> None:
     )
 
     assert "Jira main should be disabled" in failures
+
+
+def test_sidekick_v2_mode_keeps_label_gated_v2_enabled() -> None:
+    module = load_preflight()
+    ids = module.DEFAULT_AUTOMATION_IDS
+    automations = [
+        {
+            "id": ids.jira_main,
+            "name": "Jira main",
+            "enabled": True,
+            "model": "Bedrock-Claude-Sonnet-4-5-fast",
+        },
+        {
+            "id": ids.jira_control,
+            "name": "Jira control",
+            "enabled": False,
+            "model": "Bedrock-Claude-Sonnet-4-5",
+        },
+        {
+            "id": ids.jira_sidekick,
+            "name": "Jira sidekick",
+            "enabled": False,
+            "model": "Bedrock-Claude-Sonnet-4-5",
+        },
+        {
+            "id": ids.jira_sidekick_v2,
+            "name": "Jira sidekick v2",
+            "enabled": True,
+            "model": "Bedrock-Claude-Sonnet-4-5-fast",
+        },
+        {
+            "id": ids.github_qa,
+            "name": "GitHub QA",
+            "enabled": True,
+            "model": "Bedrock-Claude-Sonnet-4-5-fast",
+        },
+    ]
+
+    assert module.validate_automation_states(automations, "sidekick-v2", ids) == []
 
 
 def test_jira_permission_validation_requires_add_comments() -> None:
