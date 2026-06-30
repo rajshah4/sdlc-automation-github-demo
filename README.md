@@ -109,5 +109,4 @@ No secrets belong in this repo. Store OpenHands, GitHub, Slack, and GCP credenti
 
 - [GitHub demo walkthrough](docs/github-demo-walkthrough.md)
 - [Setup checklist](docs/setup-checklist.md)
-- [Work log](docs/work-log.md)
 - [Tested flow and validation notes](docs/tested-demo-flow.md)

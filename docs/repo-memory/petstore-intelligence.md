@@ -43,4 +43,4 @@ python3 skills/sdlc-qa/scripts/with_server.py \
 - Start from this file and `AGENTS.md`; do not re-infer product rules from every source file.
 - Use `skills/sdlc-story/references/petstore-implementation-map.md` when sparse stories need file targeting.
 - Use `docs/qa-reports/` as prior QA evidence and report style examples.
-- Use `docs/work-log.md` and `docs/tested-demo-flow.md` for previous OpenHands run IDs and validated automation state.
+- Use `docs/repo-memory/previous-agent-runs.md` for curated prior-agent lessons and reusable file-path hints.

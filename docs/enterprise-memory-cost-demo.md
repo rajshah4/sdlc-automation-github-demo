@@ -58,18 +58,15 @@ python3 scripts/simulate_github_event.py \
 python3 scripts/preflight_github_demo.py --offline
 ```
 
-## Rajistics Live Validation
+## Live Validation Checklist
 
-Validated against `https://app.replicated.rajistics.com` on 2026-06-30:
+For a customer-facing live run, keep environment-specific proof in local notes and show only the polished artifacts in GitHub:
 
-- Automation: `SDLC Demo - GitHub OpenHands Context Scout (Rajistics Live)`
-- Automation id: `24e44821-e572-46b8-bf20-0f3e33372ccc`
-- Branch ref cloned by the automation: `codex/memory-cost-overlay`
-- Model profile: `Bedrock-Claude-Haiku-4-5`
-- Completed run: `956ea959-4b48-4d62-af7e-ac3b134991f5`
-- Conversation: `https://app.replicated.rajistics.com/conversations/a7dfdc16-7472-4fa6-803f-aac851939449`
-- GitHub proof comment: `https://github.com/rajshah4/sdlc-automation-github-demo/issues/58#issuecomment-4847619436`
-- Required writeback secret: `GITHUB_TOKEN` in Rajistics secrets. The local install also has `GITHUB`; keep `GITHUB_TOKEN` as the canonical runtime alias so prompts and scripts do not need environment-specific branching.
+- The OpenHands automation is registered from `automations/github/openhands-context/`.
+- The automation clones the branch that contains `AGENTS.md`, `skills/sdlc-context-reuse/`, `docs/repo-memory/`, and `scripts/build_context_reuse_report.py`.
+- The scout automation uses a lower-cost model profile when available.
+- The runtime has a `GITHUB_TOKEN` secret with permission to comment on issues.
+- Applying `openhands-context` to a sparse issue creates a context report and posts a concise issue comment.
 
 ## What This Proves
 

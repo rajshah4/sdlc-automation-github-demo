@@ -7,6 +7,6 @@ __pycache__/
 .pytest_cache/
 .venv/
 automation-registration-results.json
+docs/work-log.md
 work/
 tmp/
-

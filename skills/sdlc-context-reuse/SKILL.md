@@ -19,9 +19,9 @@ The customer-facing story is: a low-cost scout agent gathers reusable context fi
 
 1. `AGENTS.md` for durable repo rules, commands, product constraints, and human gates.
 2. Repo-local skills for procedural memory: `sdlc-story`, `sdlc-qa`, `sdlc-code-review`, and `sdlc-incident`.
-3. Existing logs and evidence, especially `docs/work-log.md`, `docs/tested-demo-flow.md`, QA reports, and incident references.
+3. Existing polished evidence, especially `docs/qa-reports/`, incident references, and curated repo memory.
 4. Targeted GitHub repo search for the files and tests relevant to the trigger.
-5. Previous agent runs and conversation memory in `docs/repo-memory/previous-agent-runs.md` and linked OpenHands run records.
+5. Previous agent-run lessons in `docs/repo-memory/previous-agent-runs.md`.
 
 ## Workflow
 

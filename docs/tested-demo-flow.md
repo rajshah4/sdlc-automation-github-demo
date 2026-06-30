@@ -25,9 +25,8 @@ Issue:
 
 Result:
 
-- Rajistics OpenHands automation run `f84671ac-33b7-43d8-a0e4-3532fb180263` completed at `2026-06-23T02:29:45Z`.
-- Rajistics OpenHands conversation: `https://app.replicated.rajistics.com/conversations/060aa6399eae4e77b2fcd630646fbe56`
-- OpenHands posted the result comment: `https://github.com/rajshah4/sdlc-automation-github-demo/issues/1#issuecomment-4775062401`
+- OpenHands completed the build automation for issue #1.
+- OpenHands posted a result comment on the issue.
 - OpenHands opened PR #2: `https://github.com/rajshah4/sdlc-automation-github-demo/pull/2`
 - Issue #1 now has `openhands:done`.
 
