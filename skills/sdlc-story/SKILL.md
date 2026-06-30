@@ -47,6 +47,7 @@ Sparse issues are acceptable when the title maps to an existing Petstore behavio
 
 ## Workflow
 
+0. Use `skills/sdlc-context-reuse/SKILL.md` or `scripts/build_context_reuse_report.py` to reuse durable context before broad exploration.
 1. Read `README.md`, `AGENTS.md`, and the issue context.
 2. Run `python3 skills/sdlc-story/scripts/extract_acceptance_criteria.py "<issue title>"` with the issue body on stdin when useful.
 3. Create or update an OpenSpec-style change folder at `openspec/changes/github-issue-<number>-<slug>/`.

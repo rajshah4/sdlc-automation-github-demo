@@ -2,6 +2,21 @@
 
 This is the live flow for the GitHub-native SDLC Automation Demo.
 
+## 0. Optional Context Scout
+
+For the memory-and-cost version of the demo, create or reuse a sparse GitHub issue and add `openhands-context` before `openhands-build`.
+
+OpenHands should produce a context reuse report that shows:
+
+- `AGENTS.md` durable repo memory
+- selected repo-local skills
+- existing logs, QA reports, and incident references
+- targeted GitHub repo search results
+- previous OpenHands conversations or run records
+- recommended lower-cost scout and stronger coding/review model routing
+
+Use this as the setup for the rest of the live demo: the expensive model should start after the scout has narrowed context.
+
 ## 1. Create An Issue
 
 Create a GitHub issue with a sparse title such as:

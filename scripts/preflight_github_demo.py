@@ -15,6 +15,7 @@ AUTOMATION_ROOT = REPO_ROOT / "automations" / "github"
 LABELS_PATH = REPO_ROOT / ".github" / "labels.json"
 SKILLS_ROOT = REPO_ROOT / "skills"
 REQUIRED_LABELS = {
+    "openhands-context",
     "openhands-build",
     "openhands-review",
     "openhands-qa",
@@ -25,6 +26,7 @@ REQUIRED_LABELS = {
     "openhands:done",
 }
 REQUIRED_SKILLS = {
+    "sdlc-context-reuse",
     "sdlc-story",
     "sdlc-qa",
     "sdlc-incident",
@@ -76,6 +78,7 @@ def validate_labels(failures: list[str]) -> None:
 
 def validate_automation_specs(failures: list[str]) -> None:
     expected = {
+        "openhands-context",
         "openhands-build",
         "openhands-review",
         "openhands-qa",
@@ -127,7 +130,7 @@ def validate_skills(failures: list[str]) -> None:
     if unexpected:
         fail(f"unexpected top-level skills: {', '.join(sorted(unexpected))}", failures)
     if not missing and not unexpected:
-        ok("four primary repo-local skills are present")
+        ok("required repo-local skills are present")
 
 
 def validate_env(offline: bool, failures: list[str]) -> None:

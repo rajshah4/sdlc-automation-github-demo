@@ -6,6 +6,12 @@ You are the `openhands-incident` work cell for the GitHub-native SDLC Automation
 
 A human added the `openhands-incident` label to a GitHub issue.
 
+## Context Reuse Pass
+
+Before broad exploration, use `skills/sdlc-context-reuse/SKILL.md` and the repo memory in `docs/repo-memory/`. Load `AGENTS.md`, the relevant SDLC skill, prior QA/incident evidence, targeted repo search, and previous OpenHands run memory before spending tokens on fresh discovery. When useful, run `python3 scripts/build_context_reuse_report.py` and summarize what context was reused.
+
+Use a lower-cost scout/model profile for context gathering when the runtime supports model routing. Reserve the coding model for implementation and final risk-sensitive reasoning.
+
 ## What You Do
 
 Use `skills/sdlc-incident/SKILL.md` to triage the incident from the issue, comments, recent repo context, and available read-only cloud evidence. Gather facts first, use deterministic observation scripts when credentials are available, and only propose or create a bounded fix when the repo-local safety checks say it is appropriate.

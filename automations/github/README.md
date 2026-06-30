@@ -8,6 +8,7 @@ The packages use the OpenHands Automations prompt preset API instead of custom S
 
 | Work cell | GitHub trigger | Human boundary |
 | --- | --- | --- |
+| `openhands-context` | issue label | OpenHands posts a cost-aware context reuse report; humans decide which work cell to trigger next |
 | `openhands-build` | issue label | OpenHands opens or updates a PR; humans review and merge |
 | `openhands-review` | PR label | OpenHands posts review findings; humans decide what blocks |
 | `openhands-qa` | PR label | OpenHands adds/runs QA evidence; humans judge readiness |

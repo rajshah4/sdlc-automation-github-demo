@@ -23,6 +23,7 @@ This skill is based on the automated QA demo pattern: understand the changed beh
 
 ## Strategy
 
+0. Use `skills/sdlc-context-reuse/SKILL.md` or `scripts/build_context_reuse_report.py` to reuse durable context, prior QA reports, and targeted repo search before broad exploration.
 1. Read the PR diff, changed files, linked issue, OpenSpec-style change folder, and existing test evidence. Treat the diff as the source of truth; the PR body may be sparse.
 2. Classify the change as backend, UI, automation, docs, SRE, or mixed.
 3. Read the relevant reference:

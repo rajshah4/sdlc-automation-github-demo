@@ -1,0 +1,20 @@
+{
+  "preset": "prompt",
+  "name": "SDLC Demo - GitHub OpenHands Context Scout",
+  "prompt_file": "prompt.md",
+  "trigger": {
+    "type": "event",
+    "source": "github",
+    "on": ["issues.labeled"],
+    "filter": "repository.full_name == '${GITHUB_DEMO_REPOSITORY}' && issue.pull_request == null && label.name == 'openhands-context' && !contains(issue.labels[].name, 'openhands:in-progress') && !contains(issue.labels[].name, 'openhands:done')"
+  },
+  "repos": [
+    {
+      "url": "${GITHUB_DEMO_REPO_URL}",
+      "provider": "github",
+      "ref": "main"
+    }
+  ],
+  "timeout": 300,
+  "llm_profile": "sdlc-scout"
+}

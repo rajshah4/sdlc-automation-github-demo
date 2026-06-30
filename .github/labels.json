@@ -1,5 +1,10 @@
 [
   {
+    "name": "openhands-context",
+    "color": "6f42c1",
+    "description": "Trigger OpenHands to build a cost-aware context reuse report"
+  },
+  {
     "name": "openhands-build",
     "color": "1f6feb",
     "description": "Trigger OpenHands to clarify a sparse issue and create a PR"

@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 AUTOMATION_LABELS = {
+    "openhands-context",
     "openhands-build",
     "openhands-review",
     "openhands-qa",

@@ -46,6 +46,7 @@ HTTP 500" plus impact notes. The skill provides the operating procedure:
 
 ## Flow
 
+0. Use `skills/sdlc-context-reuse/SKILL.md` or `scripts/build_context_reuse_report.py` to reuse durable repo rules, prior incident notes, and targeted logs before broad exploration.
 1. State symptom and impact.
 2. Gather recent issue/PR context, Cloud Run target, and Cloud Logging evidence.
 3. Use `scripts/petstore_gcp_observe.py` for read-only observation when GCP credentials are available.

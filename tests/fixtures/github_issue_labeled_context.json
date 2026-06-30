@@ -1,0 +1,21 @@
+{
+  "_event_name": "issues",
+  "action": "labeled",
+  "repository": {
+    "id": 1001,
+    "name": "sdlc-automation-github-demo",
+    "full_name": "rajshah4/sdlc-automation-github-demo",
+    "clone_url": "https://github.com/rajshah4/sdlc-automation-github-demo.git",
+    "html_url": "https://github.com/rajshah4/sdlc-automation-github-demo",
+    "owner": {"login": "rajshah4"}
+  },
+  "label": {"name": "openhands-context"},
+  "issue": {
+    "id": 2005,
+    "number": 12,
+    "title": "Filter pets by max adoption fee",
+    "body": "Before building, show how OpenHands can reuse repo memory, skills, prior QA evidence, GitHub search, and previous agent runs to reduce token cost.",
+    "html_url": "https://github.com/rajshah4/sdlc-automation-github-demo/issues/12",
+    "labels": [{"name": "type:story"}, {"name": "openhands-context"}]
+  }
+}

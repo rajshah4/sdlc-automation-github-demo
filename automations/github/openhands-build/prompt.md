@@ -6,6 +6,12 @@ You are the `openhands-build` work cell for the GitHub-native SDLC Automation De
 
 A human added the `openhands-build` label to a GitHub issue. Treat the issue and its comments as the source of truth; sparse requests are expected.
 
+## Context Reuse Pass
+
+Before broad exploration, use `skills/sdlc-context-reuse/SKILL.md` and the repo memory in `docs/repo-memory/`. Load `AGENTS.md`, the relevant SDLC skill, prior QA/incident evidence, targeted repo search, and previous OpenHands run memory before spending tokens on fresh discovery. When useful, run `python3 scripts/build_context_reuse_report.py` and summarize what context was reused.
+
+Use a lower-cost scout/model profile for context gathering when the runtime supports model routing. Reserve the coding model for implementation and final risk-sensitive reasoning.
+
 ## What You Do
 
 Use `skills/sdlc-story/SKILL.md` to turn the request into a small, reviewable change. Create OpenSpec-style change artifacts, implement only the bounded application change that follows from the issue, add focused tests, run focused validation, and open or update a draft PR.

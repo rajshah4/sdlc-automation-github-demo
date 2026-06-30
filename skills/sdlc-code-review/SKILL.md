@@ -22,6 +22,10 @@ The review should feel like a senior engineer looking for real defects, not a st
 - Do not approve, merge, push fixes, or update branch protection from this skill.
 - Avoid result comments that repeat the exact trigger text.
 
+## Context Reuse
+
+Before reviewing, use `skills/sdlc-context-reuse/SKILL.md` or `scripts/build_context_reuse_report.py` to load durable repo rules, prior QA/review evidence, and targeted repo search. Prefer lower-cost context gathering before higher-cost risk judgment.
+
 ## Review Priorities
 
 Lead with concrete findings:
