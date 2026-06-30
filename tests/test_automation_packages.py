@@ -153,6 +153,9 @@ def test_sidekick_experiment_jira_automation_specs_are_label_gated() -> None:
             assert "exactly once" in prompt
             assert "Do not inspect the launcher script first" in prompt
             assert "not rerun the launcher" in prompt
+            assert "Step 0 response is the visible index" in prompt
+            assert "child conversation" not in prompt
+            assert "Parent conversation" not in prompt
         else:
             assert spec["model"] == "Bedrock-Claude-Sonnet-4-5"
         assert expectation["required_prompt"] in prompt

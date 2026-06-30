@@ -124,8 +124,8 @@ one thing:
 | Approach | What launches | Expected benefit | Risk |
 | --- | --- | --- | --- |
 | Current single-agent | One implementation conversation. | Fastest live demo path. | Context search is less explicit. |
-| Deterministic fan-out scouts | One script starts `docs-scout`, `logs-scout`, and `repo-scout` concurrently. | Clear launch markers, near-zero model cost, minimal context loading. | It is not a true child-agent architecture. |
-| True side-agent scouts | Three read-only child conversations, ideally on cheaper profiles, return briefs to the main conversation. | Best architecture story and model-routing demo. | More orchestration, more elapsed time, and possible token overhead. |
+| Deterministic fan-out scouts | One script starts `docs-scout`, `logs-scout`, and `repo-scout` concurrently. | Clear launch markers, near-zero model cost, minimal context loading. | It is not a true multi-conversation architecture. |
+| Visible side-agent scouts | Three read-only top-level scout conversations, ideally on cheaper profiles, return briefs to the main conversation. | Best architecture story and model-routing demo. | More orchestration, more elapsed time, and possible token overhead. |
 
 The repo now includes the deterministic baseline:
 
@@ -145,19 +145,19 @@ Example local runtime for the deterministic fan-out on the standard sparse bug:
 about 0.004 seconds on a laptop, with docs/logs/repo launches visible in the
 output and no model call.
 
-## True Side-Agent Design
+## Visible Side-Agent Design
 
 For the actual sidekick architecture, use a custom orchestration automation
 rather than a single prompt preset:
 
 1. Main orchestrator receives the Jira webhook and extracts only ticket key,
    summary, description, labels, and URL.
-2. It starts three child conversations at the same time:
+2. It starts three top-level scout conversations at the same time:
    - `docs-scout`: read-only search of `README.md`, `AGENTS.md`, `docs/wiki/`,
      and `openspec/project.md`.
    - `logs-scout`: read-only search of `docs/logs/`.
    - `repo-scout`: read-only search of `app/` and `tests/`.
-3. Each child conversation uses a cheap profile when available and has a strict
+3. Each scout conversation uses a cheap profile when available and has a strict
    output contract: paths checked, snippets, confidence, and missing info. No
    skills, no edits, no Jira/GitHub mutations.
 4. The orchestrator waits for a short barrier, such as 45 seconds, then starts
@@ -172,8 +172,11 @@ cannot wander."
 
 Live API support checked on the Rajistics instance:
 
-- `POST /api/v1/app-conversations` supports `parent_conversation_id`, so side
-  scouts can appear as child conversations under a parent run.
+- `POST /api/v1/app-conversations` accepts `parent_conversation_id`, but the
+  current UI does not reliably show those linked conversations in the parent or
+  top-level history. The current launcher intentionally does not send that
+  field; Step 0 prints the index, and scouts/main appear as normal top-level
+  conversations.
 - It supports `llm_model`, which is enough for a first pass at cheaper scout
   models if saved profiles are not needed.
 - It supports `selected_repository` and `selected_branch`, which lets the scouts
@@ -213,8 +216,9 @@ Compare:
 - Number of broad file reads before first edit.
 - Whether a customer can identify the context launches in under 30 seconds.
 
-Do not use true child-agent sidekicks in the five-minute live demo until they
-beat or match the deterministic fan-out baseline on elapsed time and readability.
+Do not use the visible side-agent path in the five-minute live demo until it
+beats or matches the deterministic fan-out baseline on elapsed time and
+readability.
 
 ## Sidekick V2 Manual Launcher Result
 
@@ -340,17 +344,16 @@ What this proves:
 - The GitHub QA handoff is working from the PR label and remains human-reviewed:
   QA reports evidence, but does not approve, merge, or deploy.
 - Conversation readability is now part of the design: the launcher is Step 0,
-  the parent is Step 1, the scouts are Step 2A/2B/2C, the main implementation is
-  Step 3, and QA is Step 4.
+  the scouts are Step 2A/2B/2C, the main implementation is Step 3, and QA is
+  Step 4.
 - The current live v2 registration for that step-labeled path is
   `86d4c0a4-cdf7-4f74-92ee-4ef51db391c7`. This registration keeps the launcher
   and main implementation on Sonnet fast and runs the read-only sidekick scouts
   on Haiku.
 - KAN-48 exposed a useful demo-hardening issue: the parent grouping
-  conversation started acting like an agent when it had no repo checkout, then
-  improvised its own child conversations. The launcher now makes the parent
-  self-terminating so only the script-owned Step 2A/2B/2C scouts perform
-  context search.
+  conversation started acting like an agent when it had no repo checkout. The
+  launcher now removes the parent conversation entirely; Step 0 is the index,
+  and only the script-owned Step 2A/2B/2C scouts perform context search.
 
 ### QA And UI Evidence
 

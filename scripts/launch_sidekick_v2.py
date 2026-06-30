@@ -3,11 +3,10 @@
 
 This script is intentionally API-first so the demo shows separate conversations:
 
-- a lightweight parent orchestrator conversation
-- docs-scout child conversation
-- logs-scout child conversation
-- repo-scout child conversation
-- optional main Jira-to-PR implementation child conversation
+- docs-scout top-level conversation
+- logs-scout top-level conversation
+- repo-scout top-level conversation
+- optional main Jira-to-PR implementation top-level conversation
 
 It never prints secret values. Live mode requires an OpenHands API key in the
 environment or an env file.
@@ -253,10 +252,6 @@ def text_message(text: str, *, run: bool = True) -> dict[str, Any]:
     }
 
 
-def parent_title(ticket: Ticket) -> str:
-    return f"Step 1 - Jira Intake and Sidekick Orchestrator ({ticket.key})"
-
-
 def scout_step(scout_name: str) -> tuple[str, str]:
     return SCOUT_DEMO_STEPS[scout_name]
 
@@ -306,32 +301,6 @@ MISSING_INFO:
 - none, or the smallest human question needed
 CONFIDENCE:
 - high, medium, low, or NEEDS_HUMAN plus one short rationale
-"""
-
-
-def parent_prompt(ticket: Ticket) -> str:
-    return f"""DEMO_STEP 1: Jira Intake and Sidekick Orchestration
-
-Sidekick V2 grouping conversation for Jira work item {ticket.key}.
-
-This conversation exists only so the demo has one visible parent for the
-script-owned child conversations. The launcher script, not this agent, starts
-the docs, logs, repo, and implementation conversations.
-
-Rules:
-- Do not use tools.
-- Do not invoke skills.
-- Do not read files.
-- Do not call Jira, GitHub, or OpenHands APIs.
-- Do not start child conversations.
-- Do not implement code.
-
-Return exactly this final response and stop:
-
-DEMO_STEP 1 COMPLETE: Jira intake grouped
-- Jira: {ticket.url}
-- Title: {ticket.title}
-- Next visible steps: Step 2A docs scout, Step 2B logs scout, Step 2C repo scout, Step 3 implementation
 """
 
 
@@ -398,7 +367,6 @@ def start_payload(
     repository: str | None,
     branch: str | None,
     model: str | None,
-    parent_id: str | None = None,
 ) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "title": title,
@@ -418,8 +386,6 @@ def start_payload(
         payload["selected_branch"] = branch
     if model:
         payload["llm_model"] = model
-    if parent_id:
-        payload["parent_conversation_id"] = parent_id
     return payload
 
 
@@ -582,17 +548,15 @@ def conversation_result(
 def launch_one_scout(
     scout: ScoutSpec,
     ticket: Ticket,
-    parent_id: str,
     args: argparse.Namespace,
 ) -> ConversationResult:
-    started = start_one_scout(scout, ticket, parent_id, args)
+    started = start_one_scout(scout, ticket, args)
     return finish_scout(started, args.scout_timeout_seconds)
 
 
 def start_one_scout(
     scout: ScoutSpec,
     ticket: Ticket,
-    parent_id: str,
     args: argparse.Namespace,
 ) -> StartedScout:
     start_at = utc_now()
@@ -604,7 +568,6 @@ def start_one_scout(
         repository=args.repository,
         branch=args.branch,
         model=args.scout_model,
-        parent_id=parent_id,
     )
     start_task = start_conversation(payload)
     ready_task, ready_started_at = wait_for_ready(start_task, args.start_timeout_seconds)
@@ -678,7 +641,6 @@ def timing_summary(
     *,
     started_at: str,
     finished_at: str,
-    parent: ConversationResult,
     scout_results: list[ConversationResult],
     main_result: ConversationResult | None,
     main_start_barrier_seconds: int,
@@ -689,8 +651,12 @@ def timing_summary(
             "Use these numbers to explain whether time was spent in launcher startup, "
             "sidekick context search, implementation, or QA handoff."
         ),
+        "conversation_layout": "top-level",
+        "index_note": (
+            "Step 0 automation output is the index; scout and implementation "
+            "conversations are created as normal top-level conversations."
+        ),
         "total_launcher_elapsed_seconds": seconds_between(started_at, finished_at),
-        "parent_ready_seconds": parent.elapsed_to_ready_seconds,
         "scout_count": len(scout_results),
         "scout_fastest_finished_seconds": min_elapsed(scout_finish_values),
         "scout_slowest_finished_seconds": max_elapsed(scout_finish_values),
@@ -711,14 +677,6 @@ def timing_summary(
 
 
 def dry_run_payloads(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]:
-    parent = start_payload(
-        title=parent_title(ticket),
-        message=parent_prompt(ticket),
-        run=False,
-        repository=None,
-        branch=None,
-        model=None,
-    )
     scouts = [
         start_payload(
             title=scout_title(ticket, scout),
@@ -727,7 +685,6 @@ def dry_run_payloads(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]
             repository=args.repository,
             branch=args.branch,
             model=args.scout_model,
-            parent_id="<parent-conversation-id>",
         )
         for scout in SCOUTS
     ]
@@ -738,42 +695,16 @@ def dry_run_payloads(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]
         repository=args.repository,
         branch=args.branch,
         model=args.main_model,
-        parent_id="<parent-conversation-id>",
     )
-    return {"parent": parent, "scouts": scouts, "main": main}
+    return {"conversation_layout": "top-level", "scouts": scouts, "main": main}
 
 
 def run_live(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]:
     started_at = utc_now()
-    parent_title_value = parent_title(ticket)
-    parent_task = start_conversation(
-        start_payload(
-            title=parent_title_value,
-            message=parent_prompt(ticket),
-            run=False,
-            repository=None,
-            branch=None,
-            model=None,
-        )
-    )
-    parent_ready, parent_started_at = wait_for_ready(parent_task, args.start_timeout_seconds)
-    parent_id = parent_ready["app_conversation_id"]
-    update_conversation_title(parent_id, parent_title_value)
-    parent_conversation = get_conversation(parent_id)
-    update_conversation_title(parent_id, parent_title_value)
-    parent_conversation = get_conversation(parent_id)
-    parent = conversation_result(
-        "orchestrator",
-        parent_task,
-        parent_ready,
-        parent_started_at,
-        parent_conversation,
-        parent_ready.get("updated_at"),
-    )
 
     with ThreadPoolExecutor(max_workers=len(SCOUTS)) as executor:
         start_futures = [
-            executor.submit(start_one_scout, scout, ticket, parent_id, args)
+            executor.submit(start_one_scout, scout, ticket, args)
             for scout in SCOUTS
         ]
         started_scouts = [future.result() for future in as_completed(start_futures)]
@@ -818,7 +749,6 @@ def run_live(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]:
                     repository=args.repository,
                     branch=args.branch,
                     model=args.main_model,
-                    parent_id=parent_id,
                 )
             )
             main_ready, main_started_at = wait_for_ready(main_task, args.start_timeout_seconds)
@@ -850,18 +780,21 @@ def run_live(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]:
     finished_at = utc_now()
     return {
         "ticket": asdict(ticket),
+        "conversation_layout": "top-level",
+        "index_note": (
+            "Step 0 automation output is the index; scouts and main implementation "
+            "are normal top-level conversations."
+        ),
         "started_at": started_at,
         "finished_at": finished_at,
         "elapsed_seconds": seconds_between(started_at, finished_at),
         "timing_summary": timing_summary(
             started_at=started_at,
             finished_at=finished_at,
-            parent=parent,
             scout_results=scout_results,
             main_result=main_result,
             main_start_barrier_seconds=args.main_start_barrier_seconds,
         ),
-        "parent": asdict(parent),
         "scouts": [asdict(result) for result in scout_results],
         "main": asdict(main_result) if main_result else None,
     }
@@ -904,7 +837,7 @@ def main() -> int:
     )
     parser.add_argument("--main-timeout-seconds", type=int, default=900)
     parser.add_argument("--dry-run", action="store_true")
-    parser.add_argument("--full", action="store_true", help="launch main Jira-to-PR child after scouts")
+    parser.add_argument("--full", action="store_true", help="launch main Jira-to-PR conversation after scouts")
     args = parser.parse_args()
 
     if args.env_file:

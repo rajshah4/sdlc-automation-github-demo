@@ -24,9 +24,9 @@ Jira issue as source of truth.
 
    Do not inspect the launcher script first. Do not run a dry run first. Do not
    pipe the command to `head`, `tail`, `tee`, or any other truncating command. Do
-   not rerun the launcher after partial output. The launcher owns the child
-   conversations, and rerunning it creates duplicate scouts and implementation
-   agents.
+   not rerun the launcher after partial output. The launcher owns the visible
+   scout and implementation conversations, and rerunning it creates duplicate
+   scouts and implementation agents.
 
    ```bash
    export OPENHANDS_HOST="${OPENHANDS_HOST:-https://app.replicated.rajistics.com}"
@@ -48,24 +48,22 @@ Jira issue as source of truth.
    use completed scout briefs after the 90-second barrier and pass links for any
    scouts still running.
 5. Print the complete launcher JSON summary in your final response. Include the
-   `timing_summary` plus the direct parent, scout, main, PR, and QA trigger
-   links when available. The scout links may not show up in the top-level
-   conversation list, so these direct links are important for the demo.
+   `timing_summary` plus the direct scout, main, PR, and QA trigger links when
+   available. The Step 0 response is the visible index for the demo.
 6. If a required secret or API setting is missing, stop and report the missing
    setting name only. Do not print secret values.
 
 ## Expected Demo Shape
 
-- Parent orchestrator conversation.
-- Three visible read-only scout child conversations: docs, logs, and repo. These
+- Step 0 launcher conversation prints the index and timing summary.
+- Three visible read-only scout conversations: docs, logs, and repo. These
   scouts run on Haiku because they are bounded context search agents.
-- Main implementation child conversation opens the PR and adds `openhands-qa`.
+- Main implementation conversation opens the PR and adds `openhands-qa`.
 - The GitHub QA automation runs as the post-PR validation conversation.
 
 Use this viewer-facing sequence when summarizing the run:
 
 - Step 0: Jira webhook launcher unwraps the event.
-- Step 1: Parent conversation groups the sidekick run.
 - Step 2A: Docs scout finds product/wiki context.
 - Step 2B: Logs scout finds symptom evidence.
 - Step 2C: Repo scout finds likely implementation and test files.
@@ -77,4 +75,4 @@ Use this viewer-facing sequence when summarizing the run:
 ## Human Control
 
 Humans approve PR review, merge, deployment, and risky follow-up. The sidekick
-scouts are read-only; the main implementation child owns code changes.
+scouts are read-only; the main implementation conversation owns code changes.

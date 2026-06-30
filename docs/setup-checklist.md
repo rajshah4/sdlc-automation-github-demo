@@ -24,7 +24,7 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
   This mode now also checks `/api/v1/app-conversations/search`; the visible
   sidekick demo is not ready if that endpoint returns `BearerTokenError`, even
   when the automation list endpoint passes.
-- The read-only preflight does not prove that `selected_repository` child
+- The read-only preflight does not prove that `selected_repository` scout
   conversations can start. If the sidekick launcher fails with `Git provider
   authentication issue when getting remote URL`, fix the Rajistics GitHub
   provider/app authorization before testing Haiku scout timing.
@@ -125,7 +125,7 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
 - Desired LLM profiles are documented in the automation JSON files with the `model` field. In the Rajistics automation API, `model` means the saved model profile name for automation runs.
 - Current Enterprise Org model split: Jira launcher, main implementation, and QA
   use `Bedrock-Claude-Sonnet-4-5-fast`; visible sidekick scouts use the concrete
-  Haiku child-conversation model
+  Haiku scout model
   `litellm_proxy/us.anthropic.claude-haiku-4-5-20251001-v1:0`; build/incident
   use `Bedrock-Claude-Sonnet-4-5`; review uses `Bedrock-Claude-Haiku-4-5`.
 - Secrets stay in OpenHands secret store or local `.env`.

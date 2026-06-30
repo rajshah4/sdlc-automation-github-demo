@@ -170,7 +170,7 @@ The sidekick experiment lives on branch `sidekick-context-experiment`.
 - Read-only sidekick skill: `skills/sdlc-context-sidekick/`
 - Single-agent control package: `automations/jira/jira-to-story-control/`
 - Sidekick-assisted package: `automations/jira/jira-to-story-sidekick/`
-- Visible child-conversation package:
+- Visible sidekick V2 package:
   `automations/jira/jira-to-story-sidekick-v2/`
 - Experiment plan: `docs/experiments/sidekick-context-experiment.md`
 - Comparison helper: `scripts/compare_sidekick_experiment.py`
@@ -194,12 +194,17 @@ First live A/B result on 2026-06-30 UTC:
 
 Visible Sidekick V2 live result on 2026-06-30 UTC:
 
+Current V2 behavior: the launcher no longer creates a parent conversation or
+sets `parent_conversation_id`. Step 0 prints the index and timing summary; the
+docs/logs/repo scouts and main implementation are normal top-level
+conversations so they are easier to find in the UI.
+
 - Jira: `https://rajiv-shah.atlassian.net/browse/KAN-41`
 - Sidekick-v2 automation run:
   `0b60432b-5065-445c-b731-d494af8f60c7`
 - Launcher automation conversation:
   `https://app.replicated.rajistics.com/conversations/34bfd883-8520-4276-9891-87ab9c679bf8`
-- Parent sidekick conversation:
+- Historical parent sidekick conversation:
   `https://app.replicated.rajistics.com/conversations/4a96f19d97354f2f9acaf12f82341a1c`
 - Scout conversations:
   `logs-scout` `https://app.replicated.rajistics.com/conversations/0b1436fec56a4411b011477d57c537ad`,
@@ -243,7 +248,7 @@ Follow-up sidekick-v2 checks on 2026-06-30 UTC:
   `add32647-efc4-42ef-adc1-93c5db211991`.
 - On 2026-06-30, the step-labeled v2 automation was replaced by
   `a159704a-7b4a-4b6d-b17b-ec201b5abb64` so the read-only docs/logs/repo scouts
-  run on the concrete Haiku child-conversation model
+  run on the concrete Haiku scout model
   `litellm_proxy/us.anthropic.claude-haiku-4-5-20251001-v1:0` while the launcher
   and main implementation remain on Sonnet fast.
 - KAN-44 was created against the corrected v2 automation as run
