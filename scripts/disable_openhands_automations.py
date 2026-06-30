@@ -59,12 +59,13 @@ def main() -> int:
         or "https://app.replicated.rajistics.com"
     )
     api_key = (
-        os.getenv("OPENHANDS_API_KEY_GITHUB")
+        os.getenv("OPENHANDS_API_KEY_ORG")
+        or os.getenv("OPENHANDS_API_KEY_GITHUB")
         or os.getenv("OPENHANDS_API_KEY_RAJISTICS")
         or os.getenv("OPENHANDS_API_KEY")
     )
     if not api_key:
-        raise SystemExit("OPENHANDS_API_KEY_GITHUB, OPENHANDS_API_KEY_RAJISTICS, or OPENHANDS_API_KEY is required")
+        raise SystemExit("OPENHANDS_API_KEY_ORG, OPENHANDS_API_KEY_GITHUB, OPENHANDS_API_KEY_RAJISTICS, or OPENHANDS_API_KEY is required")
 
     enabled = bool(args.enable)
     for automation_id in args.automation_ids:

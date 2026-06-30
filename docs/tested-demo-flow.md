@@ -1,6 +1,6 @@
 # Tested Demo Flow
 
-Last updated: 2026-06-23 UTC.
+Last updated: 2026-06-30 UTC.
 
 ## Local Validation
 
@@ -37,30 +37,331 @@ Note: this successful build result used the earlier max-adoption-fee feature sto
 
 ## Registered OpenHands Automations
 
-Prompt-preset automations were registered with the Rajistics Replicated API key:
+Prompt-preset automations are registered with the Rajistics Enterprise Org API key. The current Jira demo path uses the Rajistics instance, not app.all-hands Cloud:
 
-| Work cell | Automation ID | Trigger |
-| --- | --- | --- |
-| `openhands-build` | `efc16fdb-04da-4140-963a-5e693bbc8bb4` | `issues.labeled` |
-| `openhands-incident` | `4c9ebc42-eb96-4cc5-a4a7-13089bdd6506` | `issues.labeled` |
-| `openhands-qa` | `fe3ea75f-dfbb-4779-a73f-a287380fdb27` | `pull_request.labeled` |
-| `openhands-review` | `854dcbb9-0320-40f2-a8a7-e70d15cb737c` | `pull_request.labeled` |
+| Work cell | Automation ID | Model profile | Trigger |
+| --- | --- | --- | --- |
+| `jira-to-story` | `7f63aad8-ae78-483d-9296-223869dc239d` | `Bedrock-Claude-Sonnet-4-5-fast` | `jira:issue_created` from `jira-direct` |
+| `jira-to-story-sidekick-v2` | `86d4c0a4-cdf7-4f74-92ee-4ef51db391c7` | `Bedrock-Claude-Sonnet-4-5-fast` launcher; Haiku scouts | `jira:issue_created` from `jira-direct`, label `sidekick-v2` |
+| `openhands-build` | `d549cb26-8062-43c0-9e97-d0fb81e93ad5` | `Bedrock-Claude-Sonnet-4-5` | `issues.labeled` |
+| `openhands-incident` | `3ca10ce1-d6f4-4b87-a068-5b86b059d9e9` | `Bedrock-Claude-Sonnet-4-5` | `issues.labeled` |
+| `openhands-qa` | `96b8ad90-bdb4-42ba-81f8-0cabf059bd6a` | `Bedrock-Claude-Sonnet-4-5-fast` | `pull_request.labeled`, `issues.labeled` |
+| `openhands-review` | `5601f92c-7972-4416-b317-ea37e41df866` | `Bedrock-Claude-Haiku-4-5` | `pull_request.labeled` |
 
 Run-list check:
 
 ```bash
 python3 scripts/list_openhands_automation_runs.py \
   --env-file /path/to/local/.env \
-  --automation-id efc16fdb-04da-4140-963a-5e693bbc8bb4 \
+  --automation-id 7f63aad8-ae78-483d-9296-223869dc239d \
   --limit 5
 ```
 
-The previously registered comment-capable automation set was disabled. The active set above is label-only and skips items already marked `openhands:done`.
+The Jira automation opens or updates a draft PR and adds `openhands-qa`. That
+label intentionally starts a second QA conversation. For the live demo, QA is a
+handoff check, not a stopwatch metric: show that the Enterprise QA automation
+starts and reports back, then keep human review, merge, deployment, and
+production-facing changes under human control.
 
-The Rajistics API was checked after registration and returned the active set as enabled with only `issues.labeled` or `pull_request.labeled` triggers.
+For the visible multi-agent customer demo, create the Jira Task with label
+`sidekick-v2`. The normal Jira automation excludes that label and the
+sidekick-v2 automation starts visible docs/logs/repo scout conversations before
+the main implementation conversation.
+
+The Rajistics API was checked after registration and returned the active set as enabled. The Jira custom webhook source is `jira-direct`.
+
+Enterprise Org Jira webhook source:
+
+- Webhook ID: `5248e3f6-101a-4f45-afbf-ca1d7944c807`
+- Webhook URL: `https://app.replicated.rajistics.com/api/automation/v1/events/9a0d7385-6478-45d5-9764-122d1b980341/jira-direct`
+- Event key expression: `webhookEvent`
+- Signature header: `X-Hub-Signature`
+
+Stage-specific model profiles are tracked in the automation JSON files with the
+`model` field. In the Rajistics automation API, `model` means the saved model
+profile name for automation runs.
+
+## Current Jira-To-QA Validation
+
+The latest confirmed end-to-end path before the Enterprise Org migration is KAN-25:
+
+- Jira automation run `811b03a5-6ff9-4aab-ad98-368ebfb8bdd6` completed on 2026-06-29.
+- Jira/story conversation: `https://app.replicated.rajistics.com/conversations/210a1ebe-94e8-400b-8116-3f7aff802cd5`
+- Draft PR: `https://github.com/rajshah4/sdlc-automation-github-demo/pull/36`
+- QA automation run `dd0aa558-92b3-4e56-a129-da06d78c928b` completed on 2026-06-29.
+- QA conversation: `https://app.replicated.rajistics.com/conversations/35e8ad56-91ea-4fd0-a4ce-ebfab3c4dde9`
+- QA PR comment: `https://github.com/rajshah4/sdlc-automation-github-demo/pull/36#issuecomment-4836846019`
+
+The PR is intentionally still human-reviewed. The QA conversation pushed a QA report and commented with PASS evidence, but it did not approve or merge.
+
+## Enterprise Org Live Smoke: 2026-06-29
+
+KAN-26 confirmed the Enterprise Org Jira automation and Jira-to-PR work cell when
+the Rajistics `jira-direct` event endpoint received a correctly signed Jira-shaped
+event:
+
+- Jira issue: `https://rajiv-shah.atlassian.net/browse/KAN-26`
+- Enterprise Org Jira run: `c499dcc1-8545-4e68-97cd-6b7a5a493318`
+- Jira/story conversation: `https://app.replicated.rajistics.com/conversations/0bf7ca7b530449d0b37000de5a937b3c`
+- Draft PR: `https://github.com/rajshah4/sdlc-automation-github-demo/pull/37`
+- Result: PR opened, regression tests added, OpenSpec-style artifacts added, `openhands-qa` label added, and Jira commented.
+
+KAN-27 tested a fresh live Jira issue-created webhook after the Enterprise Org URL
+was configured in Jira:
+
+- Jira issue: `https://rajiv-shah.atlassian.net/browse/KAN-27`
+- Poll result: no new Enterprise Org Jira automation run appeared after 18 polls
+  over roughly three minutes.
+- Interpretation: the Rajistics Enterprise Org `jira-direct` source and automation
+  match correctly when an event arrives, but the Jira admin webhook delivery still
+  needs to be checked in Jira webhook history/configuration.
+
+The QA handoff for PR #37 did run automatically, but it was handled by the older
+personal-scope Rajistics QA automation, not the new Enterprise Org QA automation:
+
+- Personal QA automation: `dfd2bfe1-72f9-4ad2-8548-6b2aad64a037`
+- Personal QA run: `ffa67162-d16d-4567-ba93-127e4295f14d`
+- QA conversation: `https://app.replicated.rajistics.com/conversations/2b1b5b07-b75e-478c-a544-8715a57d2349`
+- QA comment: `https://github.com/rajshah4/sdlc-automation-github-demo/pull/37#issuecomment-4837839892`
+
+The new Enterprise Org QA automation was manually dispatched as a smoke test:
+
+- Enterprise QA run: `abab8704-3f59-4207-a74c-852f79ef2383`
+- Enterprise QA conversation: `https://app.replicated.rajistics.com/conversations/c6f640ca-e815-4072-8c57-cfe512bfb504`
+- Result: the automation launched on `Bedrock-Qwen3-Coder-30B` and completed, but
+  the automatic GitHub label event still appears to be routed to the personal scope.
+
+KAN-28 confirmed the live Jira admin webhook after the Enterprise Org URL and
+signing secret were updated in Jira:
+
+- Jira issue: `https://rajiv-shah.atlassian.net/browse/KAN-28`
+- Enterprise Org Jira run: `b0ce5754-a388-4c1a-967f-8aaf41b8461a`
+- Jira/story conversation: `https://app.replicated.rajistics.com/conversations/37175c6c-0445-4729-bdd4-519842f855b3`
+- Draft PR: `https://github.com/rajshah4/sdlc-automation-github-demo/pull/38`
+- Result: PR opened, regression tests added, OpenSpec-style artifacts added, `openhands-qa` label added, and Jira commented.
+
+The first `openhands-qa` label on PR #38 still routed to the older personal-scope
+QA automation. The older personal-scope demo automations were then disabled:
+
+- Jira: `1ae30b64-85ba-4713-bd39-b82892dcdc9a`
+- Build: `c0e77dc6-af1b-48eb-bb88-6673093a8ea5`
+- Incident: `fc5bd894-3571-4375-b27f-4719061bb45a`
+- QA: `dfd2bfe1-72f9-4ad2-8548-6b2aad64a037`
+- Review: `50c7b188-a2f8-4ac7-bc27-85cd3cb2cc0c`
+
+After the GitHub event routing fix, the Enterprise Org QA automation received a
+live `openhands-qa` label event:
+
+- Enterprise QA automation: `b3192e16-171a-4ec3-8028-9514a7f372fe`
+- Enterprise QA run: `c96832d5-f706-4989-97be-8a9efaf9370c`
+- QA conversation: `https://app.replicated.rajistics.com/conversations/c3d75104-9f1f-44d5-8fd6-08d388a99d98`
+- Result: run completed successfully on 2026-06-30 UTC. The PR already had a QA
+  report from the older run, so the validation evidence should be checked in the
+  Enterprise conversation as well as the PR comment history.
+
+At this point, both delivery paths are proven separately: live Jira issue-created
+events reach Enterprise `jira-to-story`, and live GitHub label events reach
+Enterprise `openhands-qa`.
+
+## Sidekick Context Experiment
+
+The sidekick experiment lives on branch `sidekick-context-experiment`.
+
+- Read-only sidekick skill: `skills/sdlc-context-sidekick/`
+- Single-agent control package: `automations/jira/jira-to-story-control/`
+- Sidekick-assisted package: `automations/jira/jira-to-story-sidekick/`
+- Visible child-conversation package:
+  `automations/jira/jira-to-story-sidekick-v2/`
+- Experiment plan: `docs/experiments/sidekick-context-experiment.md`
+- Comparison helper: `scripts/compare_sidekick_experiment.py`
+
+The experiment packages are label-gated with `control-experiment` and
+`sidekick-experiment` so the normal Jira demo can stay separate.
+
+First live A/B result on 2026-06-30 UTC:
+
+- Control: Jira `KAN-29`, run `09bf9e2a-26a7-4b9f-a1ec-0d59cd30cb55`, conversation
+  `https://app.replicated.rajistics.com/conversations/2bfaf1bb-2ce7-4fa9-8b6a-14bad473f807`,
+  PR `https://github.com/rajshah4/sdlc-automation-github-demo/pull/39`, time to PR
+  4.88 minutes, run completion 6.26 minutes.
+- Sidekick: Jira `KAN-30`, run `cbaa0fc7-a671-4676-be23-3294e01c888d`, conversation
+  `https://app.replicated.rajistics.com/conversations/9b361dd2-f2ac-4f24-afdb-b48b2d5f8b10`,
+  PR `https://github.com/rajshah4/sdlc-automation-github-demo/pull/40`, time to PR
+  6.19 minutes, run completion 7.84 minutes.
+- Interpretation: sidekick assistance improves the architecture story and evidence
+  readability, but the first run missed the five-minute target. Keep the
+  single-agent Jira-to-PR path for the main live demo.
+
+Visible Sidekick V2 live result on 2026-06-30 UTC:
+
+- Jira: `https://rajiv-shah.atlassian.net/browse/KAN-41`
+- Sidekick-v2 automation run:
+  `0b60432b-5065-445c-b731-d494af8f60c7`
+- Launcher automation conversation:
+  `https://app.replicated.rajistics.com/conversations/34bfd883-8520-4276-9891-87ab9c679bf8`
+- Parent sidekick conversation:
+  `https://app.replicated.rajistics.com/conversations/4a96f19d97354f2f9acaf12f82341a1c`
+- Scout conversations:
+  `logs-scout` `https://app.replicated.rajistics.com/conversations/0b1436fec56a4411b011477d57c537ad`,
+  `docs-scout` `https://app.replicated.rajistics.com/conversations/5813c3c4970f4c4f9d62264791e43022`,
+  `repo-scout` `https://app.replicated.rajistics.com/conversations/897a9a5c6cb14765982d381fa4a7551d`
+- Main implementation conversation:
+  `https://app.replicated.rajistics.com/conversations/f5f758a453a247cb9146f088d61548d0`
+- PR:
+  `https://github.com/rajshah4/sdlc-automation-github-demo/pull/48`
+- QA run:
+  `361bb50f-1f5b-47ca-b442-b842448eff84`
+- QA conversation:
+  `https://app.replicated.rajistics.com/conversations/3fa9264a-fab9-4381-a37a-fc5e0f7bee1a`
+- QA comment:
+  `https://github.com/rajshah4/sdlc-automation-github-demo/pull/48#issuecomment-4839894899`
+
+Timing: Jira automation run to PR opened was about 7.3 minutes. The visible
+sidekick tree to PR opened was about 5.4 minutes. The main implementation child
+to PR opened was about 4.5 minutes. QA was not timed; the useful demo signal is
+that the `openhands-qa` label started the separate QA automation and PR comment
+path. This proves the customer-visible architecture, but the prompt-preset
+launcher still adds enough overhead that a strict five-minute Jira-to-PR demo
+should use the normal path or a future deterministic custom launcher.
+
+Follow-up sidekick-v2 checks on 2026-06-30 UTC:
+
+- KAN-42 run `ce41b5b4-2d67-4874-99e1-411b274f9b13` failed after timeout with
+  `Timed out: Sandbox not available` while sandbox grouping was
+  `NO_GROUPING`. No PR was opened.
+- The org setting `sandbox_grouping_strategy` was changed to
+  `FEWEST_CONVERSATIONS`.
+- KAN-43 run `e43e01c1-85ee-41f8-8627-2b82b3295612` then got a sandbox and
+  completed quickly, but the old registered v2 prompt still called
+  `--fetch-jira` and stopped because `JIRA_API_BASE_URL` was not available in
+  the automation runtime.
+- The v2 prompt was corrected to use the Jira webhook payload summary and
+  description directly, avoiding the extra Jira API env dependency. The old v2
+  automation `ca0ddf76-bafe-4c3e-803a-1612eaed74de` was disabled and the
+  corrected v2 automation `3ed7bd14-e35a-4fb4-b111-2efc0c739f1d` was later
+  replaced by the step-labeled v2 automation
+  `add32647-efc4-42ef-adc1-93c5db211991`.
+- On 2026-06-30, the step-labeled v2 automation was replaced by
+  `a159704a-7b4a-4b6d-b17b-ec201b5abb64` so the read-only docs/logs/repo scouts
+  run on the concrete Haiku child-conversation model
+  `litellm_proxy/us.anthropic.claude-haiku-4-5-20251001-v1:0` while the launcher
+  and main implementation remain on Sonnet fast.
+- KAN-44 was created against the corrected v2 automation as run
+  `5c5c528d-882e-400d-8cf2-57748443a6e1`. The run completed after roughly 15.3
+  minutes with no `conversation_id`, no error detail, and no KAN-44 PR. During
+  the run, the automation runs endpoint also returned HTTP 503
+  `Service Unavailable` / `no available server`. Treat KAN-44 as an
+  automation-service/prompt-preset blocker, not a sidekick timing result.
+- KAN-45 was created as a UI-scoped sidekick-v2 ticket after switching the
+  read-only scouts to Haiku:
+  `https://rajiv-shah.atlassian.net/browse/KAN-45`.
+  Run `5f0726d6-d0c5-4ca5-9091-cfc8a20c5542` completed and created launcher
+  conversation
+  `https://app.replicated.rajistics.com/conversations/afd5957d-53e2-4e46-ba70-fa6beb646069`,
+  but no scout child conversations or PR were created. The launcher stopped with
+  `HTTP 401: BearerTokenError` when trying to call the app-conversation control
+  API.
+- `OPENHANDS_API_KEY` and `OPENHANDS_API_KEY_ORG` were refreshed in the
+  Rajistics secret store, then KAN-46 was created:
+  `https://rajiv-shah.atlassian.net/browse/KAN-46`.
+  Run `b4215f57-e6c3-403c-aaf2-ceb152a776d9` stayed in `RUNNING` with no
+  `conversation_id` while the automation runs endpoint intermittently returned
+  `HTTP 401 Invalid or expired API key`, `HTTP 502 Unexpected response from
+  OpenHands API`, and `HTTP 503 no available server`.
+- A direct local run of `scripts/launch_sidekick_v2.py` against KAN-46 also
+  failed before Haiku scouts could start: `POST /api/v1/app-conversations`
+  returned a start task, but `GET /api/v1/app-conversations/start-tasks?...`
+  returned `HTTP 401: BearerTokenError` for the available API keys. Treat this
+  as an app-conversation control-plane/auth issue, not as a Haiku model failure.
+- KAN-47 was created as a fresh UI-scoped sidekick-v2 issue:
+  `https://rajiv-shah.atlassian.net/browse/KAN-47`. The webhook fired and
+  created run `9234b584-4fa4-43a2-8c3b-27bc6a0594d3`. The run produced a single
+  Sonnet conversation,
+  `https://app.replicated.rajistics.com/conversations/4bfa6a072dd745a9bf07965deb56d755`,
+  titled `Pet Search Budget Filter (KAN-47)`, with `selected_repository=null`,
+  no sidekick children, no PR, and `execution_status=error` after about 1.4
+  minutes. The registered remote automation prompt was checked and does include
+  the Step 0 launcher plus the Haiku scout model string, so this is not local
+  prompt drift.
+- Direct KAN-47 launcher runs with Haiku scouts failed before model execution
+  because child conversation startup could not resolve GitHub repository access:
+  `conversation start task failed: Git provider authentication issue when
+  getting remote URL`. This reproduced with both
+  `rajshah4/sdlc-automation-github-demo` and
+  `https://github.com/rajshah4/sdlc-automation-github-demo` as the repository
+  value. A minimal no-repo Haiku smoke conversation later hit
+  `POST /api/v1/app-conversations returned HTTP 401: BearerTokenError` during an
+  intermittent app-conversation API failure window.
+- Current conclusion: Haiku sidekick timing is not validated yet. The concrete
+  blocker is the stale/invalid GitHub provider token for the API-key owner user,
+  which prevents `selected_repository` child conversations from resolving the
+  demo repo. The normal Jira-to-PR path and the older sidekick-v2 proof remain
+  useful demo assets, but do not promise the Haiku scout variant until GitHub is
+  re-authenticated and repo search passes.
+- A final live preflight after these checks passed Jira and GitHub but failed on
+  the Rajistics automation list endpoint with `HTTP 503 no available server`,
+  reinforcing that the current issue is instance/API reliability rather than the
+  demo prompt itself.
+- Follow-up diagnosis split the auth issue into two separate surfaces:
+  automation APIs under `/api/automation/v1` should use
+  `Authorization: Bearer <OPENHANDS_API_KEY_ORG>`, while app-server APIs under
+  `/api/v1` should use `X-Access-Token: <OPENHANDS_API_KEY_ORG>` only. Sending
+  both headers can be harmful because app auth may prioritize `Authorization`.
+- The org key currently works for app-server checks such as `/api/v1/users/me`,
+  `/api/v1/app-conversations/search`, and
+  `/api/v1/app-conversations/start-tasks/search`. The repo-backed conversation
+  failure reproduced at
+  `/api/v1/git/repositories/search?provider=github&query=rajshah4/sdlc-automation-github-demo`
+  as `401 Invalid github token`. The app logs show a GitHub token being resolved
+  for user `9328d634-bd0d-4125-be44-a71b18548a58`, but GitHub rejects it. The
+  concrete fix is to re-auth GitHub for the API-key owner user in Rajistics,
+  then rerun the sidekick-v2 preflight.
+
+Wiring check:
+
+- The high-level automation prompts are workflow-oriented and not hardcoded to
+  one ticket. They name the Jira issue, sidekick launcher, and expected demo
+  sequence.
+- Petstore-specific details live in repo skills and reference fixtures
+  (`skills/sdlc-story`, `skills/sdlc-context-sidekick`, `skills/sdlc-qa`,
+  `docs/wiki`, and `docs/logs`). That is the right place for demo domain
+  context; it keeps the automation prompt readable while still giving the agent
+  concrete product, logs, and test clues after the repo is loaded.
+
+## Playwright Status
+
+PR #36 is mostly a backend/catalog-filter fix. It has user-visible impact, but
+it does not add a new UI control. The QA conversation therefore ran backend/API
+checks plus static UI validation.
+
+The automation runtime did not have Playwright available, so QA correctly
+reported fallback evidence instead of claiming browser coverage. For the
+customer demo, treat browser evidence as a prepared example, not a dependency of
+the live Jira bug run. To show the full Playwright artifact path, use one of
+these options:
+
+- Point to the prebuilt UI example in `docs/ui-playwright-example.md`, especially PR #6.
+- PR #6 is titled `Add adoption fee filter to Petstore UI` and includes a
+  Playwright spec, screenshot, GIF, and QA report artifacts.
+- PR #28 is a separate budget-filter UI PR, but it does not include the full
+  Playwright artifact bundle.
+- Preinstall Playwright or expose BrowserToolSet in the Rajistics automation runtime before the demo.
+- Run the checked-in Playwright example locally or in a prepared runtime with `NODE_PATH` pointing at an existing Playwright install.
+
+Do not let the timed automation install Playwright live; the demo guidance is to use preinstalled browser tooling or report the gap clearly.
+
+## Disabling The Old app.all-hands Path
+
+For a clean Rajistics demo, disable the old app.all-hands Cloud Jira path without deleting it:
+
+1. In Jira admin, open **System -> Webhooks**.
+2. Disable the webhook or rule named like `OpenHands Cloud Integration`.
+3. Leave `OpenHands KAN Task Created` enabled because it points at Rajistics `jira-direct`.
+4. To reverse, re-enable the Cloud webhook or rule.
+
+If the Cloud path is an OpenHands automation instead of a Jira webhook, toggle that automation's `enabled` setting off in app.all-hands and toggle it back on after the demo. Do not delete secrets or credentials for a temporary pause.
 
 ## Not Tested Live
 
 - SRE incident remediation was not run; cloud mutation remains report-only unless `scripts/petstore_gcp_observe.py` reports `diagnosis.safe_to_remediate=true`.
-- QA and review automations are registered but were not live-triggered in this pass.
-- The fresh label-only build automation was registered and preflight-validated, but not live-triggered after cleanup to avoid opening a duplicate PR for issue #1.
+- Review automation was not part of the latest Jira-to-QA pass.

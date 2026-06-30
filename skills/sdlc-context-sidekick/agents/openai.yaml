@@ -1,0 +1,4 @@
+interface:
+  display_name: "SDLC Context Sidekick"
+  short_description: "Scout Jira, docs, logs, and repo context without editing files."
+  default_prompt: "Use the SDLC context sidekick to produce a read-only context brief for this sparse Jira bug."

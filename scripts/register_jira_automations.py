@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Register GitHub OpenHands automations with the prompt preset API."""
+"""Register Jira OpenHands automations with the prompt preset API."""
 
 from __future__ import annotations
 
@@ -14,7 +14,11 @@ from urllib.request import Request, urlopen
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-AUTOMATION_ROOT = REPO_ROOT / "automations" / "github"
+AUTOMATION_ROOT = REPO_ROOT / "automations" / "jira"
+DEFAULTS = {
+    "JIRA_DEMO_PROJECT_KEY": "KAN",
+    "GITHUB_DEMO_REPO_URL": "https://github.com/rajshah4/sdlc-automation-github-demo",
+}
 
 
 def load_env_file(path: Path) -> None:
@@ -26,8 +30,7 @@ def load_env_file(path: Path) -> None:
         key = key.strip()
         if not key or not key.replace("_", "").isalnum():
             continue
-        value = value.strip().strip("'").strip('"')
-        os.environ.setdefault(key, value)
+        os.environ.setdefault(key, value.strip().strip("'").strip('"'))
 
 
 def expand_env(value: Any) -> Any:
@@ -48,12 +51,9 @@ def load_request(spec_path: Path) -> dict[str, Any]:
         "prompt": prompt_path.read_text(encoding="utf-8"),
         "trigger": expand_env(spec["trigger"]),
     }
-    if "timeout" in spec:
-        request["timeout"] = expand_env(spec["timeout"])
-    if "repos" in spec:
-        request["repos"] = expand_env(spec["repos"])
-    if "model" in spec:
-        request["model"] = expand_env(spec["model"])
+    for optional in ("timeout", "repos", "model"):
+        if optional in spec:
+            request[optional] = expand_env(spec[optional])
     return request
 
 
@@ -76,8 +76,11 @@ def post_prompt_preset(host: str, api_key: str, payload: dict[str, Any]) -> dict
         raise RuntimeError(f"OpenHands API returned {exc.code}: {body}") from exc
 
 
-def automation_specs() -> list[Path]:
-    return sorted(AUTOMATION_ROOT.glob("openhands-*/automation.prompt-preset.json"))
+def automation_specs(include: set[str] | None) -> list[Path]:
+    specs = sorted(AUTOMATION_ROOT.glob("jira-to-story*/automation.prompt-preset.json"))
+    if include:
+        specs = [path for path in specs if path.parent.name in include]
+    return specs
 
 
 def main() -> int:
@@ -86,14 +89,17 @@ def main() -> int:
     mode.add_argument("--dry-run", action="store_true", help="print requests without creating automations")
     mode.add_argument("--apply", action="store_true", help="create automations through OpenHands API")
     parser.add_argument("--env-file", type=Path, help="load KEY=value entries without printing values")
-    parser.add_argument("--repository", help="set GITHUB_DEMO_REPOSITORY for this run")
+    parser.add_argument("--include", action="append", help="automation folder to include; repeatable")
+    parser.add_argument("--project-key", help="set JIRA_DEMO_PROJECT_KEY for this run")
     parser.add_argument("--repo-url", help="set GITHUB_DEMO_REPO_URL for this run")
     args = parser.parse_args()
 
     if args.env_file:
         load_env_file(args.env_file)
-    if args.repository:
-        os.environ["GITHUB_DEMO_REPOSITORY"] = args.repository
+    for key, value in DEFAULTS.items():
+        os.environ.setdefault(key, value)
+    if args.project_key:
+        os.environ["JIRA_DEMO_PROJECT_KEY"] = args.project_key
     if args.repo_url:
         os.environ["GITHUB_DEMO_REPO_URL"] = args.repo_url
 
@@ -112,15 +118,13 @@ def main() -> int:
     )
 
     results: list[dict[str, Any]] = []
-    for spec_path in automation_specs():
+    for spec_path in automation_specs(set(args.include or [])):
         payload = load_request(spec_path)
         if dry_run:
-            spec = json.loads(spec_path.read_text(encoding="utf-8"))
             print(
                 json.dumps(
                     {
                         "spec": str(spec_path.relative_to(REPO_ROOT)),
-                        "model": spec.get("model"),
                         "request": payload,
                     },
                     indent=2,
@@ -128,17 +132,14 @@ def main() -> int:
             )
             continue
         if not api_key:
-            print(
-                "OPENHANDS_API_KEY_ORG, OPENHANDS_API_KEY_GITHUB, OPENHANDS_API_KEY_RAJISTICS, or OPENHANDS_API_KEY is required for --apply",
-                file=sys.stderr,
-            )
+            print("An OpenHands API key is required for --apply", file=sys.stderr)
             return 2
         result = post_prompt_preset(host, api_key, payload)
         results.append({"spec": str(spec_path.relative_to(REPO_ROOT)), "result": result})
         print(f"Registered {payload['name']}: {result.get('id', 'unknown-id')}")
 
     if results:
-        output_path = REPO_ROOT / "automation-registration-results.json"
+        output_path = REPO_ROOT / "jira-automation-registration-results.json"
         output_path.write_text(json.dumps(results, indent=2, sort_keys=True), encoding="utf-8")
         print(f"Wrote {output_path}")
     return 0
