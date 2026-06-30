@@ -319,6 +319,18 @@ Timing from the webhook-triggered run:
 | QA label to QA comment | 04:30:15 | 04:34:17 | ~4.0 min |
 | QA automation total | 04:30:15 | 04:35:02 | ~4.8 min |
 
+Viewer-facing step map:
+
+| Step | Conversation | What to point out | Timing cue |
+| --- | --- | --- | --- |
+| Step 0 | Jira launcher automation | Jira webhook event woke OpenHands and launched the visible sidekick run. | This is prompt-preset overhead in the current design. |
+| Step 1 | Parent orchestrator | Groups the child sidekick conversations. | Parent/scout launch began around 04:24:43. |
+| Step 2A | Docs scout | Searches product/wiki context only. | Scouts finish in roughly 1.7-2.1 minutes. |
+| Step 2B | Logs scout | Searches log evidence only. | This makes the log context visible without editing. |
+| Step 2C | Repo scout | Searches implementation/test candidates only. | This makes repo discovery visible before coding. |
+| Step 3 | Main implementation | Uses scout links/briefs, fixes code, adds tests, opens PR, adds `openhands-qa`. | Main child to PR was about 4.5 minutes. |
+| Step 4 | GitHub QA automation | Separate QA conversation validates and comments; humans still review/merge. | QA label to QA comment was about 4.0 minutes. |
+
 What this proves:
 
 - The customer-visible architecture now exists: Jira starts a launcher, the
@@ -329,6 +341,9 @@ What this proves:
   section inside the main implementation conversation.
 - The GitHub QA handoff is working from the PR label and remains human-reviewed:
   QA reports evidence, but does not approve, merge, or deploy.
+- Conversation readability is now part of the design: the launcher is Step 0,
+  the parent is Step 1, the scouts are Step 2A/2B/2C, the main implementation is
+  Step 3, and QA is Step 4.
 
 What still needs optimization:
 
@@ -339,6 +354,9 @@ What still needs optimization:
   after a 90-second scout-result barrier instead of waiting for every scout as a
   hard gate. Completed briefs are passed into the main prompt; still-running
   scouts are passed as links and are collected in the final JSON summary.
+- The launcher JSON now includes a `timing_summary` object so the demo can call
+  out parent readiness, scout duration, main implementation time, and QA handoff
+  without hand-calculating timestamps.
 - KAN-42 then showed an infrastructure failure mode: the run timed out with
   `Sandbox not available` while `sandbox_grouping_strategy` was `NO_GROUPING`.
   Switching the org setting to `FEWEST_CONVERSATIONS` allowed KAN-43 to get a

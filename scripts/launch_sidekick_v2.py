@@ -99,6 +99,12 @@ SCOUTS = (
     ),
 )
 
+SCOUT_DEMO_STEPS = {
+    "docs-scout": ("2A", "Docs Context Scout"),
+    "logs-scout": ("2B", "Logs Context Scout"),
+    "repo-scout": ("2C", "Repo Context Scout"),
+}
+
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -242,15 +248,37 @@ def text_message(text: str, *, run: bool = True) -> dict[str, Any]:
     }
 
 
+def parent_title(ticket: Ticket) -> str:
+    return f"Step 1 - Jira Intake and Sidekick Orchestrator ({ticket.key})"
+
+
+def scout_step(scout_name: str) -> tuple[str, str]:
+    return SCOUT_DEMO_STEPS[scout_name]
+
+
+def scout_title(ticket: Ticket, scout: ScoutSpec) -> str:
+    step, label = scout_step(scout.name)
+    return f"Step {step} - {label} ({ticket.key})"
+
+
+def main_title(ticket: Ticket) -> str:
+    return f"Step 3 - Implement Fix and Open PR ({ticket.key})"
+
+
 def scout_prompt(scout: ScoutSpec, ticket: Ticket) -> str:
     roots = ", ".join(scout.allowed_roots)
-    return f"""You are {scout.name}, a visible read-only side agent for a customer demo.
+    step, label = scout_step(scout.name)
+    return f"""DEMO_STEP {step}: {label}
+
+You are {scout.name}, a visible read-only side agent for a customer demo.
 
 Ticket: {ticket.key}
 Title: {ticket.title}
 Description: {ticket.body or "No description provided."}
 
 Purpose: {scout.purpose}.
+Viewer cue: this conversation should make it obvious that a small side agent is
+only gathering one slice of context before the main implementation agent edits code.
 
 Rules:
 - Read only. Do not change files or external systems.
@@ -261,6 +289,7 @@ Rules:
 
 Return exactly this shape and then stop:
 
+DEMO_STEP {step} COMPLETE: {label}
 SCOUT_RESULT {scout.name}
 FILES_CHECKED:
 - path: one short reason
@@ -276,10 +305,14 @@ CONFIDENCE:
 
 
 def parent_prompt(ticket: Ticket) -> str:
-    return f"""Sidekick V2 orchestration parent for {ticket.key}.
+    return f"""DEMO_STEP 1: Jira Intake and Sidekick Orchestration
+
+Sidekick V2 orchestration parent for {ticket.key}.
 
 This parent groups the visible context scout child conversations for the demo.
 The parent itself should not perform implementation work.
+Viewer cue: open the child conversations to show docs, logs, and repo context
+being searched separately before implementation.
 
 Ticket: {ticket.url}
 Title: {ticket.title}
@@ -294,13 +327,17 @@ def main_prompt(ticket: Ticket, scout_results: list[ConversationResult]) -> str:
         f"## {result.name}\n{result.output.strip() or 'No SCOUT_RESULT extracted.'}"
         for result in scout_results
     )
-    return f"""You are the main Jira-to-PR implementation agent in a sidekick demo.
+    return f"""DEMO_STEP 3: Implement Fix, Add Tests, Open PR
+
+You are the main Jira-to-PR implementation agent in a sidekick demo.
 
 The read-only side agents are searching context in separate conversations. Some
 may already have returned briefs; others may still be running. Do not repeat a
 broad docs/logs/project search. Use completed scout results first, follow any
 linked scout conversations when useful, then inspect only likely implementation
 and test files before editing.
+Viewer cue: this conversation should show the handoff from sidekick context to
+actual code change, tests, PR creation, and QA handoff.
 
 Ticket: {ticket.key}
 Ticket URL: {ticket.url}
@@ -314,13 +351,20 @@ Scout results:
 {scout_briefs}
 
 Workflow:
-1. Load and follow skills/sdlc-story/SKILL.md for the implementation workflow.
-2. Fix the bug indicated by the ticket and scout results.
-3. Add or update tests that would have caught the bug.
-4. Run the relevant tests.
-5. Open a GitHub pull request for review and include the Jira key in the title/body.
-6. Add the openhands-qa label to the pull request so the separate QA agent runs.
-7. If essential context is missing, stop and ask for human input instead of guessing.
+Step 3.1 - Load and follow skills/sdlc-story/SKILL.md for the implementation workflow.
+Step 3.2 - Fix the bug indicated by the ticket and scout results.
+Step 3.3 - Add or update tests that would have caught the bug.
+Step 3.4 - Run the relevant tests.
+Step 3.5 - Open a GitHub pull request for review and include the Jira key in the title/body.
+Step 3.6 - Add the openhands-qa label to the pull request so the separate QA agent runs.
+Step 3.7 - If essential context is missing, stop and ask for human input instead of guessing.
+
+Final response shape:
+DEMO_STEP 3 COMPLETE: PR ready for human review
+- PR: link
+- Tests: commands and result
+- QA handoff: whether openhands-qa was added
+- Human review: what remains for the reviewer
 """
 
 
@@ -502,7 +546,7 @@ def start_one_scout(
     args: argparse.Namespace,
 ) -> StartedScout:
     start_at = utc_now()
-    title = f"Sidekick V2 {ticket.key} {scout.name}"
+    title = scout_title(ticket, scout)
     payload = start_payload(
         title=title,
         message=scout_prompt(scout, ticket),
@@ -545,7 +589,9 @@ def finish_scout(started: StartedScout, timeout_seconds: int) -> ConversationRes
 
 def pending_scout_result(started: StartedScout) -> ConversationResult:
     conversation = get_conversation(started.conversation_id)
+    step, label = scout_step(started.spec.name)
     output = f"""SCOUT_RESULT {started.spec.name}
+DEMO_STEP {step} PENDING: {label}
 FILES_CHECKED:
 - pending: scout was still running when the main implementation started
 EVIDENCE:
@@ -568,9 +614,55 @@ CONFIDENCE:
     )
 
 
+def max_elapsed(values: list[float | None]) -> float | None:
+    numeric = [value for value in values if value is not None]
+    return max(numeric) if numeric else None
+
+
+def min_elapsed(values: list[float | None]) -> float | None:
+    numeric = [value for value in values if value is not None]
+    return min(numeric) if numeric else None
+
+
+def timing_summary(
+    *,
+    started_at: str,
+    finished_at: str,
+    parent: ConversationResult,
+    scout_results: list[ConversationResult],
+    main_result: ConversationResult | None,
+    main_start_barrier_seconds: int,
+) -> dict[str, Any]:
+    scout_finish_values = [result.elapsed_to_finished_seconds for result in scout_results]
+    summary: dict[str, Any] = {
+        "demo_timing_readme": (
+            "Use these numbers to explain whether time was spent in launcher startup, "
+            "sidekick context search, implementation, or QA handoff."
+        ),
+        "total_launcher_elapsed_seconds": seconds_between(started_at, finished_at),
+        "parent_ready_seconds": parent.elapsed_to_ready_seconds,
+        "scout_count": len(scout_results),
+        "scout_fastest_finished_seconds": min_elapsed(scout_finish_values),
+        "scout_slowest_finished_seconds": max_elapsed(scout_finish_values),
+        "main_start_barrier_seconds": main_start_barrier_seconds,
+        "main_elapsed_seconds": main_result.elapsed_to_finished_seconds if main_result else None,
+        "qa_timing_note": (
+            "QA runs in the separate GitHub automation after the main agent adds openhands-qa."
+        ),
+    }
+    if summary["total_launcher_elapsed_seconds"] and not main_result:
+        summary["bottleneck_note"] = "Launcher ended before main implementation ran."
+    elif main_result and main_result.elapsed_to_finished_seconds:
+        summary["bottleneck_note"] = (
+            "Compare main_elapsed_seconds with scout_slowest_finished_seconds to see "
+            "whether implementation or context search dominated the visible run."
+        )
+    return summary
+
+
 def dry_run_payloads(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]:
     parent = start_payload(
-        title=f"Sidekick V2 {ticket.key} orchestrator",
+        title=parent_title(ticket),
         message=parent_prompt(ticket),
         run=False,
         repository=None,
@@ -579,7 +671,7 @@ def dry_run_payloads(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]
     )
     scouts = [
         start_payload(
-            title=f"Sidekick V2 {ticket.key} {scout.name}",
+            title=scout_title(ticket, scout),
             message=scout_prompt(scout, ticket),
             run=True,
             repository=args.repository,
@@ -590,7 +682,7 @@ def dry_run_payloads(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]
         for scout in SCOUTS
     ]
     main = start_payload(
-        title=f"Sidekick V2 {ticket.key} main Jira-to-PR",
+        title=main_title(ticket),
         message=main_prompt(ticket, []),
         run=True,
         repository=args.repository,
@@ -603,10 +695,10 @@ def dry_run_payloads(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]
 
 def run_live(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]:
     started_at = utc_now()
-    parent_title = f"Sidekick V2 {ticket.key} orchestrator"
+    parent_title_value = parent_title(ticket)
     parent_task = start_conversation(
         start_payload(
-            title=parent_title,
+            title=parent_title_value,
             message=parent_prompt(ticket),
             run=False,
             repository=None,
@@ -616,9 +708,9 @@ def run_live(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]:
     )
     parent_ready, parent_started_at = wait_for_ready(parent_task, args.start_timeout_seconds)
     parent_id = parent_ready["app_conversation_id"]
-    update_conversation_title(parent_id, parent_title)
+    update_conversation_title(parent_id, parent_title_value)
     parent_conversation = get_conversation(parent_id)
-    update_conversation_title(parent_id, parent_title)
+    update_conversation_title(parent_id, parent_title_value)
     parent_conversation = get_conversation(parent_id)
     parent = conversation_result(
         "orchestrator",
@@ -667,10 +759,10 @@ def run_live(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]:
 
         main_result = None
         if args.full:
-            main_title = f"Sidekick V2 {ticket.key} main Jira-to-PR"
+            main_title_value = main_title(ticket)
             main_task = start_conversation(
                 start_payload(
-                    title=main_title,
+                    title=main_title_value,
                     message=main_prompt(ticket, scout_results),
                     run=True,
                     repository=args.repository,
@@ -681,9 +773,9 @@ def run_live(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]:
             )
             main_ready, main_started_at = wait_for_ready(main_task, args.start_timeout_seconds)
             main_id = main_ready["app_conversation_id"]
-            update_conversation_title(main_id, main_title)
+            update_conversation_title(main_id, main_title_value)
             main_conversation = wait_for_terminal(main_id, args.main_timeout_seconds)
-            update_conversation_title(main_id, main_title)
+            update_conversation_title(main_id, main_title_value)
             main_conversation = get_conversation(main_id)
             main_result = conversation_result(
                 "main-jira-to-pr",
@@ -711,6 +803,14 @@ def run_live(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]:
         "started_at": started_at,
         "finished_at": finished_at,
         "elapsed_seconds": seconds_between(started_at, finished_at),
+        "timing_summary": timing_summary(
+            started_at=started_at,
+            finished_at=finished_at,
+            parent=parent,
+            scout_results=scout_results,
+            main_result=main_result,
+            main_start_barrier_seconds=args.main_start_barrier_seconds,
+        ),
         "parent": asdict(parent),
         "scouts": [asdict(result) for result in scout_results],
         "main": asdict(main_result) if main_result else None,

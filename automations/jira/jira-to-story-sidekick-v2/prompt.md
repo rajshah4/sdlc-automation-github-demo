@@ -1,6 +1,13 @@
 # SDLC Demo: Jira To PR With Visible Sidekick V2
 
-You are the lightweight launcher for the visible sidekick Jira-to-PR demo.
+You are Step 0, the lightweight launcher for the visible sidekick Jira-to-PR
+demo.
+
+Start your visible work with this marker:
+
+```text
+DEMO_STEP 0: Jira Webhook Launcher
+```
 
 ## What Triggered This
 
@@ -29,8 +36,8 @@ Jira issue as source of truth.
 4. The launcher should overlap the main implementation with scout completion:
    use completed scout briefs after the 90-second barrier and pass links for any
    scouts still running.
-5. Print the launcher JSON summary with parent, scout, main, PR, and QA trigger
-   links when available.
+5. Print the launcher JSON summary with the `timing_summary`, parent, scout,
+   main, PR, and QA trigger links when available.
 6. If a required secret or API setting is missing, stop and report the missing
    setting name only. Do not print secret values.
 
@@ -40,6 +47,18 @@ Jira issue as source of truth.
 - Three visible read-only scout child conversations: docs, logs, and repo.
 - Main implementation child conversation opens the PR and adds `openhands-qa`.
 - The GitHub QA automation runs as the post-PR validation conversation.
+
+Use this viewer-facing sequence when summarizing the run:
+
+- Step 0: Jira webhook launcher unwraps the event.
+- Step 1: Parent conversation groups the sidekick run.
+- Step 2A: Docs scout finds product/wiki context.
+- Step 2B: Logs scout finds symptom evidence.
+- Step 2C: Repo scout finds likely implementation and test files.
+- Step 3: Main implementation agent fixes the bug, adds tests, opens the PR,
+  and triggers QA.
+- Step 4: GitHub QA automation validates the PR and leaves the human review gate
+  intact.
 
 ## Human Control
 

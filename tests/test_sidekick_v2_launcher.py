@@ -42,11 +42,14 @@ def test_dry_run_builds_visible_parent_and_child_scouts() -> None:
     payloads = module.dry_run_payloads(demo_ticket(module), demo_args())
 
     assert payloads["parent"]["initial_message"]["run"] is False
+    assert payloads["parent"]["title"] == (
+        "Step 1 - Jira Intake and Sidekick Orchestrator (KAN-123)"
+    )
     assert len(payloads["scouts"]) == 3
-    assert {payload["title"].split()[-1] for payload in payloads["scouts"]} == {
-        "docs-scout",
-        "logs-scout",
-        "repo-scout",
+    assert {payload["title"] for payload in payloads["scouts"]} == {
+        "Step 2A - Docs Context Scout (KAN-123)",
+        "Step 2B - Logs Context Scout (KAN-123)",
+        "Step 2C - Repo Context Scout (KAN-123)",
     }
     for payload in payloads["scouts"]:
         assert payload["parent_conversation_id"] == "<parent-conversation-id>"
@@ -54,6 +57,10 @@ def test_dry_run_builds_visible_parent_and_child_scouts() -> None:
         assert payload["plugins"] == []
         assert payload["selected_repository"] == "rajshah4/sdlc-automation-github-demo"
         assert payload["selected_branch"] == "sidekick-context-experiment"
+        prompt = payload["initial_message"]["content"][0]["text"]
+        assert "DEMO_STEP 2" in prompt
+        assert "SCOUT_RESULT" in prompt
+    assert payloads["main"]["title"] == "Step 3 - Implement Fix and Open PR (KAN-123)"
 
 
 def test_scout_prompts_are_read_only_and_bounded() -> None:
@@ -62,6 +69,9 @@ def test_scout_prompts_are_read_only_and_bounded() -> None:
 
     for scout in module.SCOUTS:
         prompt = module.scout_prompt(scout, ticket)
+        step, label = module.scout_step(scout.name)
+        assert f"DEMO_STEP {step}: {label}" in prompt
+        assert f"DEMO_STEP {step} COMPLETE: {label}" in prompt
         assert f"SCOUT_RESULT {scout.name}" in prompt
         assert "Read only" in prompt
         assert "Do not change files or external systems" in prompt
@@ -94,6 +104,66 @@ def test_main_prompt_consumes_scout_results_and_triggers_qa_label() -> None:
     assert "Do not repeat a" in prompt
     assert "broad docs/logs/project search" in prompt
     assert "SCOUT_RESULT docs-scout" in prompt
+    assert "DEMO_STEP 3: Implement Fix, Add Tests, Open PR" in prompt
+    assert "DEMO_STEP 3 COMPLETE: PR ready for human review" in prompt
     assert "skills/sdlc-story/SKILL.md" in prompt
     assert "openhands-qa" in prompt
     assert "Open a GitHub pull request" in prompt
+
+
+def test_timing_summary_calls_out_launcher_and_handoff_segments() -> None:
+    module = load_module()
+    parent = module.ConversationResult(
+        name="orchestrator",
+        conversation_id="parent",
+        conversation_url="https://app.replicated.rajistics.com/conversations/parent",
+        start_task_id="parent-task",
+        start_status="READY",
+        execution_status="idle",
+        started_at="2026-06-30T00:00:00+00:00",
+        ready_at="2026-06-30T00:00:10+00:00",
+        finished_at="2026-06-30T00:00:10+00:00",
+        elapsed_to_ready_seconds=10.0,
+        elapsed_to_finished_seconds=10.0,
+    )
+    scout = module.ConversationResult(
+        name="repo-scout",
+        conversation_id="scout",
+        conversation_url="https://app.replicated.rajistics.com/conversations/scout",
+        start_task_id="scout-task",
+        start_status="READY",
+        execution_status="finished",
+        started_at="2026-06-30T00:00:20+00:00",
+        ready_at="2026-06-30T00:00:30+00:00",
+        finished_at="2026-06-30T00:01:20+00:00",
+        elapsed_to_ready_seconds=10.0,
+        elapsed_to_finished_seconds=60.0,
+    )
+    main = module.ConversationResult(
+        name="main-jira-to-pr",
+        conversation_id="main",
+        conversation_url="https://app.replicated.rajistics.com/conversations/main",
+        start_task_id="main-task",
+        start_status="READY",
+        execution_status="finished",
+        started_at="2026-06-30T00:01:30+00:00",
+        ready_at="2026-06-30T00:01:40+00:00",
+        finished_at="2026-06-30T00:04:00+00:00",
+        elapsed_to_ready_seconds=10.0,
+        elapsed_to_finished_seconds=150.0,
+    )
+
+    summary = module.timing_summary(
+        started_at="2026-06-30T00:00:00+00:00",
+        finished_at="2026-06-30T00:04:10+00:00",
+        parent=parent,
+        scout_results=[scout],
+        main_result=main,
+        main_start_barrier_seconds=90,
+    )
+
+    assert summary["total_launcher_elapsed_seconds"] == 250.0
+    assert summary["parent_ready_seconds"] == 10.0
+    assert summary["scout_slowest_finished_seconds"] == 60.0
+    assert summary["main_elapsed_seconds"] == 150.0
+    assert "QA runs in the separate GitHub automation" in summary["qa_timing_note"]
