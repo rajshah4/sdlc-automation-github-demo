@@ -344,6 +344,8 @@ What this proves:
 - Conversation readability is now part of the design: the launcher is Step 0,
   the parent is Step 1, the scouts are Step 2A/2B/2C, the main implementation is
   Step 3, and QA is Step 4.
+- The current live v2 registration for that step-labeled path is
+  `add32647-efc4-42ef-adc1-93c5db211991`.
 
 What still needs optimization:
 

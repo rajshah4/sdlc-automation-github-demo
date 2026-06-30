@@ -42,7 +42,7 @@ Prompt-preset automations are registered with the Rajistics Enterprise Org API k
 | Work cell | Automation ID | Model profile | Trigger |
 | --- | --- | --- | --- |
 | `jira-to-story` | `a22f4cfd-d194-4566-b773-89fc903fd9d6` | `Bedrock-Claude-Sonnet-4-5-fast` | `jira:issue_created` from `jira-direct` |
-| `jira-to-story-sidekick-v2` | `3ed7bd14-e35a-4fb4-b111-2efc0c739f1d` | `Bedrock-Claude-Sonnet-4-5-fast` | `jira:issue_created` from `jira-direct`, label `sidekick-v2` |
+| `jira-to-story-sidekick-v2` | `add32647-efc4-42ef-adc1-93c5db211991` | `Bedrock-Claude-Sonnet-4-5-fast` | `jira:issue_created` from `jira-direct`, label `sidekick-v2` |
 | `openhands-build` | `1d97b79d-7bb6-4b67-969d-7f0182c416a5` | `Bedrock-Claude-Sonnet-4-5` | `issues.labeled` |
 | `openhands-incident` | `bbff1a54-fe12-43fd-85b6-b1add7f6ca84` | `Bedrock-Claude-Sonnet-4-5` | `issues.labeled` |
 | `openhands-qa` | `b3192e16-171a-4ec3-8028-9514a7f372fe` | `Bedrock-Claude-Sonnet-4-5-fast` | `pull_request.labeled`, `issues.labeled` |
@@ -233,8 +233,9 @@ Follow-up sidekick-v2 checks on 2026-06-30 UTC:
 - The v2 prompt was corrected to use the Jira webhook payload summary and
   description directly, avoiding the extra Jira API env dependency. The old v2
   automation `ca0ddf76-bafe-4c3e-803a-1612eaed74de` was disabled and the
-  corrected v2 automation `3ed7bd14-e35a-4fb4-b111-2efc0c739f1d` is now the
-  expected label-gated path.
+  corrected v2 automation `3ed7bd14-e35a-4fb4-b111-2efc0c739f1d` was later
+  replaced by the step-labeled v2 automation
+  `add32647-efc4-42ef-adc1-93c5db211991`.
 - KAN-44 was created against the corrected v2 automation as run
   `5c5c528d-882e-400d-8cf2-57748443a6e1`. The run completed after roughly 15.3
   minutes with no `conversation_id`, no error detail, and no KAN-44 PR. During
