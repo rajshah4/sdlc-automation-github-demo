@@ -2,6 +2,9 @@
 
 This folder contains browser-oriented QA examples for the static Petstore UI.
 
+For the customer-facing prebuilt UI/Playwright demo pointer, see
+`docs/ui-playwright-example.md`.
+
 ## Playwright Example
 
 `catalog-search.playwright.mjs` drives the real browser UI and produces the

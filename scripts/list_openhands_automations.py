@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""List recent OpenHands automation runs without printing secrets."""
+"""List OpenHands automations without printing prompts or secrets."""
 
 from __future__ import annotations
 
@@ -23,10 +23,9 @@ def load_env_file(path: Path) -> None:
         os.environ.setdefault(key, value.strip().strip("'").strip('"'))
 
 
-def get_runs(host: str, api_key: str, automation_id: str, limit: int) -> dict[str, Any]:
-    endpoint = host.rstrip("/") + f"/api/automation/v1/{automation_id}/runs?limit={limit}"
+def api_get(host: str, api_key: str, path: str) -> dict[str, Any]:
     request = Request(
-        endpoint,
+        host.rstrip("/") + path,
         headers={"Authorization": f"Bearer {api_key}"},
         method="GET",
     )
@@ -34,27 +33,38 @@ def get_runs(host: str, api_key: str, automation_id: str, limit: int) -> dict[st
         return json.loads(response.read().decode("utf-8"))
 
 
-def summarize(payload: dict[str, Any]) -> list[dict[str, Any]]:
-    runs = payload.get("runs") or payload.get("data") or payload.get("items") or []
-    summary = []
-    for run in runs:
-        summary.append(
-            {
-                "id": run.get("id") or run.get("run_id"),
-                "status": run.get("status"),
-                "created_at": run.get("created_at"),
-                "started_at": run.get("started_at"),
-                "completed_at": run.get("completed_at"),
-            }
-        )
-    return summary
+def extract_items(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    for key in ("items", "data", "automations"):
+        value = payload.get(key)
+        if isinstance(value, list):
+            return value
+    if isinstance(payload, list):
+        return payload
+    return []
+
+
+def summarize(automation: dict[str, Any]) -> dict[str, Any]:
+    trigger = automation.get("trigger") or {}
+    return {
+        "id": automation.get("id"),
+        "name": automation.get("name"),
+        "enabled": automation.get("enabled"),
+        "model": automation.get("model"),
+        "timeout": automation.get("timeout"),
+        "trigger": {
+            "type": trigger.get("type"),
+            "source": trigger.get("source"),
+            "on": trigger.get("on"),
+            "filter": trigger.get("filter"),
+        },
+    }
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--env-file", type=Path, help="load KEY=value entries without printing values")
-    parser.add_argument("--automation-id", required=True)
-    parser.add_argument("--limit", type=int, default=10)
+    parser.add_argument("--limit", type=int, default=100)
+    parser.add_argument("--details", action="store_true", help="fetch each automation by id before summarizing")
     args = parser.parse_args()
 
     if args.env_file:
@@ -75,7 +85,12 @@ def main() -> int:
     if not api_key:
         raise SystemExit("OPENHANDS_API_KEY_ORG, OPENHANDS_API_KEY_GITHUB, OPENHANDS_API_KEY_RAJISTICS, or OPENHANDS_API_KEY is required")
 
-    print(json.dumps(summarize(get_runs(host, api_key, args.automation_id, args.limit)), indent=2))
+    payload = api_get(host, api_key, f"/api/automation/v1?limit={args.limit}")
+    items = extract_items(payload)
+    if args.details:
+        items = [api_get(host, api_key, f"/api/automation/v1/{item['id']}") for item in items if item.get("id")]
+
+    print(json.dumps([summarize(item) for item in items], indent=2, sort_keys=True))
     return 0
 
 

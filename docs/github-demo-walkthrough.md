@@ -76,7 +76,8 @@ OpenHands should run or add focused tests, exercise the changed behavior, map re
 
 For a concrete browser-evidence example, show:
 
-- `app/web/tests/catalog-search.playwright.mjs`
+- `docs/ui-playwright-example.md`
+- PR #6, `Add adoption fee filter to Petstore UI`
 - the PR QA comment with an inline GIF
 - PR-branch artifact links for the screenshot, video, and report
 

@@ -16,5 +16,5 @@
     }
   ],
   "timeout": 600,
-  "llm_profile": "sdlc-review"
+  "model": "Bedrock-Claude-Haiku-4-5"
 }
