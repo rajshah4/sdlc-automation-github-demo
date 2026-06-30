@@ -208,6 +208,7 @@ def check_env(failures: list[str]) -> None:
         ("JIRA_DEMO_PROJECT_KEY",),
         ("GITHUB_DEMO_REPOSITORY",),
         ("GITHUB_DEMO_REPO_URL",),
+        ("GITHUB_TOKEN",),
     ]
     missing = [" or ".join(group) for group in required_groups if not env_first(*group)]
     if missing:
@@ -249,6 +250,24 @@ def check_jira(failures: list[str]) -> None:
 
 def check_github(failures: list[str]) -> None:
     repo = os.environ["GITHUB_DEMO_REPOSITORY"]
+    token_headers = {
+        "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+    http_json("https://api.github.com/user", token_headers)
+    token_repository = http_json(
+        f"https://api.github.com/repos/{quote(repo, safe='/')}",
+        token_headers,
+    )
+    if token_repository.get("full_name") != repo:
+        fail(
+            failures,
+            f"GITHUB_TOKEN repo lookup returned {token_repository.get('full_name')!r}",
+        )
+    else:
+        ok("GITHUB_TOKEN can access the demo repository")
+
     repository = gh_json(f"repos/{repo}")
     if repository.get("full_name") != repo:
         fail(failures, f"GitHub repo lookup returned {repository.get('full_name')!r}")

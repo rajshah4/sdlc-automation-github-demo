@@ -158,6 +158,13 @@ def openhands_api_key() -> str:
     return value
 
 
+def github_token() -> str:
+    value = os.getenv("GITHUB_TOKEN", "")
+    if not value:
+        raise SystemExit("Missing required setting: GITHUB_TOKEN")
+    return value
+
+
 def app_headers() -> dict[str, str]:
     return {
         "X-Access-Token": openhands_api_key(),
@@ -198,6 +205,32 @@ def http_json(
                 continue
             raise RuntimeError(f"{method} {path} returned HTTP {exc.code}: {detail[:500]}") from exc
     raise RuntimeError(f"{method} {path} failed after retries")
+
+
+def verify_github_token(repository: str) -> None:
+    token = github_token()
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+    checks = [
+        ("GitHub /user", "https://api.github.com/user"),
+        (
+            "GitHub repository access",
+            f"https://api.github.com/repos/{quote(repository, safe='/')}",
+        ),
+    ]
+    for label, url in checks:
+        request = Request(url, headers=headers, method="GET")
+        try:
+            with urlopen(request, timeout=30) as response:
+                response.read()
+        except HTTPError as exc:
+            exc.read()
+            raise SystemExit(
+                f"Invalid required setting: GITHUB_TOKEN ({label} HTTP {exc.code})"
+            ) from exc
 
 
 def jira_headers() -> dict[str, str]:
@@ -345,7 +378,9 @@ Step 3.2 - Create the implementation branch from origin/main before editing. The
 Step 3.3 - Fix the bug indicated by the ticket and scout results.
 Step 3.4 - Add or update tests that would have caught the bug.
 Step 3.5 - Run the relevant tests.
-Step 3.6 - Open a GitHub pull request for review and include the Jira key in the title/body.
+Step 3.6 - Use runtime secret GITHUB_TOKEN for GitHub auth. Do not use GITHUB
+           or GH_TOKEN. Open a GitHub pull request for review and include the
+           Jira key in the title/body.
            Preserve useful ticket title prefixes such as [UI] in the PR title.
 Step 3.7 - Add the openhands-qa label to the pull request so the separate QA agent runs.
 Step 3.8 - If essential context is missing, stop and ask for human input instead of guessing.
@@ -846,6 +881,8 @@ def main() -> int:
     if args.dry_run:
         print(json.dumps(dry_run_payloads(ticket, args), indent=2, sort_keys=True))
         return 0
+    if args.full:
+        verify_github_token(args.repository)
     result = run_live(ticket, args)
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0

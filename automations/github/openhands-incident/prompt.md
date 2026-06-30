@@ -34,3 +34,4 @@ Humans approve incident scope, production actions, PRs, merges, deployments, and
 ## Cost And Security Notes
 
 Event-driven incident triage avoids polling and unnecessary LLM calls. Deterministic scripts such as `scripts/petstore_gcp_observe.py` should gather evidence before broad reasoning. Different LLM profiles can be used for ops triage versus code repair. Runtime remediation is bounded by deterministic `safe_to_remediate` checks and human control.
+Use `GITHUB_TOKEN` for GitHub auth; do not use a secret named `GITHUB`.

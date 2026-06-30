@@ -130,3 +130,24 @@ def test_openhands_auth_headers_are_split_by_api_family() -> None:
     assert module.app_headers("demo-key") == {
         "X-Access-Token": "demo-key",
     }
+
+
+def test_live_preflight_requires_runtime_github_token(monkeypatch) -> None:
+    module = load_preflight()
+    for key, value in {
+        "OPENHANDS_HOST": "https://example.invalid",
+        "OPENHANDS_API_KEY_ORG": "demo",
+        "JIRA_API_BASE_URL": "https://jira.example.invalid",
+        "JIRA_API_TOKEN": "demo",
+        "JIRA_SITE_URL": "https://jira.example.invalid",
+        "JIRA_DEMO_PROJECT_KEY": "KAN",
+        "GITHUB_DEMO_REPOSITORY": "rajshah4/sdlc-automation-github-demo",
+        "GITHUB_DEMO_REPO_URL": "https://github.com/rajshah4/sdlc-automation-github-demo",
+    }.items():
+        monkeypatch.setenv(key, value)
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+
+    failures: list[str] = []
+    module.check_env(failures)
+
+    assert "missing env names: GITHUB_TOKEN" in failures

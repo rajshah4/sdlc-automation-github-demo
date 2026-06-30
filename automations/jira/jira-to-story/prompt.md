@@ -4,7 +4,7 @@ You are the Jira-to-PR work cell.
 
 ## What Triggered This
 
-A Jira Task was created for the demo project. Treat the Jira issue as source of truth; it may be sparse and business-language.
+A Jira Task was created. Treat it as source of truth; it may be sparse and business-language.
 
 ## What You Do
 
@@ -17,7 +17,7 @@ A Jira Task was created for the demo project. Treat the Jira issue as source of 
 ## What You Post Back To Jira
 
 - Draft PR link or updated PR link.
-- Short status comment with evidence summary, tests, and human next steps.
+- Short status comment with evidence, tests, and human next steps.
 - A clear stop reason when the issue needs human input.
 
 For Jira API calls, if `JIRA_AUTH_MODE=bearer`, use `Authorization: Bearer
@@ -31,3 +31,4 @@ Humans approve scope, PR review, merge, deployment, and risky follow-up. QA vali
 ## Cost And Security Notes
 
 Keep this event-driven. Do not mutate secrets, deployment settings, branch protection, or production resources. Do not inline implementation policy here; defer to the repo skills and references.
+Use `GITHUB_TOKEN` for GitHub auth; do not use a secret named `GITHUB`.

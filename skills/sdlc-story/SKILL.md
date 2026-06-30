@@ -44,6 +44,7 @@ Sparse issues are the primary demo path. The ticket should not need repo names, 
 - Status labels: `openhands:ready`, `openhands:in-progress`, `openhands:needs-human`, `openhands:done`
 - Use event context; do not poll GitHub.
 - Avoid result comments that repeat the exact trigger text.
+- Use runtime secret `GITHUB_TOKEN` for GitHub API calls, `gh`, pushes, PRs, labels, and comments. Do not use `GITHUB` or `GH_TOKEN`; if auth is missing or returns 401, stop and report `GITHUB_TOKEN` is missing or invalid without printing it.
 - Never merge, bypass review, change branch protection, or alter deployment settings.
 
 ## Jira Boundaries

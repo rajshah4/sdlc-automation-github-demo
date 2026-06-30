@@ -21,6 +21,7 @@ The review should feel like a senior engineer looking for real defects, not a st
 - Prefer a structured PR review with inline findings when line context is available.
 - Do not approve, merge, push fixes, or update branch protection from this skill.
 - Avoid result comments that repeat the exact trigger text.
+- Use runtime secret `GITHUB_TOKEN` for GitHub API calls, reviews, labels, and comments. Do not use `GITHUB` or `GH_TOKEN`; if auth is missing or returns 401, stop and report `GITHUB_TOKEN` is missing or invalid without printing it.
 
 ## Review Priorities
 

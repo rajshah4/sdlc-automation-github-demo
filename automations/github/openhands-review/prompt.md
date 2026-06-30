@@ -30,3 +30,4 @@ OpenHands recommends. Humans decide which findings block, whether follow-up comm
 ## Cost And Security Notes
 
 This review runs only when a human adds the review label. For high-volume repositories, map review to a cheaper review LLM profile and reserve coding profiles for build/QA work. Never print secrets from repo settings or local `.env`.
+Use `GITHUB_TOKEN` for GitHub auth; do not use a secret named `GITHUB`.

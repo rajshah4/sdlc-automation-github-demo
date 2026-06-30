@@ -39,3 +39,7 @@ label starts validation; it does not approve or merge.
 
 Make `CONTEXT_SCOUT_FANOUT` and `CONTEXT_BRIEF` easy to find in the conversation
 log. Record the conversation and run IDs for comparison.
+
+## Cost And Security Notes
+
+Use `GITHUB_TOKEN` for GitHub auth; do not use a secret named `GITHUB`.

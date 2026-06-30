@@ -170,6 +170,8 @@ def test_main_prompt_consumes_scout_results_and_triggers_qa_label() -> None:
     assert "skills/sdlc-story/SKILL.md" in prompt
     assert "Create the implementation branch from origin/main" in prompt
     assert "git log --oneline origin/main..HEAD" in prompt
+    assert "GITHUB_TOKEN" in prompt
+    assert "Do not use GITHUB" in prompt
     assert "openhands-qa" in prompt
     assert "Open a GitHub pull request" in prompt
 

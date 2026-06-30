@@ -10,6 +10,8 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
 - Public OpenHands GitHub App is not also installed on the same repo.
 - Labels from `.github/labels.json` are present.
 - GitHub App permissions allow reading issues/PRs, posting comments, creating branches, creating PRs, reading checks, and updating labels.
+- Enterprise runtime secret `GITHUB_TOKEN` is set and valid for the demo repo.
+  The automations do not use a secret named `GITHUB`.
 ## OpenHands / Rajistics
 
 - `OPENHANDS_HOST_GITHUB` points at the self-hosted app URL, usually `https://app.<base_domain>`.
@@ -18,8 +20,8 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
   `python3 scripts/preflight_live_connections.py --env-file /Users/rajiv.shah/Code/install_replicate/.env --mode main`
 - Before the sidekick A/B timing demo, switch automation state intentionally and
   run: `python3 scripts/preflight_live_connections.py --env-file /Users/rajiv.shah/Code/install_replicate/.env --mode sidekick-experiment`
-- Before the visible sidekick customer demo, keep the normal Jira automation and
-  `sidekick-v2` automation enabled, then run:
+- Before the visible sidekick customer demo, disable the normal Jira automation,
+  enable the `sidekick-v2` automation, then run:
   `python3 scripts/preflight_live_connections.py --env-file /Users/rajiv.shah/Code/install_replicate/.env --mode sidekick-v2`
   This mode now also checks `/api/v1/app-conversations/search`; the visible
   sidekick demo is not ready if that endpoint returns `BearerTokenError`, even

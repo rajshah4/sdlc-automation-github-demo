@@ -50,3 +50,4 @@ Humans decide whether QA evidence is sufficient and whether to merge. OpenHands 
 
 Use deterministic tests and scripts before spending exploratory LLM calls. For expensive UI QA, keep the scope to changed behavior. Do not run `pip install` during the demo; use existing dependencies or report the gap. Secrets stay out of the repo and out of screenshots/logs.
 Do not install Playwright during the live automation run. Use preinstalled Playwright/BrowserToolSet when available; otherwise report the missing browser capability and run fallback checks.
+Use `GITHUB_TOKEN` for GitHub auth; do not use a secret named `GITHUB`.

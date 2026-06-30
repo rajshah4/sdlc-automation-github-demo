@@ -31,3 +31,7 @@ label starts validation; it does not approve or merge.
 
 This is the single-agent control. Do not run a separate context-sidekick step.
 Record the conversation and run IDs for comparison.
+
+## Cost And Security Notes
+
+Use `GITHUB_TOKEN` for GitHub auth; do not use a secret named `GITHUB`.

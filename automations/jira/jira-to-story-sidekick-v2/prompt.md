@@ -12,53 +12,27 @@ DEMO_STEP 0: Jira Webhook Launcher
 ## What Triggered This
 
 A Jira Task labeled `sidekick-v2` was created for the demo project. Treat the
-Jira issue as source of truth.
+Jira webhook payload as source of truth.
 
 ## What You Do
 
-1. Determine the Jira issue key, summary, and plain-text description from the
-   webhook payload.
-2. Do not implement the code change yourself.
-3. Run the V2 launcher from the cloned repo exactly once. Use the webhook
-   payload fields directly; do not call Jira from the launcher path.
+1. Load and follow `skills/sdlc-sidekick-launcher/SKILL.md`.
+2. Use the webhook payload fields directly.
+3. Run the sidekick launcher exactly once.
+4. Do not implement the code change yourself.
+5. Print the complete launcher JSON summary in your final response.
 
-   Do not inspect the launcher script first. Do not run a dry run first. Do not
-   pipe the command to `head`, `tail`, `tee`, or any other truncating command. Do
-   not rerun the launcher after partial output. The launcher owns the visible
-   scout and implementation conversations, and rerunning it creates duplicate
-   scouts and implementation agents.
+## Cost And Security Notes
 
-   ```bash
-   export OPENHANDS_HOST="${OPENHANDS_HOST:-https://app.replicated.rajistics.com}"
-   export OPENHANDS_API_KEY_ORG="${OPENHANDS_API_KEY_ORG:-${OPENHANDS_API_KEY:-}}"
-   test -n "${OPENHANDS_API_KEY_ORG}" || { echo "Missing required setting: OPENHANDS_API_KEY_ORG"; exit 1; }
-
-   python3 scripts/launch_sidekick_v2.py \
-     --jira-key <ISSUE_KEY> \
-     --title "<ISSUE_SUMMARY>" \
-     --body "<ISSUE_DESCRIPTION_PLAIN_TEXT>" \
-     --full \
-     --scout-model litellm_proxy/us.anthropic.claude-haiku-4-5-20251001-v1:0 \
-     --scout-timeout-seconds 180 \
-     --main-start-barrier-seconds 90 \
-     --main-timeout-seconds 900
-   ```
-
-4. The launcher should overlap the main implementation with scout completion:
-   use completed scout briefs after the 90-second barrier and pass links for any
-   scouts still running.
-5. Print the complete launcher JSON summary in your final response. Include the
-   `timing_summary` plus the direct scout, main, PR, and QA trigger links when
-   available. The Step 0 response is the visible index for the demo.
-6. If a required secret or API setting is missing, stop and report the missing
-   setting name only. Do not print secret values.
+Runtime secrets and `GITHUB_TOKEN` validation are handled by the launcher skill
+and script. Do not use `GITHUB` or `GH_TOKEN`. Do not print secret values.
 
 ## Expected Demo Shape
 
 - Step 0 launcher conversation prints the index and timing summary.
-- Three visible read-only scout conversations: docs, logs, and repo. These
-  scouts run on Haiku because they are bounded context search agents.
-- Main implementation conversation opens the PR and adds `openhands-qa`.
+- Three visible read-only scout conversations search docs, logs, and repo.
+- Main implementation conversation fixes the bug, opens the PR, and adds
+  `openhands-qa`.
 - The GitHub QA automation runs as the post-PR validation conversation.
 
 Use this viewer-facing sequence when summarizing the run:
