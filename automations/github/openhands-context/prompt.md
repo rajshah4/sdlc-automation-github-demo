@@ -32,6 +32,8 @@ Post a concise issue comment with:
 
 When permissions allow, update status labels from `openhands:ready` or `openhands:in-progress` to `openhands:done` or `openhands:needs-human`.
 
+For GitHub REST writeback, use `GITHUB_TOKEN` when present and `GITHUB` as the fallback secret name. Never print token values, token previews, authorization headers, or raw environment dumps. If no usable GitHub credential is available, finish the scout report in the OpenHands conversation and say that GitHub writeback needs secret configuration.
+
 ## Human Control
 
 Humans decide whether to proceed to `openhands-build`, `openhands-review`, `openhands-qa`, or `openhands-incident`. This work cell does not merge, deploy, mutate secrets, change branch protection, or perform production actions.
