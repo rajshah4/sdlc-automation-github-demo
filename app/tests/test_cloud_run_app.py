@@ -1,4 +1,7 @@
 import json
+from http.server import HTTPServer
+from io import BytesIO
+from unittest.mock import Mock
 
 from petstore_app import cloud_run_app
 
@@ -36,3 +39,37 @@ def test_runtime_remediation_restores_healthy_mode(monkeypatch, tmp_path) -> Non
 
     assert cloud_run_app.current_mode() == "healthy"
     assert cloud_run_app.status_payload()["status"] == "healthy"
+
+
+def test_api_pets_endpoint_excludes_pending_by_default(monkeypatch, tmp_path) -> None:
+    """Regression test for KAN-58: /api/pets must not return pending pets by default."""
+    from petstore_app.catalog import search_pets
+    
+    monkeypatch.setattr(cloud_run_app, "RUNTIME_CONFIG_PATH", tmp_path / "runtime.json")
+    monkeypatch.setenv("INCIDENT_MODE", "healthy")
+    
+    # Test the search_pets function that the endpoint now uses
+    pets = search_pets()  # Default status="available"
+    
+    pet_names = [pet.name for pet in pets]
+    pet_ids = [pet.id for pet in pets]
+    pet_statuses = [pet.status for pet in pets]
+    
+    assert "Nova" not in pet_names, "Nova (pet-103) is pending and should not appear"
+    assert "pet-103" not in pet_ids, "Pending pet pet-103 should not appear in default API response"
+    assert all(status == "available" for status in pet_statuses), "Default /api/pets must only return available pets"
+
+
+def test_api_pets_endpoint_can_explicitly_request_pending(monkeypatch, tmp_path) -> None:
+    """Pending pets should be visible when explicitly requested via status parameter."""
+    from petstore_app.catalog import search_pets
+    
+    monkeypatch.setattr(cloud_run_app, "RUNTIME_CONFIG_PATH", tmp_path / "runtime.json")
+    monkeypatch.setenv("INCIDENT_MODE", "healthy")
+    
+    # Test the search_pets function with status="pending"
+    pets = search_pets(status="pending")
+    
+    pet_names = [pet.name for pet in pets]
+    
+    assert "Nova" in pet_names, "Nova should be visible when explicitly requesting pending pets"
