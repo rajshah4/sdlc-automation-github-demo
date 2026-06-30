@@ -3,6 +3,15 @@ import pytest
 from petstore_app.catalog import search_pets
 
 
+def test_search_pets_default_excludes_pending() -> None:
+    """Default search returns only available pets, excluding pending ones like Nova."""
+    results = search_pets()
+
+    assert len(results) == 3
+    assert all(pet.status == "available" for pet in results)
+    assert "Nova" not in [pet.name for pet in results]
+
+
 def test_search_pets_filters_by_species_and_status() -> None:
     results = search_pets(species="dog")
 

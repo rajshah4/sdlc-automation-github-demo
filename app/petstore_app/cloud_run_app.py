@@ -15,7 +15,7 @@ from typing import Any
 from urllib.parse import parse_qs, urlparse
 
 from .adoptions import create_adoption_order
-from .catalog import PETS, Pet
+from .catalog import PETS, Pet, search_pets
 from .telemetry import adoption_validation_error_event
 
 APP_NAME = os.getenv("APP_NAME", "sdlc-automation-petstore")
@@ -92,7 +92,7 @@ def incident() -> dict[str, Any] | None:
 def visible_pets() -> list[Pet]:
     if current_mode() == INCIDENT_MODE:
         return list(PETS)
-    return [pet for pet in PETS if pet.status == "available"]
+    return search_pets()
 
 
 def pet_to_dict(pet: Pet) -> dict[str, Any]:
