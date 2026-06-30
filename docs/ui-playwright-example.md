@@ -1,7 +1,7 @@
 # Prebuilt UI And Playwright Example
 
-Use this page when you want to show the richer browser-QA path without making
-the live Jira demo depend on Playwright being installed in the Rajistics
+Use this page as the prepared UI example for the richer browser-QA path. The
+live Jira demo should not depend on Playwright being installed in the Rajistics
 automation runtime.
 
 ## Recommended Demo Split

@@ -24,6 +24,10 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
 - For visible sidekick runs, keep `sandbox_grouping_strategy` at
   `FEWEST_CONVERSATIONS`; with `NO_GROUPING`, KAN-42 failed before useful work
   with `Timed out: Sandbox not available`.
+- For timed customer demos, measure the Jira-to-PR path. QA only needs to kick
+  off through the `openhands-qa` label and show a separate Enterprise QA
+  run/conversation. Use `docs/ui-playwright-example.md` as the prebuilt UI and
+  Playwright evidence path.
 - For the Rajistics Replicated instance, verify the app URL, GitHub App slug, client ID, app ID, webhook secret, and private key are configured in the Replicated admin console.
 - GitHub sign-in works in OpenHands.
 - Repo search works in OpenHands.

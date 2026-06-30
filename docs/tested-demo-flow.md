@@ -57,7 +57,11 @@ python3 scripts/list_openhands_automation_runs.py \
   --limit 5
 ```
 
-The Jira automation opens or updates a draft PR and adds `openhands-qa`. That label intentionally starts a second QA conversation. Humans still approve review, merge, deployment, and production-facing changes.
+The Jira automation opens or updates a draft PR and adds `openhands-qa`. That
+label intentionally starts a second QA conversation. For the live demo, QA is a
+handoff check, not a stopwatch metric: show that the Enterprise QA automation
+starts and reports back, then keep human review, merge, deployment, and
+production-facing changes under human control.
 
 For the visible multi-agent customer demo, create the Jira Task with label
 `sidekick-v2`. The normal Jira automation excludes that label and the
@@ -214,8 +218,9 @@ Visible Sidekick V2 live result on 2026-06-30 UTC:
 
 Timing: Jira automation run to PR opened was about 7.3 minutes. The visible
 sidekick tree to PR opened was about 5.4 minutes. The main implementation child
-to PR opened was about 4.5 minutes. QA label to QA comment was about 4.0
-minutes. This proves the customer-visible architecture, but the prompt-preset
+to PR opened was about 4.5 minutes. QA was not timed; the useful demo signal is
+that the `openhands-qa` label started the separate QA automation and PR comment
+path. This proves the customer-visible architecture, but the prompt-preset
 launcher still adds enough overhead that a strict five-minute Jira-to-PR demo
 should use the normal path or a future deterministic custom launcher.
 
@@ -245,9 +250,15 @@ Follow-up sidekick-v2 checks on 2026-06-30 UTC:
 
 ## Playwright Status
 
-PR #36 is mostly a backend/catalog-filter fix. It has user-visible impact, but it does not add a new UI control. The QA conversation therefore ran backend/API checks plus static UI validation.
+PR #36 is mostly a backend/catalog-filter fix. It has user-visible impact, but
+it does not add a new UI control. The QA conversation therefore ran backend/API
+checks plus static UI validation.
 
-The automation runtime did not have Playwright available, so QA correctly reported fallback evidence instead of claiming browser coverage. To show the full Playwright artifact path, use one of these options:
+The automation runtime did not have Playwright available, so QA correctly
+reported fallback evidence instead of claiming browser coverage. For the
+customer demo, treat browser evidence as a prepared example, not a dependency of
+the live Jira bug run. To show the full Playwright artifact path, use one of
+these options:
 
 - Point to the prebuilt UI example in `docs/ui-playwright-example.md`, especially PR #6.
 - Preinstall Playwright or expose BrowserToolSet in the Rajistics automation runtime before the demo.
