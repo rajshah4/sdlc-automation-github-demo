@@ -23,6 +23,10 @@ Jira issue as source of truth.
    directly; do not call Jira from the launcher path.
 
    ```bash
+   export OPENHANDS_HOST="${OPENHANDS_HOST:-https://app.replicated.rajistics.com}"
+   export OPENHANDS_API_KEY_ORG="${OPENHANDS_API_KEY_ORG:-${OPENHANDS_API_KEY:-}}"
+   test -n "${OPENHANDS_API_KEY_ORG}" || { echo "Missing required setting: OPENHANDS_API_KEY_ORG"; exit 1; }
+
    python3 scripts/launch_sidekick_v2.py \
      --jira-key <ISSUE_KEY> \
      --title "<ISSUE_SUMMARY>" \

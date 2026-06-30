@@ -38,16 +38,12 @@ DEFAULTS = {
 @dataclass(frozen=True)
 class AutomationIds:
     jira_main: str
-    jira_control: str
-    jira_sidekick: str
     jira_sidekick_v2: str
     github_qa: str
 
 
 DEFAULT_AUTOMATION_IDS = AutomationIds(
     jira_main="7f63aad8-ae78-483d-9296-223869dc239d",
-    jira_control="a37f7bf9-fa58-4751-953d-ecda962ebf3d",
-    jira_sidekick="35dcd21c-0ad0-4011-9504-1ef7b1c72914",
     jira_sidekick_v2="86d4c0a4-cdf7-4f74-92ee-4ef51db391c7",
     github_qa="96b8ad90-bdb4-42ba-81f8-0cabf059bd6a",
 )
@@ -116,12 +112,6 @@ def gh_json(path: str) -> Any:
 def automation_ids_from_env() -> AutomationIds:
     return AutomationIds(
         jira_main=os.getenv("JIRA_MAIN_AUTOMATION_ID", DEFAULT_AUTOMATION_IDS.jira_main),
-        jira_control=os.getenv(
-            "JIRA_CONTROL_AUTOMATION_ID", DEFAULT_AUTOMATION_IDS.jira_control
-        ),
-        jira_sidekick=os.getenv(
-            "JIRA_SIDEKICK_AUTOMATION_ID", DEFAULT_AUTOMATION_IDS.jira_sidekick
-        ),
         jira_sidekick_v2=os.getenv(
             "JIRA_SIDEKICK_V2_AUTOMATION_ID",
             DEFAULT_AUTOMATION_IDS.jira_sidekick_v2,
@@ -134,24 +124,12 @@ def expected_automation_states(mode: str, ids: AutomationIds) -> dict[str, bool]
     if mode == "main":
         return {
             ids.jira_main: True,
-            ids.jira_control: False,
-            ids.jira_sidekick: False,
-            ids.jira_sidekick_v2: True,
-            ids.github_qa: True,
-        }
-    if mode == "sidekick-experiment":
-        return {
-            ids.jira_main: False,
-            ids.jira_control: True,
-            ids.jira_sidekick: True,
             ids.jira_sidekick_v2: False,
             ids.github_qa: True,
         }
     if mode == "sidekick-v2":
         return {
-            ids.jira_main: True,
-            ids.jira_control: False,
-            ids.jira_sidekick: False,
+            ids.jira_main: False,
             ids.jira_sidekick_v2: True,
             ids.github_qa: True,
         }
@@ -161,8 +139,6 @@ def expected_automation_states(mode: str, ids: AutomationIds) -> dict[str, bool]
 def expected_models(ids: AutomationIds) -> dict[str, str]:
     return {
         ids.jira_main: "Bedrock-Claude-Sonnet-4-5-fast",
-        ids.jira_control: "Bedrock-Claude-Sonnet-4-5",
-        ids.jira_sidekick: "Bedrock-Claude-Sonnet-4-5",
         ids.jira_sidekick_v2: "Bedrock-Claude-Sonnet-4-5-fast",
         ids.github_qa: "Bedrock-Claude-Sonnet-4-5-fast",
     }
@@ -352,7 +328,7 @@ def main() -> int:
     parser.add_argument("--env-file", type=Path, help="load KEY=value entries")
     parser.add_argument(
         "--mode",
-        choices=("main", "sidekick-experiment", "sidekick-v2"),
+        choices=("main", "sidekick-v2"),
         default="main",
         help="expected live automation state",
     )

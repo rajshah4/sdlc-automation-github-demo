@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed, wait
@@ -34,7 +35,7 @@ DEFAULT_HOST = "https://app.replicated.rajistics.com"
 DEFAULT_REPOSITORY = "rajshah4/sdlc-automation-github-demo"
 DEFAULT_BRANCH = "sidekick-context-experiment"
 DEFAULT_LITELLM_MODEL = "litellm_proxy/us.anthropic.claude-sonnet-4-5-20250929-v1:0"
-DEFAULT_SCOUT_MODEL = DEFAULT_LITELLM_MODEL
+DEFAULT_SCOUT_MODEL = "litellm_proxy/us.anthropic.claude-haiku-4-5-20251001-v1:0"
 DEFAULT_MAIN_MODEL = DEFAULT_LITELLM_MODEL
 TERMINAL_EXECUTION_STATUSES = {"idle", "finished", "error", "stuck", "paused"}
 TERMINAL_START_STATUSES = {"READY", "ERROR"}
@@ -507,16 +508,44 @@ def fetch_events(conversation_id: str, limit: int = 100) -> list[dict[str, Any]]
     return events
 
 
+def normalized_marker_text(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", " ", value.lower()).strip()
+
+
+def is_scout_result_text(text: str, scout_name: str) -> bool:
+    normalized = normalized_marker_text(text)
+    normalized_scout = normalized_marker_text(scout_name)
+    return (
+        f"scout result {normalized_scout}" in normalized
+        or ("scout result" in normalized and normalized_scout in normalized)
+    )
+
+
 def extract_scout_result(events: list[dict[str, Any]], scout_name: str) -> str:
-    marker = f"SCOUT_RESULT {scout_name}"
     candidates: list[str] = []
     for event in events:
         if event.get("kind") != "MessageEvent" or event.get("source") != "agent":
             continue
         for text in event_strings(event):
-            if marker in text:
+            if is_scout_result_text(text, scout_name):
                 candidates.append(text)
     return candidates[-1].strip() if candidates else ""
+
+
+def fetch_scout_result_with_retries(
+    conversation_id: str,
+    scout_name: str,
+    *,
+    attempts: int = 5,
+    sleep_seconds: int = 2,
+) -> str:
+    for attempt in range(attempts):
+        result = extract_scout_result(fetch_events(conversation_id), scout_name)
+        if result:
+            return result
+        if attempt < attempts - 1:
+            time.sleep(sleep_seconds)
+    return ""
 
 
 def conversation_result(
@@ -591,7 +620,7 @@ def finish_scout(started: StartedScout, timeout_seconds: int) -> ConversationRes
     update_conversation_title(started.conversation_id, started.title)
     conversation = get_conversation(started.conversation_id)
     finished_at = utc_now()
-    output = extract_scout_result(fetch_events(started.conversation_id), started.spec.name)
+    output = fetch_scout_result_with_retries(started.conversation_id, started.spec.name)
     return conversation_result(
         started.spec.name,
         started.start_task,

@@ -94,6 +94,55 @@ def test_scout_prompts_are_read_only_and_bounded() -> None:
         assert "commit" not in prompt.lower()
 
 
+def test_extract_scout_result_accepts_markdown_marker() -> None:
+    module = load_module()
+    events = [
+        {
+            "kind": "MessageEvent",
+            "source": "agent",
+            "message": (
+                "**SCOUT_RESULT** `docs-scout`\n"
+                "FILES_CHECKED:\n"
+                "- docs/wiki/payments.md: product clue\n"
+                "CONFIDENCE:\n"
+                "- high"
+            ),
+        }
+    ]
+
+    result = module.extract_scout_result(events, "docs-scout")
+
+    assert "**SCOUT_RESULT** `docs-scout`" in result
+    assert "docs/wiki/payments.md" in result
+
+
+def test_extract_scout_result_accepts_code_block_marker() -> None:
+    module = load_module()
+    events = [
+        {
+            "kind": "MessageEvent",
+            "source": "agent",
+            "content": [
+                {
+                    "type": "text",
+                    "text": (
+                        "```text\n"
+                        "SCOUT_RESULT logs-scout\n"
+                        "EVIDENCE:\n"
+                        "- docs/logs/payment-error.log: timeout trace\n"
+                        "```"
+                    ),
+                }
+            ],
+        }
+    ]
+
+    result = module.extract_scout_result(events, "logs-scout")
+
+    assert "SCOUT_RESULT logs-scout" in result
+    assert "payment-error.log" in result
+
+
 def test_main_prompt_consumes_scout_results_and_triggers_qa_label() -> None:
     module = load_module()
     ticket = demo_ticket(module)
