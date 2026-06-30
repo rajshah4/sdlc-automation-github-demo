@@ -11,7 +11,7 @@
   "repos": [
     {
       "url": "${GITHUB_DEMO_REPO_URL}",
-      "ref": "sidekick-context-experiment"
+      "ref": "main"
     }
   ],
   "timeout": 900,

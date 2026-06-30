@@ -32,7 +32,7 @@ from urllib.request import Request, urlopen
 
 DEFAULT_HOST = "https://app.replicated.rajistics.com"
 DEFAULT_REPOSITORY = "rajshah4/sdlc-automation-github-demo"
-DEFAULT_BRANCH = "sidekick-context-experiment"
+DEFAULT_BRANCH = "main"
 DEFAULT_LITELLM_MODEL = "litellm_proxy/us.anthropic.claude-sonnet-4-5-20250929-v1:0"
 DEFAULT_SCOUT_MODEL = "litellm_proxy/us.anthropic.claude-haiku-4-5-20251001-v1:0"
 DEFAULT_MAIN_MODEL = DEFAULT_LITELLM_MODEL
@@ -371,8 +371,8 @@ Scout results:
 Workflow:
 Step 3.1 - Load and follow skills/sdlc-story/SKILL.md for the implementation workflow.
 Step 3.2 - Create the implementation branch from origin/main before editing. The
-           sidekick-context-experiment checkout is only the launcher/context
-           scaffold; the customer-facing PR must diff cleanly against main.
+           initial checkout is only the launcher/context scaffold; the
+           customer-facing PR must diff cleanly against main.
            Before opening the PR, verify `git log --oneline origin/main..HEAD`
            contains only your implementation commits.
 Step 3.3 - Fix the bug indicated by the ticket and scout results.

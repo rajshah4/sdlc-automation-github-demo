@@ -137,7 +137,7 @@ def test_sidekick_v2_jira_automation_is_label_gated() -> None:
     assert "sidekick-v2" in spec["trigger"]["filter"]
     assert "GITHUB_TOKEN" in prompt
     assert spec["model"] == "Bedrock-Claude-Sonnet-4-5-fast"
-    assert spec["repos"][0]["ref"] == "sidekick-context-experiment"
+    assert spec["repos"][0]["ref"] == "main"
     assert "skills/sdlc-sidekick-launcher/SKILL.md" in prompt
     assert "skills/sdlc-context-sidekick/SKILL.md" not in prompt
     assert "Do not implement the code change yourself" in prompt

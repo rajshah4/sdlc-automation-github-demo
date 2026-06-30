@@ -22,7 +22,7 @@ def load_module():
 def demo_args():
     return Namespace(
         repository="rajshah4/sdlc-automation-github-demo",
-        branch="sidekick-context-experiment",
+        branch="main",
         scout_model="Bedrock-Claude-Sonnet-4-5-fast",
         main_model="Bedrock-Claude-Sonnet-4-5",
     )
@@ -54,7 +54,7 @@ def test_dry_run_builds_top_level_scouts_and_main() -> None:
         assert payload["initial_message"]["run"] is True
         assert payload["plugins"] == []
         assert payload["selected_repository"] == "rajshah4/sdlc-automation-github-demo"
-        assert payload["selected_branch"] == "sidekick-context-experiment"
+        assert payload["selected_branch"] == "main"
         prompt = payload["initial_message"]["content"][0]["text"]
         assert "DEMO_STEP 2" in prompt
         assert "SCOUT_RESULT" in prompt
