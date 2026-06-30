@@ -13,7 +13,7 @@ def test_visible_pets_excludes_pending_by_default(monkeypatch, tmp_path) -> None
     assert "Nova" not in {pet.name for pet in pets}
 
 
-def test_bad_catalog_filter_exposes_pending_pet(monkeypatch, tmp_path) -> None:
+def test_visible_pets_excludes_pending_regardless_of_mode(monkeypatch, tmp_path) -> None:
     config_path = tmp_path / "runtime.json"
     config_path.write_text(json.dumps({"mode": cloud_run_app.INCIDENT_MODE}))
     monkeypatch.setattr(cloud_run_app, "RUNTIME_CONFIG_PATH", config_path)
@@ -22,7 +22,8 @@ def test_bad_catalog_filter_exposes_pending_pet(monkeypatch, tmp_path) -> None:
     pets = cloud_run_app.visible_pets()
     payload = cloud_run_app.status_payload()
 
-    assert "Nova" in {pet.name for pet in pets}
+    assert "Nova" not in {pet.name for pet in pets}
+    assert {pet.status for pet in pets} == {"available"}
     assert payload["status"] == "degraded"
     assert payload["incident"]["error_code"] == "PENDING_PET_VISIBLE"
 
@@ -36,3 +37,17 @@ def test_runtime_remediation_restores_healthy_mode(monkeypatch, tmp_path) -> Non
 
     assert cloud_run_app.current_mode() == "healthy"
     assert cloud_run_app.status_payload()["status"] == "healthy"
+
+
+def test_nova_pet_103_never_appears_in_available_catalog(monkeypatch, tmp_path) -> None:
+    """Regression test for KAN-56: Nova (pet-103, status=pending) must not appear in available pets."""
+    monkeypatch.setattr(cloud_run_app, "RUNTIME_CONFIG_PATH", tmp_path / "runtime.json")
+    monkeypatch.setenv("INCIDENT_MODE", "healthy")
+
+    pets = cloud_run_app.visible_pets()
+    pet_ids = {pet.id for pet in pets}
+    pet_names = {pet.name for pet in pets}
+
+    assert "pet-103" not in pet_ids
+    assert "Nova" not in pet_names
+    assert all(pet.status == "available" for pet in pets)
