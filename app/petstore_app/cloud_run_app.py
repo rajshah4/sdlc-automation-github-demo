@@ -15,7 +15,7 @@ from typing import Any
 from urllib.parse import parse_qs, urlparse
 
 from .adoptions import create_adoption_order
-from .catalog import PETS, Pet
+from .catalog import PETS, Pet, search_pets
 from .telemetry import adoption_validation_error_event
 
 APP_NAME = os.getenv("APP_NAME", "sdlc-automation-petstore")
@@ -236,7 +236,17 @@ class PetstoreHandler(BaseHTTPRequestHandler):
             return 200, status_payload(), "application/json"
         if path == "/api/pets":
             log_catalog_regression_if_present(request_id)
-            return 200, {"pets": [pet_to_dict(pet) for pet in visible_pets()]}, "application/json"
+            status_filter = (query.get("status") or ["available"])[0]
+            species_filter = (query.get("species") or [None])[0] or None
+            tag_filter = (query.get("tag") or [None])[0] or None
+            query_text = (query.get("q") or [""])[0]
+            pets = search_pets(
+                query_text,
+                species=species_filter,
+                status=status_filter,
+                tag=tag_filter,
+            )
+            return 200, {"pets": [pet_to_dict(pet) for pet in pets]}, "application/json"
         if path == "/api/adoptions":
             pet_id = (query.get("pet_id") or [""])[0]
             try:
