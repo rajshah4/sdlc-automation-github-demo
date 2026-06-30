@@ -9,5 +9,5 @@
 - [x] Add regression test to ensure pending pets never appear in default results
 - [x] Run validation: `pytest app/tests/test_cloud_run_app.py -v` - all 3 tests passed
 - [x] Run full app tests: `pytest app/tests/ -v` - all 14 tests passed
-- [ ] Open draft PR with evidence waypoints and KAN-41 reference
-- [ ] Add `openhands-qa` label to trigger QA automation
+- [x] Open draft PR with evidence waypoints and KAN-41 reference - PR #48
+- [x] Add `openhands-qa` label to trigger QA automation
