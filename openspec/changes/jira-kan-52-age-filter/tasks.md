@@ -1,0 +1,22 @@
+# Tasks
+
+- [x] Create OpenSpec-style change folder at `openspec/changes/jira-kan-52-age-filter/`
+- [x] Write `proposal.md` with source issue, assumptions, non-goals, and human gates
+- [x] Write `specs/catalog-search/spec.md` with acceptance criteria and scenarios
+- [x] Write `design.md` with context, decisions, risks, and validation plan
+- [ ] Validate OpenSpec artifacts with `validate_open_spec.py`
+- [ ] Add `min_age_months` and `max_age_months` parameters to `search_pets()` in `catalog.py`
+- [ ] Add age validation logic (non-negative, min <= max)
+- [ ] Add age range filtering to the search loop
+- [ ] Add focused tests for:
+  - Minimum age filter
+  - Maximum age filter
+  - Age range filter
+  - Negative age rejection
+  - Inverted range rejection
+  - Age filter combined with species filter
+- [ ] Run existing tests to verify no regression
+- [ ] Run new tests to verify age filtering works
+- [ ] Create draft PR with evidence waypoints and OpenSpec link
+- [ ] Add `openhands-qa` label to trigger QA automation
+- [ ] Post status comment to Jira issue KAN-52
