@@ -1,12 +1,21 @@
 #!/usr/bin/env python3
 """Launch visible sidekick scout conversations for the Jira-to-PR demo.
 
-This script is intentionally API-first so the demo shows separate conversations:
+This is the SDK-style side-agent orchestration for the demo, implemented with
+OpenHands app-conversation APIs. The Jira automation itself only starts Step 0;
+this launcher then creates the visible side-agent conversations through
+`POST /api/v1/app-conversations` and watches them with the corresponding
+conversation/status APIs.
+
+The goal is to make the sidekick architecture visible to a customer:
 
 - docs-scout top-level conversation
 - logs-scout top-level conversation
 - repo-scout top-level conversation
 - optional main Jira-to-PR implementation top-level conversation
+
+The scouts are intentionally normal top-level conversations, not hidden child
+conversation records, because they are easier to find and explain in the UI.
 
 It never prints secret values. Live mode requires an OpenHands API key in the
 environment or an env file.
@@ -403,6 +412,11 @@ def start_payload(
     branch: str | None,
     model: str | None,
 ) -> dict[str, Any]:
+    # This payload is the OpenHands app-conversation API contract. It mirrors
+    # what a user would start in the UI: title, initial user message, selected
+    # GitHub repository/branch, and optional model profile. Keeping scouts as
+    # top-level app conversations makes the multi-agent handoff visible instead
+    # of burying it inside one parent conversation.
     payload: dict[str, Any] = {
         "title": title,
         "initial_message": text_message(message, run=run),
@@ -425,6 +439,8 @@ def start_payload(
 
 
 def start_conversation(payload: dict[str, Any]) -> dict[str, Any]:
+    # POST /api/v1/app-conversations returns a start task first; the actual
+    # conversation id appears after the start task reaches READY.
     return http_json("POST", "/api/v1/app-conversations", body=payload)
 
 
@@ -449,6 +465,8 @@ def update_conversation_title(conversation_id: str, title: str) -> None:
 
 
 def wait_for_ready(task: dict[str, Any], timeout_seconds: int) -> tuple[dict[str, Any], str]:
+    # OpenHands provisions a sandbox and repository checkout asynchronously.
+    # Poll the start-task endpoint until the conversation is ready to run.
     task_id = task["id"]
     started_at = utc_now()
     deadline = time.monotonic() + timeout_seconds
@@ -737,6 +755,9 @@ def dry_run_payloads(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]
 def run_live(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]:
     started_at = utc_now()
 
+    # Start all context scouts together. This is the "sidekick" part: small,
+    # read-only agents search docs, logs, and repo files in parallel while the
+    # launcher prepares the eventual main implementation handoff.
     with ThreadPoolExecutor(max_workers=len(SCOUTS)) as executor:
         start_futures = [
             executor.submit(start_one_scout, scout, ticket, args)
@@ -775,6 +796,10 @@ def run_live(ticket: Ticket, args: argparse.Namespace) -> dict[str, Any]:
 
         main_result = None
         if args.full:
+            # The main implementation agent receives links to every scout plus
+            # completed briefs when available. If a scout is still running after
+            # the barrier, the main agent gets the link and a pending marker
+            # instead of blocking the demo indefinitely.
             main_title_value = main_title(ticket)
             main_task = start_conversation(
                 start_payload(

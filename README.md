@@ -123,5 +123,6 @@ No secrets belong in this repo. Store OpenHands, GitHub, Slack, and GCP credenti
 
 - [GitHub demo walkthrough](docs/github-demo-walkthrough.md)
 - [Setup checklist](docs/setup-checklist.md)
+- [Demo upgrade backlog](docs/demo-upgrades.md)
 - [Prebuilt UI and Playwright example](docs/ui-playwright-example.md)
 - [Tested flow and validation notes](docs/tested-demo-flow.md)
