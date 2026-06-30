@@ -19,8 +19,14 @@ Jira issue as source of truth.
 1. Determine the Jira issue key, summary, and plain-text description from the
    webhook payload.
 2. Do not implement the code change yourself.
-3. Run the V2 launcher from the cloned repo. Use the webhook payload fields
-   directly; do not call Jira from the launcher path.
+3. Run the V2 launcher from the cloned repo exactly once. Use the webhook
+   payload fields directly; do not call Jira from the launcher path.
+
+   Do not inspect the launcher script first. Do not run a dry run first. Do not
+   pipe the command to `head`, `tail`, `tee`, or any other truncating command. Do
+   not rerun the launcher after partial output. The launcher owns the child
+   conversations, and rerunning it creates duplicate scouts and implementation
+   agents.
 
    ```bash
    export OPENHANDS_HOST="${OPENHANDS_HOST:-https://app.replicated.rajistics.com}"
@@ -41,8 +47,10 @@ Jira issue as source of truth.
 4. The launcher should overlap the main implementation with scout completion:
    use completed scout briefs after the 90-second barrier and pass links for any
    scouts still running.
-5. Print the launcher JSON summary with the `timing_summary`, parent, scout,
-   main, PR, and QA trigger links when available.
+5. Print the complete launcher JSON summary in your final response. Include the
+   `timing_summary` plus the direct parent, scout, main, PR, and QA trigger
+   links when available. The scout links may not show up in the top-level
+   conversation list, so these direct links are important for the demo.
 6. If a required secret or API setting is missing, stop and report the missing
    setting name only. Do not print secret values.
 
