@@ -7,7 +7,8 @@ about hidden agent folders.
 | Skill | Purpose |
 | --- | --- |
 | `sdlc-story` | Turns sparse GitHub issues into OpenSpec-style change artifacts, scoped Petstore changes, tests, and PRs. |
-| `sdlc-context-sidekick` | Optional read-only context scout for Jira-to-PR experiments; finds likely docs, logs, and repo files before the story skill edits anything. |
+| `sdlc-context-sidekick` | Optional read-only context scout for Jira-to-PR demos; finds likely docs, logs, and repo files before the story skill edits anything. |
+| `sdlc-sidekick-launcher` | Starts the visible `sidekick-v2` Jira-to-PR launcher flow without exposing shell details in the automation prompt. |
 | `sdlc-qa` | Builds out automated QA evidence, including API tests and UI smoke/browser evidence where applicable. |
 | `sdlc-incident` | Performs SRE incident triage with Cloud Run/Cloud Logging evidence and bounded remediation rules. |
 | `sdlc-code-review` | Layers Petstore-specific correctness, risk, and supply-chain checks onto OpenHands `/codereview`. |

@@ -91,9 +91,8 @@ python3 scripts/simulate_github_event.py --fixture tests/fixtures/github_issue_l
 
 OpenHands Automations should be registered with the prompt preset API. The
 GitHub package specs live under `automations/github/`; the normal Jira package
-spec lives under `automations/jira/jira-to-story/`; the sidekick experiment
-packages live under `automations/jira/jira-to-story-control/` and
-`automations/jira/jira-to-story-sidekick/`.
+spec lives under `automations/jira/jira-to-story/`; the visible sidekick demo
+package lives under `automations/jira/jira-to-story-sidekick-v2/`.
 
 Dry-run the registration payloads:
 
@@ -108,9 +107,15 @@ Apply registration when `OPENHANDS_HOST_GITHUB`, an OpenHands API key such as `O
 python3 scripts/register_github_automations.py --apply
 ```
 
-For the sidekick A/B experiment, use
-[`docs/experiments/sidekick-context-experiment.md`](docs/experiments/sidekick-context-experiment.md)
-and register only the experiment Jira packages.
+Register Jira packages with:
+
+```bash
+python3 scripts/register_jira_automations.py --apply
+```
+
+For a fast live demo, keep `jira-to-story` enabled and `jira-to-story-sidekick-v2`
+disabled. For the visible multi-conversation demo, switch those states and create
+the Jira Task with label `sidekick-v2`.
 
 No secrets belong in this repo. Store OpenHands, GitHub, Slack, and GCP credentials in the OpenHands secret store or a local `.env` excluded by `.gitignore`.
 
@@ -119,6 +124,4 @@ No secrets belong in this repo. Store OpenHands, GitHub, Slack, and GCP credenti
 - [GitHub demo walkthrough](docs/github-demo-walkthrough.md)
 - [Setup checklist](docs/setup-checklist.md)
 - [Prebuilt UI and Playwright example](docs/ui-playwright-example.md)
-- [Sidekick context experiment](docs/experiments/sidekick-context-experiment.md)
-- [Work log](docs/work-log.md)
 - [Tested flow and validation notes](docs/tested-demo-flow.md)

@@ -110,8 +110,6 @@ def test_jira_registration_preserves_secret_placeholders(monkeypatch) -> None:
 
     assert payload["trigger"]["filter"] == (
         "issue.fields.project.key == 'KAN' && issue.fields.issuetype.name == 'Task' "
-        "&& !contains(issue.fields.labels, 'control-experiment') "
-        "&& !contains(issue.fields.labels, 'sidekick-experiment') "
         "&& !contains(issue.fields.labels, 'sidekick-v2')"
     )
     assert payload["repos"][0]["url"] == "https://github.com/example/demo"
@@ -120,50 +118,34 @@ def test_jira_registration_preserves_secret_placeholders(monkeypatch) -> None:
     assert "${JIRA_API_BASE_URL}" in payload["prompt"]
 
 
-def test_sidekick_experiment_jira_automation_specs_are_label_gated() -> None:
-    expected = {
-        "jira-to-story-control": {
-            "label": "control-experiment",
-            "required_prompt": "skills/sdlc-story/SKILL.md",
-            "forbidden_prompt": "skills/sdlc-context-sidekick",
-        },
-        "jira-to-story-sidekick": {
-            "label": "sidekick-experiment",
-            "required_prompt": "skills/sdlc-context-sidekick/SKILL.md",
-            "forbidden_prompt": "",
-        },
-        "jira-to-story-sidekick-v2": {
-            "label": "sidekick-v2",
-            "required_prompt": "skills/sdlc-sidekick-launcher/SKILL.md",
-            "forbidden_prompt": "skills/sdlc-context-sidekick/SKILL.md",
-        },
+def test_public_jira_automation_set_is_demo_focused() -> None:
+    specs = sorted(JIRA_AUTOMATIONS.glob("jira-to-story*/automation.prompt-preset.json"))
+    assert {path.parent.name for path in specs} == {
+        "jira-to-story",
+        "jira-to-story-sidekick-v2",
     }
 
-    for automation_name, expectation in expected.items():
-        spec_path = JIRA_AUTOMATIONS / automation_name / "automation.prompt-preset.json"
-        spec = json.loads(spec_path.read_text(encoding="utf-8"))
-        prompt = (spec_path.parent / spec["prompt_file"]).read_text(encoding="utf-8")
 
-        assert spec["preset"] == "prompt"
-        assert spec["trigger"]["source"] == "jira-direct"
-        assert spec["trigger"]["on"] == "jira:issue_created"
-        assert expectation["label"] in spec["trigger"]["filter"]
-        assert "GITHUB_TOKEN" in prompt
-        assert spec["repos"][0]["ref"] == "sidekick-context-experiment"
-        if automation_name == "jira-to-story-sidekick-v2":
-            assert spec["model"] == "Bedrock-Claude-Sonnet-4-5-fast"
-            assert spec["repos"][0]["ref"] == "sidekick-context-experiment"
-            assert "Do not implement the code change yourself" in prompt
-            assert "exactly once" in prompt
-            assert "export OPENHANDS_HOST" not in prompt
-            assert "python3 scripts/launch_sidekick_v2.py" not in prompt
-            assert "child conversation" not in prompt
-            assert "Parent conversation" not in prompt
-        else:
-            assert spec["model"] == "Bedrock-Claude-Sonnet-4-5"
-        assert expectation["required_prompt"] in prompt
-        if expectation["forbidden_prompt"]:
-            assert expectation["forbidden_prompt"] not in prompt
+def test_sidekick_v2_jira_automation_is_label_gated() -> None:
+    spec_path = JIRA_AUTOMATIONS / "jira-to-story-sidekick-v2" / "automation.prompt-preset.json"
+    spec = json.loads(spec_path.read_text(encoding="utf-8"))
+    prompt = (spec_path.parent / spec["prompt_file"]).read_text(encoding="utf-8")
+
+    assert spec["preset"] == "prompt"
+    assert spec["trigger"]["source"] == "jira-direct"
+    assert spec["trigger"]["on"] == "jira:issue_created"
+    assert "sidekick-v2" in spec["trigger"]["filter"]
+    assert "GITHUB_TOKEN" in prompt
+    assert spec["model"] == "Bedrock-Claude-Sonnet-4-5-fast"
+    assert spec["repos"][0]["ref"] == "sidekick-context-experiment"
+    assert "skills/sdlc-sidekick-launcher/SKILL.md" in prompt
+    assert "skills/sdlc-context-sidekick/SKILL.md" not in prompt
+    assert "Do not implement the code change yourself" in prompt
+    assert "exactly once" in prompt
+    assert "export OPENHANDS_HOST" not in prompt
+    assert "python3 scripts/launch_sidekick_v2.py" not in prompt
+    assert "child conversation" not in prompt
+    assert "Parent conversation" not in prompt
 
 
 def test_sidekick_launcher_skill_owns_launcher_details() -> None:
@@ -255,8 +237,6 @@ def test_github_runtime_secret_convention_is_consistent() -> None:
         AUTOMATIONS / "openhands-review" / "prompt.md",
         AUTOMATIONS / "openhands-incident" / "prompt.md",
         JIRA_AUTOMATIONS / "jira-to-story" / "prompt.md",
-        JIRA_AUTOMATIONS / "jira-to-story-control" / "prompt.md",
-        JIRA_AUTOMATIONS / "jira-to-story-sidekick" / "prompt.md",
         JIRA_AUTOMATIONS / "jira-to-story-sidekick-v2" / "prompt.md",
     ]
 

@@ -27,7 +27,7 @@ logs, likely files, confidence, and missing information.
 
 ## Scout Roles
 
-For the sidekick experiment, make launches easy to identify by splitting context
+For the visible sidekick demo, make launches easy to identify by splitting context
 search into three bounded lanes:
 
 | Scout | Roots | Job | Budget |

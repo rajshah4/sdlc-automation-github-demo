@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Run bounded read-only context scouts in parallel.
 
-This is the cheap baseline for the sidekick experiment. It keeps docs, logs,
+This is the local baseline for the visible sidekick demo. It keeps docs, logs,
 and repo search separate so the conversation shows clear launch points without
-spending LLM tokens on three child agents.
+extra external calls.
 """
 
 from __future__ import annotations
