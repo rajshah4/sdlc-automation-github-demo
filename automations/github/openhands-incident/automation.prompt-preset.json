@@ -16,5 +16,5 @@
     }
   ],
   "timeout": 600,
-  "llm_profile": "sdlc-ops"
+  "model": "Bedrock-Claude-Sonnet-4-5"
 }

@@ -12,7 +12,7 @@ A Jira Task was created for the demo project. Treat the Jira issue as the source
 2. Load and follow `skills/sdlc-story/SKILL.md`.
 3. Create or update the implementation PR that the story skill calls for.
 4. Capture evidence, tests, assumptions, and human gates in the artifacts defined by the skill.
-5. Hand off follow-up validation or review through the repo's QA/review automation labels when appropriate.
+5. After opening or updating the PR, add `openhands-qa` so the QA work cell starts as a second conversation.
 
 ## What You Post Back To Jira
 
@@ -22,7 +22,7 @@ A Jira Task was created for the demo project. Treat the Jira issue as the source
 
 ## Human Control
 
-Humans approve scope, review, merge, deployment, and any risky follow-up. Stop and ask when the story skill says the request needs human input.
+Humans approve scope, PR review, merge, deployment, and risky follow-up. The QA label starts validation; it does not approve or merge. Stop and ask when the story skill says the request needs human input.
 
 ## Cost And Security Notes
 

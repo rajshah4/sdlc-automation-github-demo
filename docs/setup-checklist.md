@@ -13,13 +13,25 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
 ## OpenHands / Rajistics
 
 - `OPENHANDS_HOST_GITHUB` points at the self-hosted app URL, usually `https://app.<base_domain>`.
-- `OPENHANDS_API_KEY_GITHUB` is available locally for registration and in the OpenHands secret store for automations. For the Rajistics instance, `OPENHANDS_API_KEY_RAJISTICS` is an accepted fallback when the GitHub-specific key is intentionally blank.
+- `OPENHANDS_API_KEY_ORG` is available locally for registration and verification. GitHub- or Rajistics-specific keys are accepted fallbacks, but the demo scripts prefer the org-scoped key when it is present.
 - For the Rajistics Replicated instance, verify the app URL, GitHub App slug, client ID, app ID, webhook secret, and private key are configured in the Replicated admin console.
 - GitHub sign-in works in OpenHands.
 - Repo search works in OpenHands.
 - Adding the `openhands-build` label to a clean issue creates a conversation in the self-hosted instance.
 - Automations are registered from `automations/github/*/automation.prompt-preset.json`.
+- After moving to an org-scoped API key, verify GitHub label events create runs in
+  the same org scope. On 2026-06-29, PR #37's `openhands-qa` label was still
+  handled by the older personal-scope automation
+  `dfd2bfe1-72f9-4ad2-8548-6b2aad64a037`, while the Enterprise Org QA
+  automation `b3192e16-171a-4ec3-8028-9514a7f372fe` only ran by manual dispatch.
+- The older personal-scope demo automations were disabled on 2026-06-29 so GitHub
+  labels no longer take the old path. Keep the Enterprise Org automations enabled.
+- After the GitHub event routing fix, PR #38's `openhands-qa` label reached the
+  Enterprise Org QA automation as run `c96832d5-f706-4989-97be-8a9efaf9370c`.
 - Jira demo automation is defined in `automations/jira/jira-to-story/`; it uses the `jira-direct` webhook source and keeps implementation details in `skills/sdlc-story/`.
+- The sidekick A/B experiment is isolated on branch `sidekick-context-experiment`
+  with label-gated Jira packages under `automations/jira/jira-to-story-control/`
+  and `automations/jira/jira-to-story-sidekick/`.
 - Story-to-PR artifacts follow Fission-AI/OpenSpec lineage, with change folders under `openspec/changes/`.
 - The live automation does not install or run the OpenSpec CLI during the timed label-triggered flow; use preinstalled CLI setup/archive commands outside the demo run when needed.
 - Only one OpenHands GitHub App should respond on this repo; duplicate public/self-hosted installs can create confusing duplicate runs.
@@ -32,9 +44,22 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
 ## Jira
 
 - Jira admin webhook points to the Rajistics `jira-direct` webhook URL.
+  - Enterprise Org URL: `https://app.replicated.rajistics.com/api/automation/v1/events/b35383f5-00e0-4f4d-99c5-df8943fa2355/jira-direct`
 - Jira webhook secret matches the Rajistics `jira-direct` signing secret.
+- The Jira webhook signing secret is stored in the Rajistics automation webhook
+  registration and in Jira's webhook configuration. It does not need to be
+  duplicated as an OpenHands runtime secret unless a custom script explicitly
+  reads `JIRA_WEBHOOK_SECRET`.
+- Enterprise OpenHands runtime secrets still need the Jira API credentials the
+  agent uses after it wakes up, such as `JIRA_API_TOKEN`, `JIRA_SERVICE_ACCOUNT_EMAIL`,
+  `JIRA_SITE_URL`, and `JIRA_API_BASE_URL`.
 - Jira webhook sends issue-created events with body included.
 - Jira webhook JQL is limited to `project = KAN AND issuetype = Task`.
+- After updating the webhook URL, create a fresh `KAN` Task and confirm the
+  Enterprise Org automation run list gains a new `jira-to-story` run. KAN-27 did
+  not create a run after roughly three minutes of polling, so Jira webhook
+  delivery history/configuration still needs review.
+- Old app.all-hands Cloud Jira webhooks or Jira automation rules are disabled, not deleted, during the Rajistics demo.
 - Demo Jira tickets are sparse business-language reports. Do not include repo names, file paths, log codes, or implementation clues in the ticket.
 - Suggested labels are `bug`, `jira-to-story-demo`, and `openhands-demo`; labels are for operator search, not the trigger boundary.
 
@@ -64,6 +89,7 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
 
 - Event-driven triggers avoid unnecessary LLM calls.
 - `scripts/preflight_github_demo.py`, OpenSpec-style validation, label setup, and Petstore SRE observation scripts are deterministic and do not call an LLM.
-- Different LLM profiles can be mapped by stage: review, QA, build, incident, and critic.
+- Desired LLM profiles are documented in the automation JSON files with the `model` field. In the Rajistics automation API, `model` means the saved model profile name for automation runs.
+- Current Enterprise Org model split: Jira/build/incident use `Bedrock-Claude-Sonnet-4-5`, QA uses `Bedrock-Qwen3-Coder-30B`, and review uses `Bedrock-Claude-Haiku-4-5`.
 - Secrets stay in OpenHands secret store or local `.env`.
 - Humans approve PRs, reviews, merges, deployments, and production-facing fixes.

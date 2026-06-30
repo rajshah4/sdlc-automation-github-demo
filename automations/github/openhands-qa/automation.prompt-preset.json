@@ -5,8 +5,8 @@
   "trigger": {
     "type": "event",
     "source": "github",
-    "on": ["pull_request.labeled"],
-    "filter": "repository.full_name == '${GITHUB_DEMO_REPOSITORY}' && pull_request != null && label.name == 'openhands-qa' && !contains(pull_request.labels[].name, 'openhands:in-progress') && !contains(pull_request.labels[].name, 'openhands:done')"
+    "on": ["pull_request.labeled", "issues.labeled"],
+    "filter": "repository.full_name == '${GITHUB_DEMO_REPOSITORY}' && label.name == 'openhands-qa' && ((pull_request != null && !contains(pull_request.labels[].name, 'openhands:in-progress') && !contains(pull_request.labels[].name, 'openhands:done')) || (issue.pull_request != null && !contains(issue.labels[].name, 'openhands:in-progress') && !contains(issue.labels[].name, 'openhands:done')))"
   },
   "repos": [
     {
@@ -16,5 +16,5 @@
     }
   ],
   "timeout": 600,
-  "llm_profile": "sdlc-coding"
+  "model": "Bedrock-Qwen3-Coder-30B"
 }

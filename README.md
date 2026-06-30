@@ -41,7 +41,7 @@ one bounded automation, then posts evidence back where the team already works.
 
 - A sparse bug issue becomes a PR with an implementation branch and visible OpenSpec-style proposal/spec/design/task artifacts.
 - A PR receives an automated review comment rather than a silent background score.
-- QA output lands on the PR with concrete test files and command results. The repo also includes a Playwright browser-evidence example with screenshot, GIF, video, and report generation.
+- QA output lands on the PR with concrete test files and command results. The repo also includes a prebuilt Playwright browser-evidence example with screenshot, GIF, video, and report generation.
 - An incident issue receives an evidence-first triage response; if cloud context
   is unavailable, the automation should say so and mark the item for humans.
 - Status labels such as `openhands:in-progress`, `openhands:needs-human`, and
@@ -55,7 +55,7 @@ repo-local knowledge, not a custom agent runtime.
 | Capability | Where it lives | Why it matters |
 | --- | --- | --- |
 | OpenHands Automations | `automations/github/`, `automations/jira/` | Prompt presets registered in the Rajistics OpenHands instance. GitHub uses label-triggered work cells; Jira uses the `jira-direct` webhook for sparse task-to-PR demos. |
-| Repo-local skills | `skills/` | Four reusable skills encode story/spec, QA, SRE, and code-review behavior with scripts and references that customers can inspect. The story skill follows Fission-AI/OpenSpec lineage while avoiding live package installs during timed automation runs. |
+| Repo-local skills | `skills/` | Reusable skills encode story/spec, optional context-sidekick scouting, QA, SRE, and code-review behavior with scripts and references that customers can inspect. The story skill follows Fission-AI/OpenSpec lineage while avoiding live package installs during timed automation runs. |
 | OpenSpec-style artifacts | `openspec/` | Repo-local context and generated change folders keep request, proposal, spec delta, design, and tasks version controlled. |
 | Deterministic scripts | `scripts/` | Preflight, label setup, fixture simulation, Petstore checks, and GCP helpers run before broader model reasoning where possible. |
 | GitHub templates and labels | `.github/` | Issues, PRs, and labels define the human approval boundaries. |
@@ -82,26 +82,35 @@ python3 scripts/simulate_github_event.py --fixture tests/fixtures/github_issue_l
 | `app/` | Small Petstore app, static UI, Cloud Run surface, and app tests. |
 | `automations/` | OpenHands prompt-preset automation packages for GitHub and Jira. |
 | `openspec/` | OpenSpec-style project context and generated change folders for story-to-PR work. |
-| `skills/` | Four repo-local OpenHands skills with scripts and references. |
+| `skills/` | Repo-local OpenHands skills with scripts and references. |
 | `scripts/` | Deterministic setup, registration, preflight, QA, and SRE helpers. |
 | `docs/` | Customer-facing setup, walkthrough, and validation notes. |
 | `.github/` | Issue/PR templates and label definitions; the live demo uses OpenHands labels, not GitHub Actions. |
 
 ## Register OpenHands Automations
 
-OpenHands Automations should be registered with the prompt preset API. The GitHub package specs live under `automations/github/`; the Jira package spec lives under `automations/jira/jira-to-story/`.
+OpenHands Automations should be registered with the prompt preset API. The
+GitHub package specs live under `automations/github/`; the normal Jira package
+spec lives under `automations/jira/jira-to-story/`; the sidekick experiment
+packages live under `automations/jira/jira-to-story-control/` and
+`automations/jira/jira-to-story-sidekick/`.
 
 Dry-run the registration payloads:
 
 ```bash
 python3 scripts/register_github_automations.py --dry-run
+python3 scripts/register_jira_automations.py --dry-run
 ```
 
-Apply registration when `OPENHANDS_HOST_GITHUB`, `OPENHANDS_API_KEY_GITHUB`, `GITHUB_DEMO_REPOSITORY`, and `GITHUB_DEMO_REPO_URL` are set:
+Apply registration when `OPENHANDS_HOST_GITHUB`, an OpenHands API key such as `OPENHANDS_API_KEY_GITHUB` or `OPENHANDS_API_KEY_ORG`, `GITHUB_DEMO_REPOSITORY`, and `GITHUB_DEMO_REPO_URL` are set:
 
 ```bash
 python3 scripts/register_github_automations.py --apply
 ```
+
+For the sidekick A/B experiment, use
+[`docs/experiments/sidekick-context-experiment.md`](docs/experiments/sidekick-context-experiment.md)
+and register only the experiment Jira packages.
 
 No secrets belong in this repo. Store OpenHands, GitHub, Slack, and GCP credentials in the OpenHands secret store or a local `.env` excluded by `.gitignore`.
 
@@ -109,5 +118,7 @@ No secrets belong in this repo. Store OpenHands, GitHub, Slack, and GCP credenti
 
 - [GitHub demo walkthrough](docs/github-demo-walkthrough.md)
 - [Setup checklist](docs/setup-checklist.md)
+- [Prebuilt UI and Playwright example](docs/ui-playwright-example.md)
+- [Sidekick context experiment](docs/experiments/sidekick-context-experiment.md)
 - [Work log](docs/work-log.md)
 - [Tested flow and validation notes](docs/tested-demo-flow.md)
