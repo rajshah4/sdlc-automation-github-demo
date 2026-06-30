@@ -8,6 +8,7 @@ brief to stdout. It does not modify files or call external services.
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -21,8 +22,7 @@ ALLOWED_ROOTS = [
     REPO_ROOT / "docs" / "logs",
     REPO_ROOT / "app",
     REPO_ROOT / "tests",
-    REPO_ROOT / "skills",
-    REPO_ROOT / "openspec",
+    REPO_ROOT / "openspec" / "project.md",
 ]
 
 
@@ -61,14 +61,15 @@ def allowed_files() -> list[Path]:
 
 def search_terms(title: str, body: str) -> list[str]:
     text = f"{title}\n{body}".lower()
-    terms = {"catalog", "available", "pending", "pet", "test"}
+    tokens = set(re.findall(r"[a-z0-9_]+", text))
+    terms = {"catalog", "available", "pending", "pet"}
     if "nova" in text:
         terms.update({"nova", "pet-103"})
     if "not available" in text or "unavailable" in text or "adoptable" in text:
         terms.update({"PENDING_PET_VISIBLE", "status", "available-only"})
-    if "fee" in text or "price" in text or "cost" in text:
+    if tokens & {"fee", "fees", "price", "prices", "cost", "costs"}:
         terms.update({"fee", "adoption_fee", "max_fee"})
-    if "age" in text:
+    if "age" in tokens:
         terms.update({"age", "min_age", "max_age"})
     return sorted(terms, key=str.lower)
 
@@ -186,7 +187,7 @@ def build_brief(args: argparse.Namespace) -> str:
             f"- {level}: {rationale}",
             "",
             "RECOMMENDED_NEXT_STEP",
-            "- Hand this brief to `skills/sdlc-story/SKILL.md`; the main agent should create artifacts, implement the fix, add tests, and open the PR.",
+            "- Hand this brief to the main Jira-to-PR agent; it should create artifacts, implement the fix, add tests, and open the PR.",
         ]
     )
     return "\n".join(lines)

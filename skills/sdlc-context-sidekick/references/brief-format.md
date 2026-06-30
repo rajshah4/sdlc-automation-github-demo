@@ -3,6 +3,43 @@
 Use this exact shape so sidekick-assisted runs are easy to compare with the
 single-agent control.
 
+When using split scouts, print this short fan-out header before the aggregate
+brief:
+
+```markdown
+CONTEXT_SCOUT_FANOUT
+Ticket: <Jira key or URL>
+Summary: <one sentence>
+Launch: docs-scout, logs-scout, and repo-scout started together
+Total elapsed seconds: <number>
+
+LAUNCHES
+- docs-scout: <purpose>; read-only; no edits; no other skills
+- logs-scout: <purpose>; read-only; no edits; no other skills
+- repo-scout: <purpose>; read-only; no edits; no other skills
+
+SCOUT_RESULT docs-scout
+- purpose: <short purpose>
+- files_checked: <number>
+- elapsed_seconds: <number>
+- findings:
+  - <path>: `<term>` -> <short snippet>
+
+SCOUT_RESULT logs-scout
+- purpose: <short purpose>
+- files_checked: <number>
+- elapsed_seconds: <number>
+- findings:
+  - <path>: `<term>` -> <short snippet>
+
+SCOUT_RESULT repo-scout
+- purpose: <short purpose>
+- files_checked: <number>
+- elapsed_seconds: <number>
+- findings:
+  - <path>: `<term>` -> <short snippet>
+```
+
 ```markdown
 CONTEXT_BRIEF
 Ticket: <Jira key or URL>
