@@ -311,15 +311,26 @@ CONFIDENCE:
 def parent_prompt(ticket: Ticket) -> str:
     return f"""DEMO_STEP 1: Jira Intake and Sidekick Orchestration
 
-Sidekick V2 orchestration parent for {ticket.key}.
+Sidekick V2 grouping conversation for Jira work item {ticket.key}.
 
-This parent groups the visible context scout child conversations for the demo.
-The parent itself should not perform implementation work.
-Viewer cue: open the child conversations to show docs, logs, and repo context
-being searched separately before implementation.
+This conversation exists only so the demo has one visible parent for the
+script-owned child conversations. The launcher script, not this agent, starts
+the docs, logs, repo, and implementation conversations.
 
-Ticket: {ticket.url}
-Title: {ticket.title}
+Rules:
+- Do not use tools.
+- Do not invoke skills.
+- Do not read files.
+- Do not call Jira, GitHub, or OpenHands APIs.
+- Do not start child conversations.
+- Do not implement code.
+
+Return exactly this final response and stop:
+
+DEMO_STEP 1 COMPLETE: Jira intake grouped
+- Jira: {ticket.url}
+- Title: {ticket.title}
+- Next visible steps: Step 2A docs scout, Step 2B logs scout, Step 2C repo scout, Step 3 implementation
 """
 
 

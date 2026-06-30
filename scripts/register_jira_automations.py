@@ -15,6 +15,10 @@ from urllib.request import Request, urlopen
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 AUTOMATION_ROOT = REPO_ROOT / "automations" / "jira"
+DEFAULTS = {
+    "JIRA_DEMO_PROJECT_KEY": "KAN",
+    "GITHUB_DEMO_REPO_URL": "https://github.com/rajshah4/sdlc-automation-github-demo",
+}
 
 
 def load_env_file(path: Path) -> None:
@@ -92,6 +96,8 @@ def main() -> int:
 
     if args.env_file:
         load_env_file(args.env_file)
+    for key, value in DEFAULTS.items():
+        os.environ.setdefault(key, value)
     if args.project_key:
         os.environ["JIRA_DEMO_PROJECT_KEY"] = args.project_key
     if args.repo_url:

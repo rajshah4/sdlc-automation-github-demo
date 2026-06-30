@@ -343,9 +343,14 @@ What this proves:
   the parent is Step 1, the scouts are Step 2A/2B/2C, the main implementation is
   Step 3, and QA is Step 4.
 - The current live v2 registration for that step-labeled path is
-  `3e19b338-b282-45c3-9dca-dcf5d3535590`. This registration keeps the launcher
+  `86d4c0a4-cdf7-4f74-92ee-4ef51db391c7`. This registration keeps the launcher
   and main implementation on Sonnet fast and runs the read-only sidekick scouts
   on Haiku.
+- KAN-48 exposed a useful demo-hardening issue: the parent grouping
+  conversation started acting like an agent when it had no repo checkout, then
+  improvised its own child conversations. The launcher now makes the parent
+  self-terminating so only the script-owned Step 2A/2B/2C scouts perform
+  context search.
 
 ### QA And UI Evidence
 

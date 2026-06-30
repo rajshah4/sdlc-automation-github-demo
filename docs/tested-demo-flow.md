@@ -42,7 +42,7 @@ Prompt-preset automations are registered with the Rajistics Enterprise Org API k
 | Work cell | Automation ID | Model profile | Trigger |
 | --- | --- | --- | --- |
 | `jira-to-story` | `7f63aad8-ae78-483d-9296-223869dc239d` | `Bedrock-Claude-Sonnet-4-5-fast` | `jira:issue_created` from `jira-direct` |
-| `jira-to-story-sidekick-v2` | `3e19b338-b282-45c3-9dca-dcf5d3535590` | `Bedrock-Claude-Sonnet-4-5-fast` launcher; Haiku scouts | `jira:issue_created` from `jira-direct`, label `sidekick-v2` |
+| `jira-to-story-sidekick-v2` | `86d4c0a4-cdf7-4f74-92ee-4ef51db391c7` | `Bedrock-Claude-Sonnet-4-5-fast` launcher; Haiku scouts | `jira:issue_created` from `jira-direct`, label `sidekick-v2` |
 | `openhands-build` | `d549cb26-8062-43c0-9e97-d0fb81e93ad5` | `Bedrock-Claude-Sonnet-4-5` | `issues.labeled` |
 | `openhands-incident` | `3ca10ce1-d6f4-4b87-a068-5b86b059d9e9` | `Bedrock-Claude-Sonnet-4-5` | `issues.labeled` |
 | `openhands-qa` | `96b8ad90-bdb4-42ba-81f8-0cabf059bd6a` | `Bedrock-Claude-Sonnet-4-5-fast` | `pull_request.labeled`, `issues.labeled` |
