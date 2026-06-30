@@ -236,10 +236,11 @@ Follow-up sidekick-v2 checks on 2026-06-30 UTC:
   corrected v2 automation `3ed7bd14-e35a-4fb4-b111-2efc0c739f1d` is now the
   expected label-gated path.
 - KAN-44 was created against the corrected v2 automation as run
-  `5c5c528d-882e-400d-8cf2-57748443a6e1`, but by 05:22 UTC the automation runs
-  endpoint was returning HTTP 503 `Service Unavailable` / `no available server`
-  and no KAN-44 PR had appeared. Treat that as an automation service
-  availability blocker, not a successful timing run.
+  `5c5c528d-882e-400d-8cf2-57748443a6e1`. The run completed after roughly 15.3
+  minutes with no `conversation_id`, no error detail, and no KAN-44 PR. During
+  the run, the automation runs endpoint also returned HTTP 503
+  `Service Unavailable` / `no available server`. Treat KAN-44 as an
+  automation-service/prompt-preset blocker, not a sidekick timing result.
 
 ## Playwright Status
 

@@ -348,10 +348,11 @@ What still needs optimization:
   automation runtime did not provide `JIRA_API_BASE_URL`. The corrected v2 prompt
   now passes Jira key, summary, and description directly from the webhook payload
   and avoids that extra Jira API env dependency.
-- KAN-44 was created after registering the corrected v2 automation, but the
-  automation runs endpoint returned HTTP 503 `Service Unavailable` / `no
-  available server` and no KAN-44 PR appeared by 05:22 UTC. Do not use KAN-44 as
-  a timing result; it is an environment availability signal.
+- KAN-44 was created after registering the corrected v2 automation. The run
+  completed after roughly 15.3 minutes with no `conversation_id`, no error
+  detail, and no PR. During the run, the automation runs endpoint also returned
+  HTTP 503 `Service Unavailable` / `no available server`. Do not use KAN-44 as a
+  timing result; it is an automation-service/prompt-preset blocker.
 - The parent/scout conversations still pay repo startup/context cost because
   they use `selected_repository`. That makes the UI simple and reliable, but it
   is not the cheapest sidekick design.
