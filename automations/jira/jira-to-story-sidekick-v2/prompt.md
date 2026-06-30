@@ -9,14 +9,17 @@ Jira issue as source of truth.
 
 ## What You Do
 
-1. Determine the Jira issue key from the webhook payload.
+1. Determine the Jira issue key, summary, and plain-text description from the
+   webhook payload.
 2. Do not implement the code change yourself.
-3. Run the V2 launcher from the cloned repo:
+3. Run the V2 launcher from the cloned repo. Use the webhook payload fields
+   directly; do not call Jira from the launcher path.
 
    ```bash
    python3 scripts/launch_sidekick_v2.py \
      --jira-key <ISSUE_KEY> \
-     --fetch-jira \
+     --title "<ISSUE_SUMMARY>" \
+     --body "<ISSUE_DESCRIPTION_PLAIN_TEXT>" \
      --full \
      --scout-timeout-seconds 180 \
      --main-start-barrier-seconds 90 \

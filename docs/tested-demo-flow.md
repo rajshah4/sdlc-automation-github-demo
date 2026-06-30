@@ -42,7 +42,7 @@ Prompt-preset automations are registered with the Rajistics Enterprise Org API k
 | Work cell | Automation ID | Model profile | Trigger |
 | --- | --- | --- | --- |
 | `jira-to-story` | `a22f4cfd-d194-4566-b773-89fc903fd9d6` | `Bedrock-Claude-Sonnet-4-5-fast` | `jira:issue_created` from `jira-direct` |
-| `jira-to-story-sidekick-v2` | `ca0ddf76-bafe-4c3e-803a-1612eaed74de` | `Bedrock-Claude-Sonnet-4-5-fast` | `jira:issue_created` from `jira-direct`, label `sidekick-v2` |
+| `jira-to-story-sidekick-v2` | `3ed7bd14-e35a-4fb4-b111-2efc0c739f1d` | `Bedrock-Claude-Sonnet-4-5-fast` | `jira:issue_created` from `jira-direct`, label `sidekick-v2` |
 | `openhands-build` | `1d97b79d-7bb6-4b67-969d-7f0182c416a5` | `Bedrock-Claude-Sonnet-4-5` | `issues.labeled` |
 | `openhands-incident` | `bbff1a54-fe12-43fd-85b6-b1add7f6ca84` | `Bedrock-Claude-Sonnet-4-5` | `issues.labeled` |
 | `openhands-qa` | `b3192e16-171a-4ec3-8028-9514a7f372fe` | `Bedrock-Claude-Sonnet-4-5-fast` | `pull_request.labeled`, `issues.labeled` |
@@ -218,6 +218,28 @@ to PR opened was about 4.5 minutes. QA label to QA comment was about 4.0
 minutes. This proves the customer-visible architecture, but the prompt-preset
 launcher still adds enough overhead that a strict five-minute Jira-to-PR demo
 should use the normal path or a future deterministic custom launcher.
+
+Follow-up sidekick-v2 checks on 2026-06-30 UTC:
+
+- KAN-42 run `ce41b5b4-2d67-4874-99e1-411b274f9b13` failed after timeout with
+  `Timed out: Sandbox not available` while sandbox grouping was
+  `NO_GROUPING`. No PR was opened.
+- The org setting `sandbox_grouping_strategy` was changed to
+  `FEWEST_CONVERSATIONS`.
+- KAN-43 run `e43e01c1-85ee-41f8-8627-2b82b3295612` then got a sandbox and
+  completed quickly, but the old registered v2 prompt still called
+  `--fetch-jira` and stopped because `JIRA_API_BASE_URL` was not available in
+  the automation runtime.
+- The v2 prompt was corrected to use the Jira webhook payload summary and
+  description directly, avoiding the extra Jira API env dependency. The old v2
+  automation `ca0ddf76-bafe-4c3e-803a-1612eaed74de` was disabled and the
+  corrected v2 automation `3ed7bd14-e35a-4fb4-b111-2efc0c739f1d` is now the
+  expected label-gated path.
+- KAN-44 was created against the corrected v2 automation as run
+  `5c5c528d-882e-400d-8cf2-57748443a6e1`, but by 05:22 UTC the automation runs
+  endpoint was returning HTTP 503 `Service Unavailable` / `no available server`
+  and no KAN-44 PR had appeared. Treat that as an automation service
+  availability blocker, not a successful timing run.
 
 ## Playwright Status
 

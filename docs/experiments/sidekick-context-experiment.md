@@ -339,6 +339,19 @@ What still needs optimization:
   after a 90-second scout-result barrier instead of waiting for every scout as a
   hard gate. Completed briefs are passed into the main prompt; still-running
   scouts are passed as links and are collected in the final JSON summary.
+- KAN-42 then showed an infrastructure failure mode: the run timed out with
+  `Sandbox not available` while `sandbox_grouping_strategy` was `NO_GROUPING`.
+  Switching the org setting to `FEWEST_CONVERSATIONS` allowed KAN-43 to get a
+  sandbox.
+- KAN-43 exposed a prompt dependency rather than a sidekick code problem: the old
+  registered v2 prompt still called the launcher with `--fetch-jira`, but the
+  automation runtime did not provide `JIRA_API_BASE_URL`. The corrected v2 prompt
+  now passes Jira key, summary, and description directly from the webhook payload
+  and avoids that extra Jira API env dependency.
+- KAN-44 was created after registering the corrected v2 automation, but the
+  automation runs endpoint returned HTTP 503 `Service Unavailable` / `no
+  available server` and no KAN-44 PR appeared by 05:22 UTC. Do not use KAN-44 as
+  a timing result; it is an environment availability signal.
 - The parent/scout conversations still pay repo startup/context cost because
   they use `selected_repository`. That makes the UI simple and reliable, but it
   is not the cheapest sidekick design.

@@ -21,6 +21,9 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
 - Before the visible sidekick customer demo, keep the normal Jira automation and
   `sidekick-v2` automation enabled, then run:
   `python3 scripts/preflight_live_connections.py --env-file /Users/rajiv.shah/Code/install_replicate/.env --mode sidekick-v2`
+- For visible sidekick runs, keep `sandbox_grouping_strategy` at
+  `FEWEST_CONVERSATIONS`; with `NO_GROUPING`, KAN-42 failed before useful work
+  with `Timed out: Sandbox not available`.
 - For the Rajistics Replicated instance, verify the app URL, GitHub App slug, client ID, app ID, webhook secret, and private key are configured in the Replicated admin console.
 - GitHub sign-in works in OpenHands.
 - Repo search works in OpenHands.
@@ -64,6 +67,9 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
 - Enterprise OpenHands runtime secrets still need the Jira API credentials the
   agent uses after it wakes up, such as `JIRA_API_TOKEN`, `JIRA_SERVICE_ACCOUNT_EMAIL`,
   `JIRA_SITE_URL`, and `JIRA_API_BASE_URL`.
+- The visible sidekick-v2 launcher does not fetch Jira directly. It uses the
+  Jira webhook payload key, summary, and description so it does not require
+  `JIRA_API_BASE_URL` in the launcher runtime.
 - Jira webhook sends issue-created events with body included.
 - Jira webhook JQL is limited to `project = KAN AND issuetype = Task`.
 - After updating the webhook URL, create a fresh `KAN` Task and confirm the

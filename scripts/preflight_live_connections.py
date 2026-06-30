@@ -48,7 +48,7 @@ DEFAULT_AUTOMATION_IDS = AutomationIds(
     jira_main="a22f4cfd-d194-4566-b773-89fc903fd9d6",
     jira_control="b12d471e-797b-4010-bef7-c02fbb3c8bed",
     jira_sidekick="0aad5e83-1b19-49f8-a985-da459b0c4112",
-    jira_sidekick_v2="ca0ddf76-bafe-4c3e-803a-1612eaed74de",
+    jira_sidekick_v2="3ed7bd14-e35a-4fb4-b111-2efc0c739f1d",
     github_qa="b3192e16-171a-4ec3-8028-9514a7f372fe",
 )
 
