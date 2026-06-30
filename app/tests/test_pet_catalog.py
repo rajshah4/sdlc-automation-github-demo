@@ -3,6 +3,15 @@ import pytest
 from petstore_app.catalog import search_pets
 
 
+def test_search_pets_default_status_excludes_pending() -> None:
+    """Regression test for KAN-51: default search must exclude pending pets."""
+    results = search_pets()
+
+    assert "Nova" not in [pet.name for pet in results]
+    assert len([pet for pet in results if pet.status == "pending"]) == 0
+    assert all(pet.status == "available" for pet in results)
+
+
 def test_search_pets_filters_by_species_and_status() -> None:
     results = search_pets(species="dog")
 
