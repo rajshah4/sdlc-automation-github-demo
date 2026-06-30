@@ -92,6 +92,14 @@ def http_json(url: str, headers: dict[str, str]) -> Any:
         raise RuntimeError(f"HTTP {exc.code} from {url}: {body[:500]}") from exc
 
 
+def automation_headers(api_key: str) -> dict[str, str]:
+    return {"Authorization": f"Bearer {api_key}"}
+
+
+def app_headers(api_key: str) -> dict[str, str]:
+    return {"X-Access-Token": api_key}
+
+
 def gh_json(path: str) -> Any:
     result = subprocess.run(
         ["gh", "api", path],
@@ -288,18 +296,16 @@ def check_openhands(failures: list[str], mode: str) -> None:
         "OPENHANDS_API_KEY_RAJISTICS",
         "OPENHANDS_API_KEY",
     )
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "X-Access-Token": api_key,
-    }
-    server_info = http_json(f"{host}/server_info", headers)
+    app_auth = app_headers(api_key)
+    automation_auth = automation_headers(api_key)
+    server_info = http_json(f"{host}/server_info", app_auth)
     if not isinstance(server_info, dict):
         fail(failures, "OpenHands /server_info did not return JSON")
     else:
         ok("OpenHands app API is reachable")
 
     automations = extract_automations(
-        http_json(f"{host}/api/automation/v1?limit=100", headers)
+        http_json(f"{host}/api/automation/v1?limit=100", automation_auth)
     )
     automation_failures = validate_automation_states(
         automations,
@@ -314,7 +320,8 @@ def check_openhands(failures: list[str], mode: str) -> None:
 
     if mode == "sidekick-v2":
         try:
-            http_json(f"{host}/api/v1/app-conversations/search?limit=1", headers)
+            http_json(f"{host}/api/v1/users/me", app_auth)
+            http_json(f"{host}/api/v1/app-conversations/search?limit=1", app_auth)
         except Exception as exc:
             fail(
                 failures,
@@ -323,6 +330,21 @@ def check_openhands(failures: list[str], mode: str) -> None:
             )
         else:
             ok("OpenHands app-conversation API is reachable for sidekick child starts")
+
+        repo_query = quote(os.environ["GITHUB_DEMO_REPOSITORY"], safe="")
+        try:
+            http_json(
+                f"{host}/api/v1/git/repositories/search?provider=github&query={repo_query}",
+                app_auth,
+            )
+        except Exception as exc:
+            fail(
+                failures,
+                "OpenHands GitHub provider token is not valid for repo-backed "
+                f"sidekick conversations; re-auth GitHub for the API-key owner ({exc})",
+            )
+        else:
+            ok("OpenHands GitHub provider token can search the demo repository")
 
 
 def main() -> int:

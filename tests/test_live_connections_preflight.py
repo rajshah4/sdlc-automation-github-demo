@@ -155,3 +155,14 @@ def test_jira_permission_validation_requires_add_comments() -> None:
     assert module.validate_jira_permissions(payload) == [
         "Jira token cannot post PR/status comments back to Jira (ADD_COMMENTS)"
     ]
+
+
+def test_openhands_auth_headers_are_split_by_api_family() -> None:
+    module = load_preflight()
+
+    assert module.automation_headers("demo-key") == {
+        "Authorization": "Bearer demo-key",
+    }
+    assert module.app_headers("demo-key") == {
+        "X-Access-Token": "demo-key",
+    }

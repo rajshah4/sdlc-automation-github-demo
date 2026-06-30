@@ -63,6 +63,19 @@ def test_dry_run_builds_visible_parent_and_child_scouts() -> None:
     assert payloads["main"]["title"] == "Step 3 - Implement Fix and Open PR (KAN-123)"
 
 
+def test_app_conversation_headers_use_access_token_only(monkeypatch) -> None:
+    module = load_module()
+    monkeypatch.setenv("OPENHANDS_API_KEY_ORG", "demo-key")
+
+    headers = module.app_headers()
+
+    assert headers == {
+        "X-Access-Token": "demo-key",
+        "Accept": "application/json",
+    }
+    assert "Authorization" not in headers
+
+
 def test_scout_prompts_are_read_only_and_bounded() -> None:
     module = load_module()
     ticket = demo_ticket(module)

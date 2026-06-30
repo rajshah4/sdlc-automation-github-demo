@@ -399,8 +399,15 @@ What still needs optimization:
   failed before model execution because `selected_repository` child starts
   returned `Git provider authentication issue when getting remote URL` for both
   owner/repo and full GitHub URL forms. Haiku timing is therefore still
-  unmeasured; first fix Rajistics app-conversation auth stability and GitHub
-  selected-repository provider access.
+  unmeasured.
+- Follow-up instance checks showed app-server auth works with
+  `X-Access-Token: <OPENHANDS_API_KEY_ORG>`, while automation APIs require
+  `Authorization: Bearer <OPENHANDS_API_KEY_ORG>`. Do not send both headers
+  together because app auth can prioritize a stale `Authorization` header. The
+  remaining sidekick blocker is the GitHub provider token for user
+  `9328d634-bd0d-4125-be44-a71b18548a58`: repo search returns
+  `401 Invalid github token`. Re-auth GitHub for that API-key owner user, rerun
+  the repo search preflight, then re-measure Haiku scout timing.
 - The parent/scout conversations still pay repo startup/context cost because
   they use `selected_repository`. That makes the UI simple and reliable, but it
   is not the cheapest sidekick design.

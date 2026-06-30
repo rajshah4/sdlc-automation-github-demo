@@ -28,6 +28,11 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
   conversations can start. If the sidekick launcher fails with `Git provider
   authentication issue when getting remote URL`, fix the Rajistics GitHub
   provider/app authorization before testing Haiku scout timing.
+- Auth is split by API family. Automation endpoints under `/api/automation/v1`
+  use `Authorization: Bearer <OPENHANDS_API_KEY_ORG>`. App-server endpoints
+  under `/api/v1`, including app conversations and Git provider repo search, use
+  `X-Access-Token: <OPENHANDS_API_KEY_ORG>`. Do not send both headers together;
+  app auth may prioritize a stale `Authorization` header.
 - For visible sidekick runs, keep `sandbox_grouping_strategy` at
   `FEWEST_CONVERSATIONS`; with `NO_GROUPING`, KAN-42 failed before useful work
   with `Timed out: Sandbox not available`.

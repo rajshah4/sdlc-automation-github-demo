@@ -292,15 +292,30 @@ Follow-up sidekick-v2 checks on 2026-06-30 UTC:
   value. A minimal no-repo Haiku smoke conversation later hit
   `POST /api/v1/app-conversations returned HTTP 401: BearerTokenError` during an
   intermittent app-conversation API failure window.
-- Current conclusion: Haiku sidekick timing is not validated yet. The blockers
-  are app-conversation API/auth instability and GitHub `selected_repository`
-  provider auth in the Rajistics instance. The normal Jira-to-PR path and the
-  older sidekick-v2 proof remain useful demo assets, but do not promise the
-  Haiku scout variant until selected-repository child starts are fixed.
+- Current conclusion: Haiku sidekick timing is not validated yet. The concrete
+  blocker is the stale/invalid GitHub provider token for the API-key owner user,
+  which prevents `selected_repository` child conversations from resolving the
+  demo repo. The normal Jira-to-PR path and the older sidekick-v2 proof remain
+  useful demo assets, but do not promise the Haiku scout variant until GitHub is
+  re-authenticated and repo search passes.
 - A final live preflight after these checks passed Jira and GitHub but failed on
   the Rajistics automation list endpoint with `HTTP 503 no available server`,
   reinforcing that the current issue is instance/API reliability rather than the
   demo prompt itself.
+- Follow-up diagnosis split the auth issue into two separate surfaces:
+  automation APIs under `/api/automation/v1` should use
+  `Authorization: Bearer <OPENHANDS_API_KEY_ORG>`, while app-server APIs under
+  `/api/v1` should use `X-Access-Token: <OPENHANDS_API_KEY_ORG>` only. Sending
+  both headers can be harmful because app auth may prioritize `Authorization`.
+- The org key currently works for app-server checks such as `/api/v1/users/me`,
+  `/api/v1/app-conversations/search`, and
+  `/api/v1/app-conversations/start-tasks/search`. The repo-backed conversation
+  failure reproduced at
+  `/api/v1/git/repositories/search?provider=github&query=rajshah4/sdlc-automation-github-demo`
+  as `401 Invalid github token`. The app logs show a GitHub token being resolved
+  for user `9328d634-bd0d-4125-be44-a71b18548a58`, but GitHub rejects it. The
+  concrete fix is to re-auth GitHub for the API-key owner user in Rajistics,
+  then rerun the sidekick-v2 preflight.
 
 Wiring check:
 

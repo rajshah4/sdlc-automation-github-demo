@@ -57,10 +57,7 @@ def fetch_events(conversation_id: str, limit: int) -> list[dict[str, Any]]:
         endpoint = f"{host()}/api/v1/conversation/{conversation_id}/events/search?{urlencode(params)}"
         request = Request(
             endpoint,
-            headers={
-                "Authorization": f"Bearer {api_key()}",
-                "X-Access-Token": api_key(),
-            },
+            headers={"X-Access-Token": api_key()},
         )
         try:
             with urlopen(request, timeout=60) as response:

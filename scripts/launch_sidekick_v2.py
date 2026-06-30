@@ -158,6 +158,13 @@ def openhands_api_key() -> str:
     return value
 
 
+def app_headers() -> dict[str, str]:
+    return {
+        "X-Access-Token": openhands_api_key(),
+        "Accept": "application/json",
+    }
+
+
 def http_json(
     method: str,
     path: str,
@@ -166,12 +173,7 @@ def http_json(
     headers: dict[str, str] | None = None,
     timeout: int = 60,
 ) -> Any:
-    request_headers = {
-        "Authorization": f"Bearer {openhands_api_key()}",
-        "Accept": "application/json",
-    }
-    if method == "GET":
-        request_headers["X-Access-Token"] = openhands_api_key()
+    request_headers = app_headers()
     if body is not None:
         request_headers["Content-Type"] = "application/json"
     if headers:
