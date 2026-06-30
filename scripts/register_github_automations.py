@@ -44,17 +44,17 @@ def load_request(spec_path: Path) -> dict[str, Any]:
     spec = json.loads(spec_path.read_text(encoding="utf-8"))
     prompt_path = spec_path.parent / spec["prompt_file"]
     request: dict[str, Any] = {
-        "name": spec["name"],
+        "name": expand_env(spec["name"]),
         "prompt": prompt_path.read_text(encoding="utf-8"),
-        "trigger": spec["trigger"],
+        "trigger": expand_env(spec["trigger"]),
     }
     if "timeout" in spec:
-        request["timeout"] = spec["timeout"]
+        request["timeout"] = expand_env(spec["timeout"])
     if "repos" in spec:
-        request["repos"] = spec["repos"]
+        request["repos"] = expand_env(spec["repos"])
     if "model" in spec:
-        request["model"] = spec["model"]
-    return expand_env(request)
+        request["model"] = expand_env(spec["model"])
+    return request
 
 
 def post_prompt_preset(host: str, api_key: str, payload: dict[str, Any]) -> dict[str, Any]:

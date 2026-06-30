@@ -43,14 +43,14 @@ def load_request(spec_path: Path) -> dict[str, Any]:
     spec = json.loads(spec_path.read_text(encoding="utf-8"))
     prompt_path = spec_path.parent / spec["prompt_file"]
     request: dict[str, Any] = {
-        "name": spec["name"],
+        "name": expand_env(spec["name"]),
         "prompt": prompt_path.read_text(encoding="utf-8"),
-        "trigger": spec["trigger"],
+        "trigger": expand_env(spec["trigger"]),
     }
     for optional in ("timeout", "repos", "model"):
         if optional in spec:
-            request[optional] = spec[optional]
-    return expand_env(request)
+            request[optional] = expand_env(spec[optional])
+    return request
 
 
 def post_prompt_preset(host: str, api_key: str, payload: dict[str, Any]) -> dict[str, Any]:

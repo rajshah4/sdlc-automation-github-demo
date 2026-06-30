@@ -16,5 +16,5 @@
     }
   ],
   "timeout": 600,
-  "model": "Bedrock-Qwen3-Coder-30B"
+  "model": "Bedrock-Claude-Sonnet-4-5-fast"
 }

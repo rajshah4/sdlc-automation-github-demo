@@ -14,6 +14,10 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
 
 - `OPENHANDS_HOST_GITHUB` points at the self-hosted app URL, usually `https://app.<base_domain>`.
 - `OPENHANDS_API_KEY_ORG` is available locally for registration and verification. GitHub- or Rajistics-specific keys are accepted fallbacks, but the demo scripts prefer the org-scoped key when it is present.
+- Before a live demo, run the non-mutating connection gate:
+  `python3 scripts/preflight_live_connections.py --env-file /Users/rajiv.shah/Code/install_replicate/.env --mode main`
+- Before the sidekick A/B timing demo, switch automation state intentionally and
+  run: `python3 scripts/preflight_live_connections.py --env-file /Users/rajiv.shah/Code/install_replicate/.env --mode sidekick-experiment`
 - For the Rajistics Replicated instance, verify the app URL, GitHub App slug, client ID, app ID, webhook secret, and private key are configured in the Replicated admin console.
 - GitHub sign-in works in OpenHands.
 - Repo search works in OpenHands.
@@ -90,6 +94,6 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
 - Event-driven triggers avoid unnecessary LLM calls.
 - `scripts/preflight_github_demo.py`, OpenSpec-style validation, label setup, and Petstore SRE observation scripts are deterministic and do not call an LLM.
 - Desired LLM profiles are documented in the automation JSON files with the `model` field. In the Rajistics automation API, `model` means the saved model profile name for automation runs.
-- Current Enterprise Org model split: Jira/build/incident use `Bedrock-Claude-Sonnet-4-5`, QA uses `Bedrock-Qwen3-Coder-30B`, and review uses `Bedrock-Claude-Haiku-4-5`.
+- Current Enterprise Org model split: Jira and QA use `Bedrock-Claude-Sonnet-4-5-fast`, build/incident use `Bedrock-Claude-Sonnet-4-5`, and review uses `Bedrock-Claude-Haiku-4-5`.
 - Secrets stay in OpenHands secret store or local `.env`.
 - Humans approve PRs, reviews, merges, deployments, and production-facing fixes.

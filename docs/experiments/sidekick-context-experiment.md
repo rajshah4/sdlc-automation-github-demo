@@ -213,3 +213,71 @@ Compare:
 
 Do not use true child-agent sidekicks in the five-minute live demo until they
 beat or match the deterministic fan-out baseline on elapsed time and readability.
+
+## Sidekick V2 Live Result
+
+Date: 2026-06-30 UTC
+
+This run used the new API launcher in `scripts/launch_sidekick_v2.py` to prove
+the visible side-agent architecture. The Jira ticket was created first, then the
+launcher started a parent conversation, three scout child conversations, and the
+main implementation child conversation. The regular broad Jira automation was
+temporarily disabled during the test so it would not duplicate the work.
+
+Important caveat: this proves the architecture and timing, but it is not yet a
+dedicated Jira webhook automation. The next step is packaging this launcher as
+the `sidekick-v2` Jira automation path.
+
+| Role | Link | Result | Cost |
+| --- | --- | --- | ---: |
+| Jira ticket | `https://rajiv-shah.atlassian.net/browse/KAN-39` | Sparse bug ticket: available pets list shows unavailable animals. | n/a |
+| Parent orchestrator | `https://app.replicated.rajistics.com/conversations/64befb59e4de49e0999d36a8fff538e9` | Grouped the visible child conversations. | $0.0625 |
+| `docs-scout` | `https://app.replicated.rajistics.com/conversations/f00b4d70f7794a1a9f99c81d60aa2135` | Found product rules in `AGENTS.md` and `docs/wiki/petstore-catalog-availability.md`. | $0.0804 |
+| `logs-scout` | `https://app.replicated.rajistics.com/conversations/015f205b6835402e987a0e42a9295f05` | Found `PENDING_PET_VISIBLE` evidence in `docs/logs/pending-pet-visible.ndjson`. | $0.0846 |
+| `repo-scout` | `https://app.replicated.rajistics.com/conversations/f39ad87fe32447ad99889680feec0a23` | Found likely implementation/test files in `app/petstore_app/catalog.py` and `app/tests/test_pet_catalog.py`. | $0.1151 |
+| Main implementation | `https://app.replicated.rajistics.com/conversations/e307dfbd8a624947bccac88ffa3d495f` | Opened PR #47 and added `openhands-qa`. | $0.6928 |
+| PR | `https://github.com/rajshah4/sdlc-automation-github-demo/pull/47` | `[KAN-39] Fix available pets filter to exclude pending pets`. | n/a |
+| QA automation | `https://app.replicated.rajistics.com/conversations/c928b6c1-9cfe-4520-9cc5-1f394105a5bd` | Posted passing QA report on PR #47. | $1.2641 |
+| QA comment | `https://github.com/rajshah4/sdlc-automation-github-demo/pull/47#issuecomment-4839777514` | Validated backend fix, regression tests, and UI fallback evidence. | n/a |
+
+Timing from the live run:
+
+| Segment | Start | End | Duration |
+| --- | --- | --- | ---: |
+| Parent/scout launch to PR opened | 03:59:07 | 04:03:12 | ~4.1 min |
+| Scouts launched to all scouts finished | 03:59:17 | 04:00:41 | ~1.4 min |
+| Main implementation child to PR opened | 04:00:40 | 04:03:12 | ~2.5 min |
+| Main implementation child to finished | 04:00:40 | 04:03:35 | ~2.9 min |
+| QA label to QA comment | 04:03:22 | 04:08:29 | ~5.1 min |
+| QA automation total | 04:03:22 | 04:08:53 | ~5.5 min |
+
+Observed improvements:
+
+- The UI now clearly shows separate side-agent conversations instead of one
+  inline `CONTEXT_BRIEF` inside the main conversation.
+- The side-agent work fit inside the five-minute PR target when paired with the
+  main implementation child: PR opened in about 4.1 minutes from parent launch.
+- The separate QA agent worked as the second post-PR conversation and posted a
+  readable report.
+
+Observed tradeoffs:
+
+- `POST /api/v1/app-conversations` accepts concrete LiteLLM model strings, not
+  saved profile names. Passing `Bedrock-Claude-Sonnet-4-5-fast` directly caused
+  `LLMBadRequestError`; the launcher now defaults to
+  `litellm_proxy/us.anthropic.claude-sonnet-4-5-20250929-v1:0`.
+- Fresh app-conversation reads can briefly return `BearerTokenError`, and event
+  reads can return 429 when several scouts finish together. The launcher now
+  retries those transient reads.
+- Using `selected_repository` makes the conversations easy to launch and visible
+  in the UI, but scouts still load substantial repo context. The three scouts
+  plus parent cost about $0.34 before the main implementation. For a cost demo,
+  test a manual shallow-clone scout path or a deterministic scout script.
+- The parent orchestrator currently consumes model tokens even though it is
+  intended as a grouping node. A custom automation package should avoid spending
+  LLM tokens for the parent when possible.
+
+Decision after KAN-39: the sidekick architecture is demo-worthy if the goal is to
+show multi-agent orchestration. The normal single-agent Jira-to-PR path is still
+simpler for a pure speed demo, but Sidekick V2 is now within the five-minute
+PR-opening target and tells the customer story much better.

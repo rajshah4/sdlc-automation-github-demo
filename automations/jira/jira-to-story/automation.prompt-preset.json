@@ -6,7 +6,7 @@
     "type": "event",
     "source": "jira-direct",
     "on": "jira:issue_created",
-    "filter": "issue.fields.project.key == '${JIRA_DEMO_PROJECT_KEY}' && issue.fields.issuetype.name == 'Task'"
+    "filter": "issue.fields.project.key == '${JIRA_DEMO_PROJECT_KEY}' && issue.fields.issuetype.name == 'Task' && !contains(issue.fields.labels, 'control-experiment') && !contains(issue.fields.labels, 'sidekick-experiment') && !contains(issue.fields.labels, 'sidekick-v2')"
   },
   "repos": [
     {
@@ -15,5 +15,5 @@
     }
   ],
   "timeout": 900,
-  "model": "Bedrock-Claude-Sonnet-4-5"
+  "model": "Bedrock-Claude-Sonnet-4-5-fast"
 }
