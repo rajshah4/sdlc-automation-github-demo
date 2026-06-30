@@ -46,10 +46,8 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
 - Adding the `openhands-build` label to a clean issue creates a conversation in the self-hosted instance.
 - Automations are registered from `automations/github/*/automation.prompt-preset.json`.
 - After moving to an org-scoped API key, verify GitHub label events create runs in
-  the same org scope. On 2026-06-29, PR #37's `openhands-qa` label was still
-  handled by the older personal-scope automation
-  `dfd2bfe1-72f9-4ad2-8548-6b2aad64a037`, while the Enterprise Org QA
-  automation `b3192e16-171a-4ec3-8028-9514a7f372fe` only ran by manual dispatch.
+  the same org scope. After the latest refreshed install, the active Enterprise
+  Org QA automation is `96b8ad90-bdb4-42ba-81f8-0cabf059bd6a`.
 - The older personal-scope demo automations were disabled on 2026-06-29 so GitHub
   labels no longer take the old path. Keep the Enterprise Org automations enabled.
 - After the GitHub event routing fix, PR #38's `openhands-qa` label reached the
@@ -74,7 +72,7 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
 ## Jira
 
 - Jira admin webhook points to the Rajistics `jira-direct` webhook URL.
-  - Enterprise Org URL: `https://app.replicated.rajistics.com/api/automation/v1/events/b35383f5-00e0-4f4d-99c5-df8943fa2355/jira-direct`
+  - Enterprise Org URL: `https://app.replicated.rajistics.com/api/automation/v1/events/9a0d7385-6478-45d5-9764-122d1b980341/jira-direct`
 - Jira webhook secret matches the Rajistics `jira-direct` signing secret.
 - The Jira webhook signing secret is stored in the Rajistics automation webhook
   registration and in Jira's webhook configuration. It does not need to be

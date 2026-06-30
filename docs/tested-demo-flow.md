@@ -41,19 +41,19 @@ Prompt-preset automations are registered with the Rajistics Enterprise Org API k
 
 | Work cell | Automation ID | Model profile | Trigger |
 | --- | --- | --- | --- |
-| `jira-to-story` | `a22f4cfd-d194-4566-b773-89fc903fd9d6` | `Bedrock-Claude-Sonnet-4-5-fast` | `jira:issue_created` from `jira-direct` |
-| `jira-to-story-sidekick-v2` | `a159704a-7b4a-4b6d-b17b-ec201b5abb64` | `Bedrock-Claude-Sonnet-4-5-fast` launcher; Haiku scouts | `jira:issue_created` from `jira-direct`, label `sidekick-v2` |
-| `openhands-build` | `1d97b79d-7bb6-4b67-969d-7f0182c416a5` | `Bedrock-Claude-Sonnet-4-5` | `issues.labeled` |
-| `openhands-incident` | `bbff1a54-fe12-43fd-85b6-b1add7f6ca84` | `Bedrock-Claude-Sonnet-4-5` | `issues.labeled` |
-| `openhands-qa` | `b3192e16-171a-4ec3-8028-9514a7f372fe` | `Bedrock-Claude-Sonnet-4-5-fast` | `pull_request.labeled`, `issues.labeled` |
-| `openhands-review` | `912cfa7e-2390-4a5c-bd27-5f6d75861030` | `Bedrock-Claude-Haiku-4-5` | `pull_request.labeled` |
+| `jira-to-story` | `7f63aad8-ae78-483d-9296-223869dc239d` | `Bedrock-Claude-Sonnet-4-5-fast` | `jira:issue_created` from `jira-direct` |
+| `jira-to-story-sidekick-v2` | `3e19b338-b282-45c3-9dca-dcf5d3535590` | `Bedrock-Claude-Sonnet-4-5-fast` launcher; Haiku scouts | `jira:issue_created` from `jira-direct`, label `sidekick-v2` |
+| `openhands-build` | `d549cb26-8062-43c0-9e97-d0fb81e93ad5` | `Bedrock-Claude-Sonnet-4-5` | `issues.labeled` |
+| `openhands-incident` | `3ca10ce1-d6f4-4b87-a068-5b86b059d9e9` | `Bedrock-Claude-Sonnet-4-5` | `issues.labeled` |
+| `openhands-qa` | `96b8ad90-bdb4-42ba-81f8-0cabf059bd6a` | `Bedrock-Claude-Sonnet-4-5-fast` | `pull_request.labeled`, `issues.labeled` |
+| `openhands-review` | `5601f92c-7972-4416-b317-ea37e41df866` | `Bedrock-Claude-Haiku-4-5` | `pull_request.labeled` |
 
 Run-list check:
 
 ```bash
 python3 scripts/list_openhands_automation_runs.py \
   --env-file /path/to/local/.env \
-  --automation-id a22f4cfd-d194-4566-b773-89fc903fd9d6 \
+  --automation-id 7f63aad8-ae78-483d-9296-223869dc239d \
   --limit 5
 ```
 
@@ -72,8 +72,8 @@ The Rajistics API was checked after registration and returned the active set as 
 
 Enterprise Org Jira webhook source:
 
-- Webhook ID: `27073b98-289c-440f-bcc4-7de63f8c31fc`
-- Webhook URL: `https://app.replicated.rajistics.com/api/automation/v1/events/b35383f5-00e0-4f4d-99c5-df8943fa2355/jira-direct`
+- Webhook ID: `5248e3f6-101a-4f45-afbf-ca1d7944c807`
+- Webhook URL: `https://app.replicated.rajistics.com/api/automation/v1/events/9a0d7385-6478-45d5-9764-122d1b980341/jira-direct`
 - Event key expression: `webhookEvent`
 - Signature header: `X-Hub-Signature`
 

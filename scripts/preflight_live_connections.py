@@ -45,11 +45,11 @@ class AutomationIds:
 
 
 DEFAULT_AUTOMATION_IDS = AutomationIds(
-    jira_main="a22f4cfd-d194-4566-b773-89fc903fd9d6",
-    jira_control="b12d471e-797b-4010-bef7-c02fbb3c8bed",
-    jira_sidekick="0aad5e83-1b19-49f8-a985-da459b0c4112",
-    jira_sidekick_v2="a159704a-7b4a-4b6d-b17b-ec201b5abb64",
-    github_qa="b3192e16-171a-4ec3-8028-9514a7f372fe",
+    jira_main="7f63aad8-ae78-483d-9296-223869dc239d",
+    jira_control="a37f7bf9-fa58-4751-953d-ecda962ebf3d",
+    jira_sidekick="35dcd21c-0ad0-4011-9504-1ef7b1c72914",
+    jira_sidekick_v2="3e19b338-b282-45c3-9dca-dcf5d3535590",
+    github_qa="96b8ad90-bdb4-42ba-81f8-0cabf059bd6a",
 )
 
 
