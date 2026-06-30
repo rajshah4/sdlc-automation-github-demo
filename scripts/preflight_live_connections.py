@@ -302,10 +302,10 @@ def check_openhands(failures: list[str], mode: str) -> None:
             fail(
                 failures,
                 "OpenHands app-conversation API is not reachable with the demo "
-                f"API key; visible sidekick child conversations will not start ({exc})",
+                f"API key; visible sidekick scout conversations will not start ({exc})",
             )
         else:
-            ok("OpenHands app-conversation API is reachable for sidekick child starts")
+            ok("OpenHands app-conversation API is reachable for sidekick scout starts")
 
         repo_query = quote(os.environ["GITHUB_DEMO_REPOSITORY"], safe="")
         try:
