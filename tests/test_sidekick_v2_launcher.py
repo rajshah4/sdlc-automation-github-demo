@@ -169,6 +169,8 @@ def test_main_prompt_consumes_scout_results_and_triggers_qa_label() -> None:
     assert "DEMO_STEP 3: Implement Fix, Add Tests, Open PR" in prompt
     assert "DEMO_STEP 3 COMPLETE: PR ready for human review" in prompt
     assert "skills/sdlc-story/SKILL.md" in prompt
+    assert "Create the implementation branch from origin/main" in prompt
+    assert "git log --oneline origin/main..HEAD" in prompt
     assert "openhands-qa" in prompt
     assert "Open a GitHub pull request" in prompt
 

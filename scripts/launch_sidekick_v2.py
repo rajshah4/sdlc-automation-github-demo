@@ -368,13 +368,18 @@ Scout results:
 
 Workflow:
 Step 3.1 - Load and follow skills/sdlc-story/SKILL.md for the implementation workflow.
-Step 3.2 - Fix the bug indicated by the ticket and scout results.
-Step 3.3 - Add or update tests that would have caught the bug.
-Step 3.4 - Run the relevant tests.
-Step 3.5 - Open a GitHub pull request for review and include the Jira key in the title/body.
+Step 3.2 - Create the implementation branch from origin/main before editing. The
+           sidekick-context-experiment checkout is only the launcher/context
+           scaffold; the customer-facing PR must diff cleanly against main.
+           Before opening the PR, verify `git log --oneline origin/main..HEAD`
+           contains only your implementation commits.
+Step 3.3 - Fix the bug indicated by the ticket and scout results.
+Step 3.4 - Add or update tests that would have caught the bug.
+Step 3.5 - Run the relevant tests.
+Step 3.6 - Open a GitHub pull request for review and include the Jira key in the title/body.
            Preserve useful ticket title prefixes such as [UI] in the PR title.
-Step 3.6 - Add the openhands-qa label to the pull request so the separate QA agent runs.
-Step 3.7 - If essential context is missing, stop and ask for human input instead of guessing.
+Step 3.7 - Add the openhands-qa label to the pull request so the separate QA agent runs.
+Step 3.8 - If essential context is missing, stop and ask for human input instead of guessing.
 
 Final response shape:
 DEMO_STEP 3 COMPLETE: PR ready for human review
