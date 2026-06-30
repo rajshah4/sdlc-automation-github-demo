@@ -30,9 +30,12 @@ REQUIRED_SKILLS = {
     "sdlc-incident",
     "sdlc-code-review",
 }
+OPTIONAL_SKILLS = {
+    "sdlc-context-sidekick",
+}
 REQUIRED_ENV = [
     ("OPENHANDS_HOST_GITHUB", "OPENHANDS_HOST_RAJISTICS", "OPENHANDS_HOST"),
-    ("OPENHANDS_API_KEY_GITHUB", "OPENHANDS_API_KEY_RAJISTICS", "OPENHANDS_API_KEY"),
+    ("OPENHANDS_API_KEY_ORG", "OPENHANDS_API_KEY_GITHUB", "OPENHANDS_API_KEY_RAJISTICS", "OPENHANDS_API_KEY"),
     ("GITHUB_DEMO_REPOSITORY",),
     ("GITHUB_DEMO_REPO_URL",),
 ]
@@ -119,13 +122,19 @@ def validate_automation_specs(failures: list[str]) -> None:
 def validate_skills(failures: list[str]) -> None:
     found = {path.parent.name for path in SKILLS_ROOT.glob("*/SKILL.md")}
     missing = REQUIRED_SKILLS - found
-    unexpected = found - REQUIRED_SKILLS
+    unexpected = found - REQUIRED_SKILLS - OPTIONAL_SKILLS
     if missing:
         fail(f"missing primary skills: {', '.join(sorted(missing))}", failures)
     if unexpected:
         fail(f"unexpected top-level skills: {', '.join(sorted(unexpected))}", failures)
     if not missing and not unexpected:
-        ok("four primary repo-local skills are present")
+        optional_found = found & OPTIONAL_SKILLS
+        suffix = (
+            f"; optional skills present: {', '.join(sorted(optional_found))}"
+            if optional_found
+            else ""
+        )
+        ok(f"primary repo-local skills are present{suffix}")
 
 
 def validate_env(offline: bool, failures: list[str]) -> None:

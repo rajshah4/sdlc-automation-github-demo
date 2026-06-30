@@ -44,6 +44,7 @@ Sparse issues are the primary demo path. The ticket should not need repo names, 
 - Status labels: `openhands:ready`, `openhands:in-progress`, `openhands:needs-human`, `openhands:done`
 - Use event context; do not poll GitHub.
 - Avoid result comments that repeat the exact trigger text.
+- Use runtime secret `GITHUB_TOKEN` for GitHub API calls, `gh`, pushes, PRs, labels, and comments. Do not use `GITHUB` or `GH_TOKEN`; if auth is missing or returns 401, stop and report `GITHUB_TOKEN` is missing or invalid without printing it.
 - Never merge, bypass review, change branch protection, or alter deployment settings.
 
 ## Jira Boundaries
@@ -66,7 +67,7 @@ Sparse issues are the primary demo path. The ticket should not need repo names, 
 9. Add or update focused tests.
 10. Run the narrowest useful validation first.
 11. Open a draft PR with OpenSpec change link, evidence, and human-review notes.
-12. Hand off to QA/review by adding the appropriate automation label when that is available and safe.
+12. For Jira demo PRs, add `openhands-qa` after opening or updating the PR so the QA work cell starts as a second conversation. Do not add `openhands-review` automatically unless the demo operator explicitly asks for review automation.
 
 ## Evidence Waypoints
 
@@ -154,3 +155,5 @@ The PR body must show:
 - tests run
 - residual risks
 - reminder that humans approve review and merge decisions
+
+When the repo supports the QA automation, add `openhands-qa` to the PR after it is created or updated. This handoff starts automated validation only; it must not approve, merge, bypass branch protection, or remove human PR review.

@@ -1,12 +1,12 @@
 {
-  "name": "Jira Bug to PR - KAN Task to PR",
+  "name": "Jira Bug to PR - Visible Sidekick V2",
   "preset": "prompt",
   "prompt_file": "prompt.md",
   "trigger": {
     "type": "event",
     "source": "jira-direct",
     "on": "jira:issue_created",
-    "filter": "issue.fields.project.key == '${JIRA_DEMO_PROJECT_KEY}' && issue.fields.issuetype.name == 'Task' && !contains(issue.fields.labels, 'sidekick-v2')"
+    "filter": "issue.fields.project.key == '${JIRA_DEMO_PROJECT_KEY}' && issue.fields.issuetype.name == 'Task' && contains(issue.fields.labels, 'sidekick-v2')"
   },
   "repos": [
     {

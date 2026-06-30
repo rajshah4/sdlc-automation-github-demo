@@ -7,6 +7,7 @@ __pycache__/
 .pytest_cache/
 .venv/
 automation-registration-results.json
+jira-automation-registration-results.json
 work/
 tmp/
-
+.local-demo-notes/

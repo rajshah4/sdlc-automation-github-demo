@@ -1,6 +1,10 @@
 # Tested Demo Flow
 
-Last updated: 2026-06-23 UTC.
+Last updated: 2026-06-30 UTC.
+
+This document keeps the public validation story concise: what to run, what the
+viewer should see, and which human gates remain in place. Exploratory notes stay
+outside the repo.
 
 ## Local Validation
 
@@ -10,57 +14,107 @@ python3 scripts/preflight_github_demo.py --offline
 python3 scripts/simulate_github_event.py --fixture tests/fixtures/github_issue_labeled_build.json
 python3 skills/sdlc-story/scripts/validate_open_spec.py skills/sdlc-story/references/openspec-change-template
 python3 skills/sdlc-qa/scripts/with_server.py --server "python3 -m http.server 4173 --directory app/web" --port 4173 -- python3 skills/sdlc-qa/scripts/static_ui_smoke.py --url http://localhost:4173
-NODE_PATH=/path/to/node_modules PLAYWRIGHT_BROWSER_CHANNEL=chrome python3 skills/sdlc-qa/scripts/with_server.py --server "python3 -m http.server 4173 --directory app/web" --port 4173 -- python3 skills/sdlc-qa/scripts/run_playwright_ui_demo.py --url http://localhost:4173 --artifact-dir /tmp/sdlc-petstore-playwright/catalog-search
 ```
 
-The build fixture now represents the bug-first demo path: a sparse issue reports that customers are seeing pets that are not available, with `PENDING_PET_VISIBLE` as the log clue.
+The build fixture represents the bug-first demo path: a sparse issue reports
+that customers are seeing pets that are not available, with
+`PENDING_PET_VISIBLE` as the log clue.
 
-## Historical Successful Build Result
+## Automation Packages
 
-Repository:
+Prompt-preset automations are registered with the Rajistics OpenHands API. The
+saved prompt files are intentionally version-controlled so customers can inspect
+the workflow boundary.
 
-- `https://github.com/rajshah4/sdlc-automation-github-demo`
-
-Issue:
-
-- `https://github.com/rajshah4/sdlc-automation-github-demo/issues/1`
-
-Result:
-
-- Rajistics OpenHands automation run `f84671ac-33b7-43d8-a0e4-3532fb180263` completed at `2026-06-23T02:29:45Z`.
-- Rajistics OpenHands conversation: `https://app.replicated.rajistics.com/conversations/060aa6399eae4e77b2fcd630646fbe56`
-- OpenHands posted the result comment: `https://github.com/rajshah4/sdlc-automation-github-demo/issues/1#issuecomment-4775062401`
-- OpenHands opened PR #2: `https://github.com/rajshah4/sdlc-automation-github-demo/pull/2`
-- Issue #1 now has `openhands:done`.
-
-Note: this successful build result used the earlier max-adoption-fee feature story before the demo assets were pivoted to bug-first examples. The active automation set is label-only and should use the current bug fixture for new dry runs.
-
-## Registered OpenHands Automations
-
-Prompt-preset automations were registered with the Rajistics Replicated API key:
-
-| Work cell | Automation ID | Trigger |
+| Work cell | Package | Trigger |
 | --- | --- | --- |
-| `openhands-build` | `efc16fdb-04da-4140-963a-5e693bbc8bb4` | `issues.labeled` |
-| `openhands-incident` | `4c9ebc42-eb96-4cc5-a4a7-13089bdd6506` | `issues.labeled` |
-| `openhands-qa` | `fe3ea75f-dfbb-4779-a73f-a287380fdb27` | `pull_request.labeled` |
-| `openhands-review` | `854dcbb9-0320-40f2-a8a7-e70d15cb737c` | `pull_request.labeled` |
+| Jira bug to PR | `automations/jira/jira-to-story/` | `jira:issue_created` from `jira-direct` |
+| Visible sidekick Jira bug to PR | `automations/jira/jira-to-story-sidekick-v2/` | `jira:issue_created` from `jira-direct`, label `sidekick-v2` |
+| GitHub build | `automations/github/openhands-build/` | `issues.labeled` |
+| GitHub QA | `automations/github/openhands-qa/` | `pull_request.labeled` or `issues.labeled` |
+| GitHub review | `automations/github/openhands-review/` | `pull_request.labeled` |
+| GitHub incident | `automations/github/openhands-incident/` | `issues.labeled` |
 
-Run-list check:
+Register the packages with:
 
 ```bash
-python3 scripts/list_openhands_automation_runs.py \
-  --env-file /path/to/local/.env \
-  --automation-id efc16fdb-04da-4140-963a-5e693bbc8bb4 \
-  --limit 5
+python3 scripts/register_github_automations.py --apply
+python3 scripts/register_jira_automations.py --apply
 ```
 
-The previously registered comment-capable automation set was disabled. The active set above is label-only and skips items already marked `openhands:done`.
+## Fast Jira-To-PR Demo
 
-The Rajistics API was checked after registration and returned the active set as enabled with only `issues.labeled` or `pull_request.labeled` triggers.
+Use this when you want the most reliable live customer demo.
 
-## Not Tested Live
+1. Keep `jira-to-story` enabled and `jira-to-story-sidekick-v2` disabled.
+2. Run the live read-only preflight in `main` mode.
+3. Create a sparse Jira Task in the demo project.
+4. Show OpenHands finding docs/log evidence, locating the repo files, adding a
+   focused regression test, opening a PR, and applying `openhands-qa`.
+5. Show the separate QA automation starting from the PR label.
+6. Stop at human review. The automation does not approve, merge, deploy, or
+   bypass branch protection.
 
-- SRE incident remediation was not run; cloud mutation remains report-only unless `scripts/petstore_gcp_observe.py` reports `diagnosis.safe_to_remediate=true`.
-- QA and review automations are registered but were not live-triggered in this pass.
-- The fresh label-only build automation was registered and preflight-validated, but not live-triggered after cleanup to avoid opening a duplicate PR for issue #1.
+Viewer-facing story:
+
+- Sparse Jira ticket arrives in business language.
+- OpenHands uses repo-local docs and logs to understand the bug.
+- OpenHands finds the implementation and test files.
+- OpenHands creates a PR with tests and evidence.
+- QA runs as a second conversation.
+- Humans keep merge authority.
+
+## Visible Sidekick Demo
+
+Use this when you want the multi-conversation “wow” moment.
+
+1. Disable `jira-to-story` and enable `jira-to-story-sidekick-v2`.
+2. Run the live read-only preflight in `sidekick-v2` mode.
+3. Create the Jira Task with label `sidekick-v2`.
+4. Show the Step 0 launcher conversation as the index.
+5. Open the visible docs, logs, and repo scout conversations.
+6. Open the main implementation conversation and PR.
+7. Show the QA handoff label and keep human review as the final gate.
+
+Expected visible sequence:
+
+- `DEMO_STEP 0`: Jira webhook launcher unwraps the event.
+- `DEMO_STEP 2A`: docs scout finds product/wiki context.
+- `DEMO_STEP 2B`: logs scout finds symptom evidence.
+- `DEMO_STEP 2C`: repo scout finds likely implementation and test files.
+- `DEMO_STEP 3`: main implementation fixes the bug, adds tests, opens the PR,
+  and adds `openhands-qa`.
+
+The sidekick launcher command and operational guardrails live in
+`skills/sdlc-sidekick-launcher/` so the automation prompt stays readable.
+
+## UI And Playwright Evidence
+
+The live Jira bug path does not require browser tooling. For a prepared UI proof,
+use `docs/ui-playwright-example.md`, which points to a PR with:
+
+- UI files changed
+- Playwright spec added
+- screenshot/GIF/video/report artifacts
+- QA PR comments
+
+Do not install Playwright during a timed live demo unless runtime provisioning is
+itself the thing being tested.
+
+## Human Control
+
+OpenHands may open PRs, add tests, post comments, and apply status labels.
+Humans still own:
+
+- scope acceptance
+- PR review
+- merge
+- deployment
+- production-facing remediation
+- risky follow-up decisions
+
+## Not Part Of The Public Demo
+
+- Exploratory timing notes are kept locally.
+- SRE incident remediation remains report-only unless the bounded safe-remediation
+  checks pass and a human explicitly chooses that path.

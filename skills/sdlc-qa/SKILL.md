@@ -19,6 +19,7 @@ This skill is based on the automated QA demo pattern: understand the changed beh
 - Trigger label: `openhands-qa`
 - Status labels: `openhands:ready`, `openhands:in-progress`, `openhands:needs-human`, `openhands:done`
 - QA may push focused test/evidence commits to the PR branch when permitted.
+- Use runtime secret `GITHUB_TOKEN` for GitHub API calls, `gh`, pushes, labels, and comments. Do not use `GITHUB` or `GH_TOKEN`; if auth is missing or returns 401, stop and report `GITHUB_TOKEN` is missing or invalid without printing it.
 - QA does not approve, merge, deploy, or bypass CI.
 
 ## Strategy

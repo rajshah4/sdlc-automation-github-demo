@@ -19,6 +19,7 @@ This skill is based on the SRE Cloud Run remediation demo pattern: observe first
 - Trigger label: `openhands-incident`
 - Status labels: `openhands:ready`, `openhands:in-progress`, `openhands:needs-human`, `openhands:done`
 - Incident automation may post an operator report or open a small PR.
+- Use runtime secret `GITHUB_TOKEN` for GitHub API calls, `gh`, PRs, labels, and comments. Do not use `GITHUB` or `GH_TOKEN`; if auth is missing or returns 401, stop and report `GITHUB_TOKEN` is missing or invalid without printing it.
 - Incident automation must not merge, deploy, change IAM, rotate secrets, or mutate cloud resources without the bounded safe-remediation criteria.
 
 ## Sparse Issue Contract

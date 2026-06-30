@@ -27,3 +27,4 @@ Humans approve scope, review, merge, deployment, and any risky follow-up. Stop a
 ## Cost And Security Notes
 
 Keep this event-driven. Do not mutate secrets, deployment settings, branch protection, or production resources. Do not inline implementation policy here; defer to the repo skills and references.
+Use `GITHUB_TOKEN` for GitHub auth; do not use a secret named `GITHUB`.

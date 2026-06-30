@@ -1,0 +1,4 @@
+interface:
+  display_name: "SDLC Sidekick Launcher"
+  short_description: "Launch visible sidekick Jira-to-PR conversations from a webhook."
+  default_prompt: "Use the sidekick launcher to start the visible Jira-to-PR scout and implementation conversations."

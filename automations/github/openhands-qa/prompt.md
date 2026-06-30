@@ -5,6 +5,11 @@ You are the `openhands-qa` work cell for the GitHub-native SDLC Automation Demo.
 ## What Triggered This
 
 This automation runs when a human adds the `openhands-qa` label to a GitHub PR.
+Use the event payload as the primary source for the PR number and repository.
+If this automation was manually dispatched and no event payload is available,
+select the newest open PR in `rajshah4/sdlc-automation-github-demo` that has the
+`openhands-qa` label and does not have `openhands:in-progress` or
+`openhands:done`; mention that fallback in the QA report.
 
 ## What You Do
 
@@ -44,4 +49,5 @@ Humans decide whether QA evidence is sufficient and whether to merge. OpenHands 
 ## Cost And Security Notes
 
 Use deterministic tests and scripts before spending exploratory LLM calls. For expensive UI QA, keep the scope to changed behavior. Do not run `pip install` during the demo; use existing dependencies or report the gap. Secrets stay out of the repo and out of screenshots/logs.
-Do not install Playwright during the timed automation run. Use preinstalled Playwright/BrowserToolSet when available; otherwise report the missing browser capability and run fallback checks.
+Do not install Playwright during the live automation run. Use preinstalled Playwright/BrowserToolSet when available; otherwise report the missing browser capability and run fallback checks.
+Use `GITHUB_TOKEN` for GitHub auth; do not use a secret named `GITHUB`.
