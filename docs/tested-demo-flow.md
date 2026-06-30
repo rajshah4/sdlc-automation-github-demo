@@ -252,6 +252,66 @@ Follow-up sidekick-v2 checks on 2026-06-30 UTC:
   the run, the automation runs endpoint also returned HTTP 503
   `Service Unavailable` / `no available server`. Treat KAN-44 as an
   automation-service/prompt-preset blocker, not a sidekick timing result.
+- KAN-45 was created as a UI-scoped sidekick-v2 ticket after switching the
+  read-only scouts to Haiku:
+  `https://rajiv-shah.atlassian.net/browse/KAN-45`.
+  Run `5f0726d6-d0c5-4ca5-9091-cfc8a20c5542` completed and created launcher
+  conversation
+  `https://app.replicated.rajistics.com/conversations/afd5957d-53e2-4e46-ba70-fa6beb646069`,
+  but no scout child conversations or PR were created. The launcher stopped with
+  `HTTP 401: BearerTokenError` when trying to call the app-conversation control
+  API.
+- `OPENHANDS_API_KEY` and `OPENHANDS_API_KEY_ORG` were refreshed in the
+  Rajistics secret store, then KAN-46 was created:
+  `https://rajiv-shah.atlassian.net/browse/KAN-46`.
+  Run `b4215f57-e6c3-403c-aaf2-ceb152a776d9` stayed in `RUNNING` with no
+  `conversation_id` while the automation runs endpoint intermittently returned
+  `HTTP 401 Invalid or expired API key`, `HTTP 502 Unexpected response from
+  OpenHands API`, and `HTTP 503 no available server`.
+- A direct local run of `scripts/launch_sidekick_v2.py` against KAN-46 also
+  failed before Haiku scouts could start: `POST /api/v1/app-conversations`
+  returned a start task, but `GET /api/v1/app-conversations/start-tasks?...`
+  returned `HTTP 401: BearerTokenError` for the available API keys. Treat this
+  as an app-conversation control-plane/auth issue, not as a Haiku model failure.
+- KAN-47 was created as a fresh UI-scoped sidekick-v2 issue:
+  `https://rajiv-shah.atlassian.net/browse/KAN-47`. The webhook fired and
+  created run `9234b584-4fa4-43a2-8c3b-27bc6a0594d3`. The run produced a single
+  Sonnet conversation,
+  `https://app.replicated.rajistics.com/conversations/4bfa6a072dd745a9bf07965deb56d755`,
+  titled `Pet Search Budget Filter (KAN-47)`, with `selected_repository=null`,
+  no sidekick children, no PR, and `execution_status=error` after about 1.4
+  minutes. The registered remote automation prompt was checked and does include
+  the Step 0 launcher plus the Haiku scout model string, so this is not local
+  prompt drift.
+- Direct KAN-47 launcher runs with Haiku scouts failed before model execution
+  because child conversation startup could not resolve GitHub repository access:
+  `conversation start task failed: Git provider authentication issue when
+  getting remote URL`. This reproduced with both
+  `rajshah4/sdlc-automation-github-demo` and
+  `https://github.com/rajshah4/sdlc-automation-github-demo` as the repository
+  value. A minimal no-repo Haiku smoke conversation later hit
+  `POST /api/v1/app-conversations returned HTTP 401: BearerTokenError` during an
+  intermittent app-conversation API failure window.
+- Current conclusion: Haiku sidekick timing is not validated yet. The blockers
+  are app-conversation API/auth instability and GitHub `selected_repository`
+  provider auth in the Rajistics instance. The normal Jira-to-PR path and the
+  older sidekick-v2 proof remain useful demo assets, but do not promise the
+  Haiku scout variant until selected-repository child starts are fixed.
+- A final live preflight after these checks passed Jira and GitHub but failed on
+  the Rajistics automation list endpoint with `HTTP 503 no available server`,
+  reinforcing that the current issue is instance/API reliability rather than the
+  demo prompt itself.
+
+Wiring check:
+
+- The high-level automation prompts are workflow-oriented and not hardcoded to
+  one ticket. They name the Jira issue, sidekick launcher, and expected demo
+  sequence.
+- Petstore-specific details live in repo skills and reference fixtures
+  (`skills/sdlc-story`, `skills/sdlc-context-sidekick`, `skills/sdlc-qa`,
+  `docs/wiki`, and `docs/logs`). That is the right place for demo domain
+  context; it keeps the automation prompt readable while still giving the agent
+  concrete product, logs, and test clues after the repo is loaded.
 
 ## Playwright Status
 
@@ -266,6 +326,10 @@ the live Jira bug run. To show the full Playwright artifact path, use one of
 these options:
 
 - Point to the prebuilt UI example in `docs/ui-playwright-example.md`, especially PR #6.
+- PR #6 is titled `Add adoption fee filter to Petstore UI` and includes a
+  Playwright spec, screenshot, GIF, and QA report artifacts.
+- PR #28 is a separate budget-filter UI PR, but it does not include the full
+  Playwright artifact bundle.
 - Preinstall Playwright or expose BrowserToolSet in the Rajistics automation runtime before the demo.
 - Run the checked-in Playwright example locally or in a prepared runtime with `NODE_PATH` pointing at an existing Playwright install.
 

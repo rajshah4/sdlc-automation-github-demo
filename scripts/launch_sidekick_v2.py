@@ -170,6 +170,8 @@ def http_json(
         "Authorization": f"Bearer {openhands_api_key()}",
         "Accept": "application/json",
     }
+    if method == "GET":
+        request_headers["X-Access-Token"] = openhands_api_key()
     if body is not None:
         request_headers["Content-Type"] = "application/json"
     if headers:
@@ -356,6 +358,7 @@ Step 3.2 - Fix the bug indicated by the ticket and scout results.
 Step 3.3 - Add or update tests that would have caught the bug.
 Step 3.4 - Run the relevant tests.
 Step 3.5 - Open a GitHub pull request for review and include the Jira key in the title/body.
+           Preserve useful ticket title prefixes such as [UI] in the PR title.
 Step 3.6 - Add the openhands-qa label to the pull request so the separate QA agent runs.
 Step 3.7 - If essential context is missing, stop and ask for human input instead of guessing.
 

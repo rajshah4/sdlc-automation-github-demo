@@ -288,7 +288,10 @@ def check_openhands(failures: list[str], mode: str) -> None:
         "OPENHANDS_API_KEY_RAJISTICS",
         "OPENHANDS_API_KEY",
     )
-    headers = {"Authorization": f"Bearer {api_key}"}
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "X-Access-Token": api_key,
+    }
     server_info = http_json(f"{host}/server_info", headers)
     if not isinstance(server_info, dict):
         fail(failures, "OpenHands /server_info did not return JSON")
@@ -308,6 +311,18 @@ def check_openhands(failures: list[str], mode: str) -> None:
             fail(failures, message)
     else:
         ok(f"OpenHands automation state matches mode={mode}")
+
+    if mode == "sidekick-v2":
+        try:
+            http_json(f"{host}/api/v1/app-conversations/search?limit=1", headers)
+        except Exception as exc:
+            fail(
+                failures,
+                "OpenHands app-conversation API is not reachable with the demo "
+                f"API key; visible sidekick child conversations will not start ({exc})",
+            )
+        else:
+            ok("OpenHands app-conversation API is reachable for sidekick child starts")
 
 
 def main() -> int:

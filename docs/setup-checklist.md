@@ -21,6 +21,13 @@ Use this checklist to configure the GitHub-native SDLC Automation Demo. Do not p
 - Before the visible sidekick customer demo, keep the normal Jira automation and
   `sidekick-v2` automation enabled, then run:
   `python3 scripts/preflight_live_connections.py --env-file /Users/rajiv.shah/Code/install_replicate/.env --mode sidekick-v2`
+  This mode now also checks `/api/v1/app-conversations/search`; the visible
+  sidekick demo is not ready if that endpoint returns `BearerTokenError`, even
+  when the automation list endpoint passes.
+- The read-only preflight does not prove that `selected_repository` child
+  conversations can start. If the sidekick launcher fails with `Git provider
+  authentication issue when getting remote URL`, fix the Rajistics GitHub
+  provider/app authorization before testing Haiku scout timing.
 - For visible sidekick runs, keep `sandbox_grouping_strategy` at
   `FEWEST_CONVERSATIONS`; with `NO_GROUPING`, KAN-42 failed before useful work
   with `Timed out: Sandbox not available`.

@@ -386,6 +386,21 @@ What still needs optimization:
   detail, and no PR. During the run, the automation runs endpoint also returned
   HTTP 503 `Service Unavailable` / `no available server`. Do not use KAN-44 as a
   timing result; it is an automation-service/prompt-preset blocker.
+- KAN-45 and KAN-46 tested the Haiku-scout registration with UI-scoped Jira
+  tickets. Haiku was not reached: the launcher failed before creating scout
+  children because the app-conversation control API returned
+  `HTTP 401: BearerTokenError` for child start-task reads. KAN-46 also showed
+  intermittent automation run-list `401`, `502`, and `503` responses. The next
+  optimization step is to fix app-conversation API auth/availability before
+  re-measuring Haiku scout timing.
+- KAN-47 confirmed a second blocker after the API key refresh: the webhook run
+  fired, but produced a single erroring Sonnet conversation instead of the Step
+  1/2/3 sidekick tree. Direct local launcher retries with Haiku scouts then
+  failed before model execution because `selected_repository` child starts
+  returned `Git provider authentication issue when getting remote URL` for both
+  owner/repo and full GitHub URL forms. Haiku timing is therefore still
+  unmeasured; first fix Rajistics app-conversation auth stability and GitHub
+  selected-repository provider access.
 - The parent/scout conversations still pay repo startup/context cost because
   they use `selected_repository`. That makes the UI simple and reliable, but it
   is not the cheapest sidekick design.

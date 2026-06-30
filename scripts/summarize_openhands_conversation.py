@@ -55,7 +55,13 @@ def fetch_events(conversation_id: str, limit: int) -> list[dict[str, Any]]:
         if page_id:
             params["page_id"] = page_id
         endpoint = f"{host()}/api/v1/conversation/{conversation_id}/events/search?{urlencode(params)}"
-        request = Request(endpoint, headers={"Authorization": f"Bearer {api_key()}"})
+        request = Request(
+            endpoint,
+            headers={
+                "Authorization": f"Bearer {api_key()}",
+                "X-Access-Token": api_key(),
+            },
+        )
         try:
             with urlopen(request, timeout=60) as response:
                 payload = json.loads(response.read().decode("utf-8"))
