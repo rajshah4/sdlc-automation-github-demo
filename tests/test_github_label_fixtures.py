@@ -6,6 +6,7 @@ from pathlib import Path
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 AUTOMATION_LABELS = {
+    "openhands-context",
     "openhands-build",
     "openhands-review",
     "openhands-qa",
@@ -26,6 +27,15 @@ def test_issue_label_build_fixture_is_sparse_bug() -> None:
     assert payload["issue"]["number"] == 7
     assert payload["issue"]["title"] == "Customers are seeing pets that are not available"
     assert "type:bug" in {label["name"] for label in payload["issue"]["labels"]}
+
+
+def test_issue_label_context_fixture_is_memory_scout_event() -> None:
+    payload = load_fixture("github_issue_labeled_context.json")
+
+    assert payload["_event_name"] == "issues"
+    assert payload["action"] == "labeled"
+    assert payload["label"]["name"] == "openhands-context"
+    assert "repo memory" in payload["issue"]["body"]
 
 
 def test_pull_request_label_qa_fixture_is_pr_event() -> None:

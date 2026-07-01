@@ -34,6 +34,7 @@ REQUIRED_SKILLS = {
 }
 OPTIONAL_SKILLS = {
     "sdlc-context-sidekick",
+    "sdlc-sidekick-launcher",
 }
 REQUIRED_ENV = [
     ("OPENHANDS_HOST_GITHUB", "OPENHANDS_HOST_RAJISTICS", "OPENHANDS_HOST"),

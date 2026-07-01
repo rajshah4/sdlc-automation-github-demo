@@ -22,6 +22,7 @@ def load_script_function(script_path: Path, function_name: str) -> Any:
 def test_all_github_automation_packages_have_visible_demo_prompts() -> None:
     specs = sorted(AUTOMATIONS.glob("openhands-*/automation.prompt-preset.json"))
     assert {path.parent.name for path in specs} == {
+        "openhands-context",
         "openhands-build",
         "openhands-review",
         "openhands-qa",
@@ -54,7 +55,15 @@ def test_github_automation_specs_include_model_profiles() -> None:
         spec = json.loads(spec_path.read_text(encoding="utf-8"))
         assert spec["model"] == expected_model
         assert spec["repos"][0]["url"] == "${GITHUB_DEMO_REPO_URL}"
-        assert spec["repos"][0]["ref"] == "main"
+        assert spec["repos"][0]["ref"] == "${GITHUB_DEMO_REF}"
+
+    context_spec = json.loads(
+        (AUTOMATIONS / "openhands-context" / "automation.prompt-preset.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert context_spec["llm_profile"] == "sdlc-scout"
+    assert context_spec["repos"][0]["ref"] == "${GITHUB_DEMO_REF}"
 
 
 def test_build_prompt_is_a_short_orchestrator() -> None:

@@ -13,21 +13,19 @@ This report is generated before broad model exploration. It shows which existing
 ## Context Sources Used
 
 ### 1. Durable Repo Memory
-- `AGENTS.md` (~630 tokens): repo rules, product constraints, commands, and reusable architecture notes.
+- `AGENTS.md` (~359 tokens): repo rules, product constraints, commands, and reusable architecture notes.
 - `docs/repo-memory/petstore-intelligence.md` (~544 tokens): repo rules, product constraints, commands, and reusable architecture notes.
 - `docs/repo-memory/model-routing-policy.md` (~416 tokens): repo rules, product constraints, commands, and reusable architecture notes.
 
 ### 2. Skills As Procedural Memory
 - `skills/sdlc-context-reuse/SKILL.md` (~763 tokens): task-specific workflow and stop conditions.
-- `skills/sdlc-story/SKILL.md` (~1333 tokens): task-specific workflow and stop conditions.
-- `skills/sdlc-qa/SKILL.md` (~1406 tokens): task-specific workflow and stop conditions.
-- `skills/sdlc-code-review/SKILL.md` (~873 tokens): task-specific workflow and stop conditions.
-- `skills/sdlc-incident/SKILL.md` (~1362 tokens): task-specific workflow and stop conditions.
+- `skills/sdlc-story/SKILL.md` (~2163 tokens): task-specific workflow and stop conditions.
+- `skills/sdlc-qa/SKILL.md` (~1466 tokens): task-specific workflow and stop conditions.
+- `skills/sdlc-code-review/SKILL.md` (~931 tokens): task-specific workflow and stop conditions.
+- `skills/sdlc-incident/SKILL.md` (~1322 tokens): task-specific workflow and stop conditions.
 
 ### 3. Existing Logs And Evidence
-- `docs/qa-reports/family-friendly-filter.md` (~1401 tokens): prior validation, QA, incident, or operator evidence.
-- `docs/qa-reports/family-friendly-filter-playwright/qa-report.md` (~212 tokens): prior validation, QA, incident, or operator evidence.
-- `skills/sdlc-incident/references/cloud-run-petstore-incident.md` (~870 tokens): prior validation, QA, incident, or operator evidence.
+- `skills/sdlc-incident/references/cloud-run-petstore-incident.md` (~722 tokens): prior validation, QA, incident, or operator evidence.
 
 ### 4. Targeted GitHub Repo Search
 
@@ -36,15 +34,9 @@ Search terms: `filter`, `max`, `adoption`, `fee`, `before`, `building`, `show`, 
 - `app/web/tests/catalog-search.playwright.mjs` (score 32)
   - L16: "/tmp/sdlc-petstore-playwright/catalog-search",
   - L87: async function writeReport({ artifactDir, url, screenshotPath, videoPath, gifPath, gifCreated, scenarios }) {
-- `app/web/tests/family-friendly-filter.playwright.mjs` (score 29)
-  - L16: "/tmp/sdlc-petstore-playwright/family-friendly-filter",
-  - L87: async function writeReport({ artifactDir, url, screenshotPath, videoPath, gifPath, gifCreated, scenarios }) {
 - `app/petstore_app/cloud_run_app.py` (score 22)
   - L17: from .adoptions import create_adoption_order
   - L19: from .telemetry import adoption_validation_error_event
-- `app/web/tests/family_friendly_filter_smoke.py` (score 18)
-  - L3: Smoke test for the family-friendly filter feature.
-  - L4: Tests the filter checkbox control and data filtering logic.
 - `app/tests/test_pet_catalog.py` (score 17)
   - L3: from petstore_app.catalog import search_pets
   - L6: def test_search_pets_filters_by_species_and_status() -> None:
@@ -55,14 +47,20 @@ Search terms: `filter`, `max`, `adoption`, `fee`, `before`, `building`, `show`, 
   - L8: def adoption_validation_error_event(
   - L13: provider: str = "github",
 - `app/web/tests/README.md` (score 12)
-  - L7: `catalog-search.playwright.mjs` drives the real browser UI and produces the
-  - L13: - markdown QA report
+  - L10: `catalog-search.playwright.mjs` drives the real browser UI and produces the
+  - L16: - markdown QA report
 - `app/tests/test_telemetry.py` (score 12)
   - L1: from petstore_app.telemetry import adoption_validation_error_event, search_latency_event
   - L4: def test_adoption_validation_error_event_matches_gcp_schema() -> None:
 - `app/tests/test_adoptions.py` (score 12)
   - L3: from petstore_app.adoptions import create_adoption_order
   - L6: def test_create_adoption_order_returns_totals_in_cents() -> None:
+- `app/petstore_app/__init__.py` (score 11)
+  - L3: from .adoptions import AdoptionOrder, create_adoption_order
+  - L4: from .catalog import Pet, search_pets
+- `app/petstore_app/catalog.py` (score 9)
+  - L16: adoption_fee_cents: int
+  - L27: def search_pets(
 
 ### 5. Previous Agent Runs / Conversation Memory
 - `docs/repo-memory/previous-agent-runs.md` (~307 tokens): durable lessons and reusable file-path hints from prior agent runs.
@@ -87,10 +85,10 @@ Search terms: `filter`, `max`, `adoption`, `fee`, `before`, `building`, `show`, 
 
 ## Token Reuse Estimate
 
-- Text files in repo scan: 103
-- Rough full-repo text estimate: ~66906 tokens
-- Focused context estimate for this run: ~10423 tokens
-- Illustrative context avoided before coding: ~56483 tokens
+- Text files in repo scan: 114
+- Rough full-repo text estimate: ~86584 tokens
+- Focused context estimate for this run: ~9266 tokens
+- Illustrative context avoided before coding: ~77318 tokens
 
 These are rough character-based estimates for live-demo comparison, not billing records. The point is the harness policy: load the known context first, then spend stronger model calls only where they change the outcome.
 

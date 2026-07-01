@@ -32,7 +32,7 @@ Post a concise issue comment with:
 
 When permissions allow, update status labels from `openhands:ready` or `openhands:in-progress` to `openhands:done` or `openhands:needs-human`.
 
-For GitHub REST writeback, use the configured `GITHUB_TOKEN` secret. Never print token values, token previews, authorization headers, or raw environment dumps. If no usable GitHub credential is available, finish the scout report in the OpenHands conversation and say that GitHub writeback needs secret configuration.
+For GitHub REST writeback, use the configured `GITHUB_TOKEN` secret; do not use a secret named `GITHUB`. Never print token values, token previews, authorization headers, or raw environment dumps. If no usable GitHub credential is available, finish the scout report in the OpenHands conversation and say that GitHub writeback needs secret configuration.
 
 ## Human Control
 
