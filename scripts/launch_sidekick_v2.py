@@ -148,6 +148,29 @@ def env_first(*names: str) -> str:
     return next((os.getenv(name, "") for name in names if os.getenv(name)), "")
 
 
+def secret_wait_seconds() -> float:
+    raw_value = os.getenv("SIDEKICK_SECRET_WAIT_SECONDS", "20")
+    try:
+        return max(0.0, float(raw_value))
+    except ValueError:
+        return 20.0
+
+
+def env_first_wait(*names: str) -> str:
+    """Wait briefly for runtime-injected secrets to appear in fresh sandboxes."""
+    value = env_first(*names)
+    if value:
+        return value
+
+    deadline = time.monotonic() + secret_wait_seconds()
+    while time.monotonic() < deadline:
+        time.sleep(1)
+        value = env_first(*names)
+        if value:
+            return value
+    return ""
+
+
 def host() -> str:
     return (
         env_first("OPENHANDS_HOST_GITHUB", "OPENHANDS_HOST_RAJISTICS", "OPENHANDS_HOST")
@@ -156,7 +179,7 @@ def host() -> str:
 
 
 def openhands_api_key() -> str:
-    value = env_first(
+    value = env_first_wait(
         "OPENHANDS_API_KEY_ORG",
         "OPENHANDS_API_KEY_GITHUB",
         "OPENHANDS_API_KEY_RAJISTICS",
@@ -168,7 +191,7 @@ def openhands_api_key() -> str:
 
 
 def github_token() -> str:
-    value = os.getenv("GITHUB_TOKEN", "")
+    value = env_first_wait("GITHUB_TOKEN")
     if not value:
         raise SystemExit("Missing required setting: GITHUB_TOKEN")
     return value

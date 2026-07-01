@@ -5,6 +5,8 @@ import sys
 from argparse import Namespace
 from pathlib import Path
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = ROOT / "scripts" / "launch_sidekick_v2.py"
@@ -73,6 +75,33 @@ def test_app_conversation_headers_use_access_token_only(monkeypatch) -> None:
         "Accept": "application/json",
     }
     assert "Authorization" not in headers
+
+
+def test_github_token_waits_for_runtime_secret(monkeypatch) -> None:
+    module = load_module()
+    calls = {"sleep": 0}
+
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    monkeypatch.setenv("SIDEKICK_SECRET_WAIT_SECONDS", "3")
+    monkeypatch.setattr(module.time, "monotonic", lambda: float(calls["sleep"]))
+
+    def fake_sleep(_seconds: float) -> None:
+        calls["sleep"] += 1
+        monkeypatch.setenv("GITHUB_TOKEN", "demo-token")
+
+    monkeypatch.setattr(module.time, "sleep", fake_sleep)
+
+    assert module.github_token() == "demo-token"
+    assert calls["sleep"] == 1
+
+
+def test_github_token_fails_without_runtime_secret(monkeypatch) -> None:
+    module = load_module()
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    monkeypatch.setenv("SIDEKICK_SECRET_WAIT_SECONDS", "0")
+
+    with pytest.raises(SystemExit, match="Missing required setting: GITHUB_TOKEN"):
+        module.github_token()
 
 
 def test_scout_prompts_are_read_only_and_bounded() -> None:
