@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Build a cost-aware context reuse report for the SDLC Automation Demo.
+"""Build a cost-aware context reuse brief for the SDLC Automation Demo.
 
 This script is intentionally deterministic: it reads repo-local memory,
 skills, prior evidence, and targeted search results before any LLM reasoning is
-needed. The resulting report is a live-demo artifact that shows what an agent
-can reuse instead of rediscovering the repository from scratch.
+needed. The resulting brief is a live-demo artifact that gives the next work
+cell the issue-specific information it needs without exposing a search
+transcript.
 """
 
 from __future__ import annotations
@@ -138,41 +139,141 @@ def search_terms(trigger: TriggerContext) -> list[str]:
     stop = {
         "and",
         "are",
+        "before",
         "can",
+        "context",
+        "cost",
+        "customers",
+        "even",
+        "evidence",
         "for",
         "from",
+        "implementation",
         "issue",
         "label",
+        "learned",
+        "list",
+        "logs",
+        "memory",
+        "mention",
+        "not",
         "open",
+        "openhands-context",
         "openhands",
         "pet",
         "pets",
+        "please",
+        "prior",
+        "reduce",
+        "repo",
+        "reuse",
+        "run",
+        "says",
+        "scout",
+        "seeing",
+        "she",
+        "should",
+        "showing",
+        "source",
+        "support",
+        "targeted",
         "that",
         "the",
+        "though",
         "this",
+        "token",
+        "type",
+        "bug",
         "want",
         "with",
     }
     selected = [word for word in words if word not in stop]
-    domain_terms = [
-        "catalog",
-        "search",
-        "adoption",
-        "adoption_fee_cents",
-        "fee",
-        "max_results",
-        "status",
-        "available",
-        "pending",
-        "test",
-        "qa",
-        "incident",
-    ]
+    domain_terms: list[str] = []
+    if any(term in raw for term in ("pending", "unavailable", "not available", "pending_pet_visible")):
+        domain_terms.extend(
+            [
+                "pending_pet_visible",
+                "bad_catalog_filter",
+                "visible_pets",
+                "nova",
+                "pending",
+                "available",
+                "status",
+                "catalog",
+                "search",
+                "test",
+            ]
+        )
+    elif any(term in raw for term in ("fee", "adoption fee", "max adoption", "budget")):
+        domain_terms.extend(
+            [
+                "adoption_fee_cents",
+                "fee",
+                "max",
+                "catalog",
+                "search",
+                "available",
+                "test",
+            ]
+        )
+    if not domain_terms:
+        domain_terms.extend(["catalog", "search", "adoption", "status", "available", "test"])
+    domain_terms.extend(["qa", "incident"])
     merged: list[str] = []
-    for term in selected + domain_terms:
+    for term in domain_terms + selected:
         if term not in merged:
             merged.append(term)
-    return merged[:18]
+    return merged[:24]
+
+
+def term_weight(term: str) -> int:
+    weights = {
+        "pending_pet_visible": 12,
+        "bad_catalog_filter": 10,
+        "visible_pets": 10,
+        "nova": 8,
+        "pending": 6,
+        "available": 4,
+        "status": 4,
+        "adoption_fee_cents": 8,
+    }
+    return weights.get(term, 2 if len(term) > 4 else 1)
+
+
+def is_boilerplate_snippet(line: str) -> bool:
+    stripped = line.strip()
+    if not stripped:
+        return True
+    lowered = stripped.lower()
+    if lowered.startswith(("from __future__", "import ", "from ", "#!", "try:", "except ", "catch ")):
+        return True
+    if lowered.startswith("console.error("):
+        return True
+    return stripped in {"{", "}", "(", ")", ");", "};"}
+
+
+def ranked_snippets(text: str, terms: list[str], limit: int = 2) -> tuple[str, ...]:
+    candidates: list[tuple[int, int, str]] = []
+    for idx, line in enumerate(text.splitlines(), start=1):
+        line_lower = line.lower()
+        if not any(term in line_lower for term in terms):
+            continue
+        if is_boilerplate_snippet(line):
+            continue
+        score = sum(line_lower.count(term) * term_weight(term) for term in terms)
+        if any(marker in line_lower for marker in ("assert", "def ", "return ", "error_code", "incident_mode")):
+            score += 4
+        if any(marker in line_lower for marker in ("pet.status", "===", "!=", " continue")):
+            score += 4
+        if "excludes_pending_by_default" in line_lower or ('"nova" not in' in line_lower):
+            score += 12
+        if any(marker in line_lower for marker in ("pending", "available", "nova", "visible_pets")):
+            score += 3
+        candidates.append((score, idx, line.strip()[:140]))
+
+    candidates.sort(key=lambda item: (item[0], -item[1]), reverse=True)
+    selected = sorted(candidates[:limit], key=lambda item: item[1])
+    return tuple(f"L{idx}: {line}" for _, idx, line in selected)
 
 
 def search_repo(root: Path, terms: list[str], limit: int = 10) -> list[SearchHit]:
@@ -186,19 +287,154 @@ def search_repo(root: Path, terms: list[str], limit: int = 10) -> list[SearchHit
             continue
         text = read_text(path)
         lowered = text.lower()
-        score = sum(lowered.count(term) for term in lowered_terms)
+        path_text = str(rel).lower()
+        score = sum((lowered.count(term) + path_text.count(term)) * term_weight(term) for term in lowered_terms)
         if score == 0:
             continue
-        snippets: list[str] = []
-        for idx, line in enumerate(text.splitlines(), start=1):
-            line_lower = line.lower()
-            if any(term in line_lower for term in lowered_terms):
-                snippets.append(f"L{idx}: {line.strip()[:140]}")
-            if len(snippets) == 2:
-                break
-        hits.append(SearchHit(rel, score, tuple(snippets)))
+        snippets = ranked_snippets(text, lowered_terms)
+        hits.append(SearchHit(rel, score, snippets))
     hits.sort(key=lambda hit: (hit.score, str(hit.path)), reverse=True)
     return hits[:limit]
+
+
+def issue_need(trigger: TriggerContext) -> str:
+    raw = " ".join([trigger.title, trigger.body, " ".join(trigger.labels)]).lower()
+    if any(term in raw for term in ("pending", "unavailable", "not available", "pending_pet_visible")):
+        return (
+            "Investigate why a pending or unavailable pet is appearing in the "
+            "available-pets experience, then preserve the default available-only "
+            "catalog behavior."
+        )
+    if any(term in raw for term in ("fee", "adoption fee", "max adoption", "budget")):
+        return (
+            "Implement or validate an adoption-fee filter while preserving the "
+            "repo rule that money is represented as integer cents."
+        )
+    return "Clarify and implement the smallest safe Petstore change implied by the issue."
+
+
+def product_facts(trigger: TriggerContext) -> list[tuple[str, tuple[str, ...]]]:
+    raw = " ".join([trigger.title, trigger.body, " ".join(trigger.labels)]).lower()
+    facts: list[tuple[str, tuple[str, ...]]] = [
+        (
+            "Humans approve scope, PR review, merge, deployment, and production-facing actions.",
+            ("AGENTS.md", "docs/repo-memory/petstore-intelligence.md"),
+        ),
+    ]
+    if any(term in raw for term in ("pending", "unavailable", "available", "pending_pet_visible")):
+        facts.insert(
+            0,
+            (
+                "Default pet search returns only available pets.",
+                ("AGENTS.md", "docs/repo-memory/petstore-intelligence.md"),
+            ),
+        )
+        facts.insert(
+            1,
+            (
+                "Pending pets can be shown only when explicitly requested and cannot be adopted.",
+                ("AGENTS.md", "docs/repo-memory/petstore-intelligence.md"),
+            ),
+        )
+    if any(term in raw for term in ("fee", "adoption", "money", "cents", "budget")):
+        facts.append(
+            (
+                "Money is represented as integer cents.",
+                ("AGENTS.md", "docs/repo-memory/petstore-intelligence.md"),
+            )
+        )
+    if any(term in raw for term in ("ui", "browser", "show", "visible", "page", "list")):
+        facts.append(
+            (
+                "UI-visible changes need UI evidence, not only backend tests.",
+                ("AGENTS.md", "docs/repo-memory/petstore-intelligence.md"),
+            )
+        )
+    return facts
+
+
+def path_hint(path: Path) -> str:
+    text = str(path)
+    hints = {
+        "app/petstore_app/catalog.py": "catalog search, status, fee, and availability behavior",
+        "app/tests/test_pet_catalog.py": "focused catalog regression tests",
+        "app/petstore_app/adoptions.py": "adoption validation and pending-pet safety",
+        "app/tests/test_adoptions.py": "adoption behavior tests",
+        "app/petstore_app/cloud_run_app.py": "runtime incident surface and API status",
+        "app/tests/test_cloud_run_app.py": "Cloud Run/API incident regression tests",
+        "app/web/app.js": "static UI catalog filter",
+        "app/web/tests/catalog-search.playwright.mjs": "browser evidence pattern for catalog UI changes",
+    }
+    for known, hint in hints.items():
+        if text == known:
+            return hint
+    if text.startswith("app/web/"):
+        return "static UI surface or browser evidence path"
+    if text.startswith("openspec/"):
+        return "OpenSpec-style change artifact"
+    return "potentially relevant repo context"
+
+
+def likely_paths(hits: list[SearchHit], limit: int = 6) -> list[Path]:
+    preferred = [
+        Path("app/petstore_app/catalog.py"),
+        Path("app/tests/test_pet_catalog.py"),
+        Path("app/petstore_app/cloud_run_app.py"),
+        Path("app/tests/test_cloud_run_app.py"),
+        Path("app/web/app.js"),
+        Path("app/web/tests/catalog-search.playwright.mjs"),
+    ]
+    hit_paths = [hit.path for hit in hits]
+    ordered: list[Path] = []
+    for path in preferred + hit_paths:
+        if path in hit_paths and path not in ordered:
+            ordered.append(path)
+        if len(ordered) >= limit:
+            break
+    return ordered
+
+
+def short_body(body: str, limit: int = 280) -> str:
+    normalized = " ".join(body.split())
+    if len(normalized) <= limit:
+        return normalized or "(none)"
+    return normalized[: limit - 1].rstrip() + "..."
+
+
+def cite(sources: tuple[str, ...]) -> str:
+    return "Sources: " + ", ".join(f"`{source}`" for source in sources)
+
+
+def hit_lookup(hits: list[SearchHit]) -> dict[Path, SearchHit]:
+    return {hit.path: hit for hit in hits}
+
+
+def snippets_for(path: Path, hits: list[SearchHit]) -> tuple[str, ...]:
+    hit = hit_lookup(hits).get(path)
+    if not hit or not hit.snippets:
+        return ()
+    return hit.snippets
+
+
+def pr_decision(trigger: TriggerContext) -> list[str]:
+    raw = " ".join([trigger.title, trigger.body, " ".join(trigger.labels)]).lower()
+    if any(term in raw for term in ("pending", "unavailable", "not available", "pending_pet_visible")):
+        return [
+            "First check whether existing catalog code and tests already exclude pending pets from the default available-pets path.",
+            "If existing code and tests already prove the behavior, do not open a code PR; post evidence and mark the issue complete or ask for the missing reproduction.",
+            "If the issue reproduces, or if the regression test is missing, open a PR with a focused catalog fix and regression test.",
+        ]
+    if any(term in raw for term in ("fee", "adoption fee", "max adoption", "budget")):
+        return [
+            "First check whether the API, UI, and tests already support the requested max adoption fee behavior.",
+            "If existing code already implements it, do not open a code PR; post the evidence and any usage guidance the issue needs.",
+            "If the behavior is missing or uncovered, open a PR with the smallest API/UI/test change.",
+        ]
+    return [
+        "First check whether existing code and tests already satisfy the issue.",
+        "Open a PR only when behavior is missing, broken, or lacks the evidence needed for review.",
+        "If existing code is sufficient, post the evidence and ask for clarification only when acceptance criteria are still ambiguous.",
+    ]
 
 
 def collect_skills(root: Path, labels: tuple[str, ...]) -> list[Path]:
@@ -276,11 +512,13 @@ def render_report(root: Path, trigger: TriggerContext) -> str:
     avoided_tokens = max(0, baseline_tokens - focused_tokens)
 
     lines: list[str] = []
-    lines.append("# Cost-Aware Context Reuse Report")
+    handoff_paths = likely_paths(hits)
+
+    lines.append("# Context Scout Issue Brief")
     lines.append("")
-    lines.append("This report is generated before broad model exploration. It shows which existing context a low-cost scout agent can load, summarize, and hand off to a stronger coding or review agent.")
+    lines.append("This brief turns the issue into the context the next OpenHands work cell needs. The scout uses repo memory, skills, prior evidence, and targeted search internally; the visible output stays focused on the decision and handoff.")
     lines.append("")
-    lines.append("## Trigger")
+    lines.append("## Issue")
     lines.append("")
     lines.append(f"- Event: `{trigger.event_type}`")
     if trigger.number is not None:
@@ -290,68 +528,65 @@ def render_report(root: Path, trigger: TriggerContext) -> str:
     lines.append(f"- Title: {trigger.title or '(none)'}")
     if trigger.labels:
         lines.append(f"- Labels: {', '.join(f'`{label}`' for label in trigger.labels)}")
+    lines.append(f"- Body signal: {short_body(trigger.body)}")
     lines.append("")
-    lines.append("## Context Sources Used")
+    lines.append("## What The Issue Needs")
     lines.append("")
-    lines.append("### 1. Durable Repo Memory")
-    for path, tokens in token_table(durable_paths, root):
-        lines.append(f"- `{path}` (~{tokens} tokens): repo rules, product constraints, commands, and reusable architecture notes.")
+    lines.append(f"- {issue_need(trigger)}")
+    lines.append(f"- Learned from: issue title/body, `AGENTS.md`, and `docs/repo-memory/petstore-intelligence.md`.")
+    lines.append("- Treat the issue and its comments as the source of truth; ask a human only if scope, credentials, or production action is unclear.")
     lines.append("")
-    lines.append("### 2. Skills As Procedural Memory")
-    for path, tokens in token_table(skill_paths, root):
-        lines.append(f"- `{path}` (~{tokens} tokens): task-specific workflow and stop conditions.")
+    lines.append("## Relevant Product Context")
     lines.append("")
-    lines.append("### 3. Existing Logs And Evidence")
-    for path, tokens in token_table(log_paths, root):
-        lines.append(f"- `{path}` (~{tokens} tokens): prior validation, QA, incident, or operator evidence.")
+    for fact, sources in product_facts(trigger):
+        lines.append(f"- {fact} ({cite(sources)})")
     lines.append("")
-    lines.append("### 4. Targeted GitHub Repo Search")
+    lines.append("## Existing Code Or New PR?")
     lines.append("")
-    lines.append(f"Search terms: {', '.join(f'`{term}`' for term in terms[:12])}")
+    for decision in pr_decision(trigger):
+        lines.append(f"- {decision}")
     lines.append("")
-    for hit in hits:
-        lines.append(f"- `{hit.path}` (score {hit.score})")
-        for snippet in hit.snippets:
-            lines.append(f"  - {snippet}")
+    lines.append("## Likely Files And Tests")
     lines.append("")
-    lines.append("### 5. Previous Agent Runs / Conversation Memory")
-    for path, tokens in token_table(conversation_paths, root):
-        lines.append(f"- `{path}` (~{tokens} tokens): durable lessons and reusable file-path hints from prior agent runs.")
+    for path in handoff_paths:
+        lines.append(f"- `{path}`: {path_hint(path)}. (Sources: `docs/repo-memory/petstore-intelligence.md`, targeted repo search)")
+    if not handoff_paths:
+        lines.append("- No narrow file target found from deterministic search; start with `docs/repo-memory/petstore-intelligence.md` and the relevant skill.")
     lines.append("")
-    lines.append("## Cost-Aware Model Routing")
+    lines.append("## Cited Handoff Material")
     lines.append("")
-    lines.append("| Phase | Work | Recommended tier | Why |")
-    lines.append("| --- | --- | --- | --- |")
-    lines.append("| Preflight | Parse event, labels, repo memory, deterministic search | No LLM or lowest-cost model | Fixed inputs and scripts do most of the work. |")
-    lines.append("| Scout | Summarize AGENTS.md, skills, logs, repo hits, prior runs | Low-cost model | Narrow context before expensive reasoning. |")
-    lines.append("| Implement | Edit code, update tests, create PR | Coding model | Requires coherent code changes. |")
-    lines.append("| Verify | Run tests and summarize evidence | Low-cost or deterministic | Prefer commands and exact output over reasoning. |")
-    lines.append("| Risk review | Security, production, or broad-change judgment | Medium/strong model | Escalate only when risk warrants it. |")
+    lines.append("- Issue source: title/body/comments on the GitHub issue remain the source of truth.")
+    for path in handoff_paths:
+        for snippet in snippets_for(path, hits):
+            lines.append(f"- `{path}`: {snippet}")
+    lines.append("- Memory source: `docs/repo-memory/previous-agent-runs.md` for prior lessons and reusable file-path hints.")
     lines.append("")
-    lines.append("## Reuse Decisions")
+    lines.append("## Reusable Memory")
     lines.append("")
-    lines.append("- Reuse `AGENTS.md` and repo-memory docs before asking the model to rediscover product rules.")
-    lines.append("- Reuse skill procedures instead of restating task workflows in every prompt.")
-    lines.append("- Reuse prior QA reports, incident notes, and OpenHands run links before creating new evidence.")
-    lines.append("- Search focused code paths first; avoid loading unrelated app, Jira, GCP, and automation files unless the trigger requires them.")
-    lines.append("- Preserve durable findings in `docs/repo-memory/`; keep issue-specific details in reports or PRs.")
+    lines.append("- `AGENTS.md` and `docs/repo-memory/petstore-intelligence.md` provide product rules and app map.")
+    if skill_paths:
+        lines.append("- Use `skills/sdlc-context-reuse/SKILL.md` first, then the specific build/QA/review/incident skill required by the next label.")
+    if log_paths:
+        lines.append("- Existing incident/QA evidence is available for style and safety checks; summarize only the parts relevant to this issue.")
+    if conversation_paths:
+        lines.append("- `docs/repo-memory/previous-agent-runs.md` captures prior lessons so the next agent does not rediscover file paths and demo guardrails.")
     lines.append("")
-    lines.append("## Token Reuse Estimate")
+    lines.append("## Recommended Next Steps")
     lines.append("")
-    lines.append(f"- Text files in repo scan: {baseline_file_count}")
-    lines.append(f"- Rough full-repo text estimate: ~{baseline_tokens} tokens")
-    lines.append(f"- Focused context estimate for this run: ~{focused_tokens} tokens")
-    lines.append(f"- Illustrative context avoided before coding: ~{avoided_tokens} tokens")
+    lines.append("- If focused tests prove existing behavior already satisfies the issue, post evidence instead of opening a PR.")
+    lines.append("- Apply `openhands-build` only when reproduction or missing coverage shows a code change is needed.")
+    lines.append("- Run focused tests before broad QA; start with `python3 -m pytest -q` and the relevant Petstore test file.")
+    lines.append("- Apply `openhands-qa` on the PR if behavior is UI-visible or needs additional evidence.")
+    lines.append("- Keep production, deployment, and merge decisions with humans.")
     lines.append("")
-    lines.append("These are rough character-based estimates for live-demo comparison, not billing records. The point is the harness policy: load the known context first, then spend stronger model calls only where they change the outcome.")
+    lines.append("## Cost Routing")
     lines.append("")
-    lines.append("## Terraform Analogy For The Customer")
+    lines.append("- Scout/context summary: lower-cost model or deterministic script.")
+    lines.append("- Code edits and risk-sensitive reasoning: coding model.")
+    lines.append("- Verification summaries: deterministic commands or lower-cost model.")
+    lines.append(f"- Approximate context avoided before coding: ~{avoided_tokens} tokens.")
     lines.append("")
-    lines.append("- `AGENTS.md` becomes Terraform workspace rules, risk policy, module ownership, and approved commands.")
-    lines.append("- Skills become module-upgrade, moved-block, and plan-triage procedures.")
-    lines.append("- Existing logs become Terraform Cloud plans, previous apply errors, and validation output.")
-    lines.append("- GitHub search finds module usage and workspace-specific code paths without reading every repo.")
-    lines.append("- Old conversation memory captures what prior agents already learned about a workspace or module family.")
+    lines.append("Exhaustive search provenance is intentionally omitted. The cited material above is the handoff raw material for deciding whether to open a PR and for drafting that PR if needed.")
     lines.append("")
     return "\n".join(lines)
 
@@ -360,7 +595,7 @@ def build_report(
     repo_root: Path = REPO_ROOT,
     *,
     fixture: Path | None = None,
-    title: str = "Filter pets by max adoption fee",
+    title: str = "Customers are seeing pets that are not available",
     body: str = "",
     labels: list[str] | None = None,
 ) -> str:
@@ -371,7 +606,7 @@ def build_report(
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--fixture", type=Path, help="GitHub/Jira fixture to use as trigger context")
-    parser.add_argument("--title", default="Filter pets by max adoption fee")
+    parser.add_argument("--title", default="Customers are seeing pets that are not available")
     parser.add_argument("--body", default="")
     parser.add_argument("--label", action="append", default=["openhands-context"], help="label for manual demo mode")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)

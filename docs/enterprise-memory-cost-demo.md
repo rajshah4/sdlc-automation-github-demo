@@ -9,7 +9,7 @@ OpenHands reduces repeated SDLC and infrastructure automation cost by loading ex
 1. Open a sparse GitHub issue, for example:
 
 ```text
-Filter pets by max adoption fee
+Customers are seeing pets that are not available
 ```
 
 2. Add `openhands-context` first for the scout pass.

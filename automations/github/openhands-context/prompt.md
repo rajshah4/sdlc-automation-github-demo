@@ -8,7 +8,7 @@ A human added the `openhands-context` label to a GitHub issue. Treat the issue a
 
 ## What You Do
 
-Use `skills/sdlc-context-reuse/SKILL.md` to build a cost-aware context reuse report before any broad implementation work. Load context in this order: `AGENTS.md`, repo-local skills, existing logs and QA/incident evidence, targeted GitHub repo search, and previous OpenHands run memory.
+Use `skills/sdlc-context-reuse/SKILL.md` to build a cost-aware issue brief before any broad implementation work. Load context in this order: `AGENTS.md`, repo-local skills, existing logs and QA/incident evidence, targeted GitHub repo search, and previous OpenHands run memory.
 
 When local tools are available, run:
 
@@ -22,13 +22,15 @@ If you can map the trigger payload to a local fixture or issue title/body, pass 
 
 Post a concise issue comment with:
 
-- durable memory loaded
-- skills loaded
-- prior logs/reports reused
-- repo files found by targeted search
-- prior OpenHands conversations or run records reused
+- what the issue appears to need
+- cited product/repo facts that matter for this issue
+- likely existing files/tests to inspect
+- whether the next agent should open a PR or first prove existing code already handles the request
+- the minimum raw material needed for a future PR, such as specific file paths, short source snippets, and test names
 - recommended model tier for scout, implementation, QA, review, and incident phases
 - a full-report link to `https://github.com/rajshah4/sdlc-automation-github-demo/blob/main/docs/context-reuse/latest-context-reuse-report.md`, or a PR link when a fresh report was committed
+
+Do not post a search transcript. It is fine to say where the scout learned something, but keep citations compact and tied to the decision: issue source, repo memory, skill, evidence file, or specific code/test path.
 
 When permissions allow, update status labels from `openhands:ready` or `openhands:in-progress` to `openhands:done` or `openhands:needs-human`.
 

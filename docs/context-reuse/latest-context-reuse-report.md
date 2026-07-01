@@ -1,102 +1,82 @@
-# Cost-Aware Context Reuse Report
+# Context Scout Issue Brief
 
-This report is generated before broad model exploration. It shows which existing context a low-cost scout agent can load, summarize, and hand off to a stronger coding or review agent.
+This brief turns the issue into the context the next OpenHands work cell needs. The scout uses repo memory, skills, prior evidence, and targeted search internally; the visible output stays focused on the decision and handoff.
 
-## Trigger
+## Issue
 
 - Event: `issues.labeled`
-- Item: `#12`
-- Source: https://github.com/rajshah4/sdlc-automation-github-demo/issues/12
-- Title: Filter pets by max adoption fee
-- Labels: `type:story`, `openhands-context`
+- Item: `#63`
+- Source: https://github.com/rajshah4/sdlc-automation-github-demo/issues/63
+- Title: Customers are seeing pets that are not available
+- Labels: `type:bug`, `openhands-context`
+- Body signal: Support says Nova is showing up in the available pets list even though she should not be adoptable. Logs mention PENDING_PET_VISIBLE. Please run the context scout before implementation so we can reuse repo memory, prior evidence, and targeted search.
 
-## Context Sources Used
+## What The Issue Needs
 
-### 1. Durable Repo Memory
-- `AGENTS.md` (~359 tokens): repo rules, product constraints, commands, and reusable architecture notes.
-- `docs/repo-memory/petstore-intelligence.md` (~544 tokens): repo rules, product constraints, commands, and reusable architecture notes.
-- `docs/repo-memory/model-routing-policy.md` (~416 tokens): repo rules, product constraints, commands, and reusable architecture notes.
+- Investigate why a pending or unavailable pet is appearing in the available-pets experience, then preserve the default available-only catalog behavior.
+- Learned from: issue title/body, `AGENTS.md`, and `docs/repo-memory/petstore-intelligence.md`.
+- Treat the issue and its comments as the source of truth; ask a human only if scope, credentials, or production action is unclear.
 
-### 2. Skills As Procedural Memory
-- `skills/sdlc-context-reuse/SKILL.md` (~763 tokens): task-specific workflow and stop conditions.
-- `skills/sdlc-story/SKILL.md` (~2163 tokens): task-specific workflow and stop conditions.
-- `skills/sdlc-qa/SKILL.md` (~1466 tokens): task-specific workflow and stop conditions.
-- `skills/sdlc-code-review/SKILL.md` (~931 tokens): task-specific workflow and stop conditions.
-- `skills/sdlc-incident/SKILL.md` (~1322 tokens): task-specific workflow and stop conditions.
+## Relevant Product Context
 
-### 3. Existing Logs And Evidence
-- `skills/sdlc-incident/references/cloud-run-petstore-incident.md` (~722 tokens): prior validation, QA, incident, or operator evidence.
+- Default pet search returns only available pets. (Sources: `AGENTS.md`, `docs/repo-memory/petstore-intelligence.md`)
+- Pending pets can be shown only when explicitly requested and cannot be adopted. (Sources: `AGENTS.md`, `docs/repo-memory/petstore-intelligence.md`)
+- Humans approve scope, PR review, merge, deployment, and production-facing actions. (Sources: `AGENTS.md`, `docs/repo-memory/petstore-intelligence.md`)
+- UI-visible changes need UI evidence, not only backend tests. (Sources: `AGENTS.md`, `docs/repo-memory/petstore-intelligence.md`)
 
-### 4. Targeted GitHub Repo Search
+## Existing Code Or New PR?
 
-Search terms: `filter`, `max`, `adoption`, `fee`, `before`, `building`, `show`, `how`, `reuse`, `repo`, `memory`, `skills`
+- First check whether existing catalog code and tests already exclude pending pets from the default available-pets path.
+- If existing code and tests already prove the behavior, do not open a code PR; post evidence and mark the issue complete or ask for the missing reproduction.
+- If the issue reproduces, or if the regression test is missing, open a PR with a focused catalog fix and regression test.
 
-- `app/web/tests/catalog-search.playwright.mjs` (score 32)
-  - L16: "/tmp/sdlc-petstore-playwright/catalog-search",
-  - L87: async function writeReport({ artifactDir, url, screenshotPath, videoPath, gifPath, gifCreated, scenarios }) {
-- `app/petstore_app/cloud_run_app.py` (score 22)
-  - L17: from .adoptions import create_adoption_order
-  - L19: from .telemetry import adoption_validation_error_event
-- `app/tests/test_pet_catalog.py` (score 17)
-  - L3: from petstore_app.catalog import search_pets
-  - L6: def test_search_pets_filters_by_species_and_status() -> None:
-- `app/petstore_app/adoptions.py` (score 15)
-  - L1: """Adoption order behavior used by validation and incident scenarios."""
-  - L11: class AdoptionOrder:
-- `app/petstore_app/telemetry.py` (score 13)
-  - L8: def adoption_validation_error_event(
-  - L13: provider: str = "github",
-- `app/web/tests/README.md` (score 12)
-  - L10: `catalog-search.playwright.mjs` drives the real browser UI and produces the
-  - L16: - markdown QA report
-- `app/tests/test_telemetry.py` (score 12)
-  - L1: from petstore_app.telemetry import adoption_validation_error_event, search_latency_event
-  - L4: def test_adoption_validation_error_event_matches_gcp_schema() -> None:
-- `app/tests/test_adoptions.py` (score 12)
-  - L3: from petstore_app.adoptions import create_adoption_order
-  - L6: def test_create_adoption_order_returns_totals_in_cents() -> None:
-- `app/petstore_app/__init__.py` (score 11)
-  - L3: from .adoptions import AdoptionOrder, create_adoption_order
-  - L4: from .catalog import Pet, search_pets
-- `app/petstore_app/catalog.py` (score 9)
-  - L16: adoption_fee_cents: int
-  - L27: def search_pets(
+## Likely Files And Tests
 
-### 5. Previous Agent Runs / Conversation Memory
-- `docs/repo-memory/previous-agent-runs.md` (~307 tokens): durable lessons and reusable file-path hints from prior agent runs.
+- `app/petstore_app/catalog.py`: catalog search, status, fee, and availability behavior. (Sources: `docs/repo-memory/petstore-intelligence.md`, targeted repo search)
+- `app/tests/test_pet_catalog.py`: focused catalog regression tests. (Sources: `docs/repo-memory/petstore-intelligence.md`, targeted repo search)
+- `app/petstore_app/cloud_run_app.py`: runtime incident surface and API status. (Sources: `docs/repo-memory/petstore-intelligence.md`, targeted repo search)
+- `app/tests/test_cloud_run_app.py`: Cloud Run/API incident regression tests. (Sources: `docs/repo-memory/petstore-intelligence.md`, targeted repo search)
+- `app/web/app.js`: static UI catalog filter. (Sources: `docs/repo-memory/petstore-intelligence.md`, targeted repo search)
+- `app/web/tests/catalog-search.playwright.mjs`: browser evidence pattern for catalog UI changes. (Sources: `docs/repo-memory/petstore-intelligence.md`, targeted repo search)
 
-## Cost-Aware Model Routing
+## Cited Handoff Material
 
-| Phase | Work | Recommended tier | Why |
-| --- | --- | --- | --- |
-| Preflight | Parse event, labels, repo memory, deterministic search | No LLM or lowest-cost model | Fixed inputs and scripts do most of the work. |
-| Scout | Summarize AGENTS.md, skills, logs, repo hits, prior runs | Low-cost model | Narrow context before expensive reasoning. |
-| Implement | Edit code, update tests, create PR | Coding model | Requires coherent code changes. |
-| Verify | Run tests and summarize evidence | Low-cost or deterministic | Prefer commands and exact output over reasoning. |
-| Risk review | Security, production, or broad-change judgment | Medium/strong model | Escalate only when risk warrants it. |
+- Issue source: title/body/comments on the GitHub issue remain the source of truth.
+- `app/petstore_app/catalog.py`: L23: Pet("pet-103", "Nova", "dog", "pending", ("active", "training"), 14, 11000),
+- `app/petstore_app/catalog.py`: L50: if normalized_status and normalized_status != pet.status:
+- `app/tests/test_pet_catalog.py`: L12: def test_search_pets_can_find_pending_pets_when_requested() -> None:
+- `app/tests/test_pet_catalog.py`: L13: results = search_pets(species="dog", status="pending")
+- `app/petstore_app/cloud_run_app.py`: L84: "error_code": "PENDING_PET_VISIBLE",
+- `app/petstore_app/cloud_run_app.py`: L126: pending_pets = [pet for pet in visible_pets() if pet.status == "pending"]
+- `app/tests/test_cloud_run_app.py`: L6: def test_visible_pets_excludes_pending_by_default(monkeypatch, tmp_path) -> None:
+- `app/tests/test_cloud_run_app.py`: L13: assert "Nova" not in {pet.name for pet in pets}
+- `app/web/app.js`: L5: { id: "pet-103", name: "Nova", species: "dog", status: "pending", tags: ["active", "training"], fee: "$110" },
+- `app/web/app.js`: L17: && pet.status === "available";
+- `app/web/tests/catalog-search.playwright.mjs`: L155: scenarios.push("Default catalog shows available pets and excludes pending pets");
+- `app/web/tests/catalog-search.playwright.mjs`: L175: assert(emptyText === "No available pets match this search.", "pending pet search should show empty state");
+- Memory source: `docs/repo-memory/previous-agent-runs.md` for prior lessons and reusable file-path hints.
 
-## Reuse Decisions
+## Reusable Memory
 
-- Reuse `AGENTS.md` and repo-memory docs before asking the model to rediscover product rules.
-- Reuse skill procedures instead of restating task workflows in every prompt.
-- Reuse prior QA reports, incident notes, and OpenHands run links before creating new evidence.
-- Search focused code paths first; avoid loading unrelated app, Jira, GCP, and automation files unless the trigger requires them.
-- Preserve durable findings in `docs/repo-memory/`; keep issue-specific details in reports or PRs.
+- `AGENTS.md` and `docs/repo-memory/petstore-intelligence.md` provide product rules and app map.
+- Use `skills/sdlc-context-reuse/SKILL.md` first, then the specific build/QA/review/incident skill required by the next label.
+- Existing incident/QA evidence is available for style and safety checks; summarize only the parts relevant to this issue.
+- `docs/repo-memory/previous-agent-runs.md` captures prior lessons so the next agent does not rediscover file paths and demo guardrails.
 
-## Token Reuse Estimate
+## Recommended Next Steps
 
-- Text files in repo scan: 114
-- Rough full-repo text estimate: ~86584 tokens
-- Focused context estimate for this run: ~9266 tokens
-- Illustrative context avoided before coding: ~77318 tokens
+- If focused tests prove existing behavior already satisfies the issue, post evidence instead of opening a PR.
+- Apply `openhands-build` only when reproduction or missing coverage shows a code change is needed.
+- Run focused tests before broad QA; start with `python3 -m pytest -q` and the relevant Petstore test file.
+- Apply `openhands-qa` on the PR if behavior is UI-visible or needs additional evidence.
+- Keep production, deployment, and merge decisions with humans.
 
-These are rough character-based estimates for live-demo comparison, not billing records. The point is the harness policy: load the known context first, then spend stronger model calls only where they change the outcome.
+## Cost Routing
 
-## Terraform Analogy For The Customer
+- Scout/context summary: lower-cost model or deterministic script.
+- Code edits and risk-sensitive reasoning: coding model.
+- Verification summaries: deterministic commands or lower-cost model.
+- Approximate context avoided before coding: ~79775 tokens.
 
-- `AGENTS.md` becomes Terraform workspace rules, risk policy, module ownership, and approved commands.
-- Skills become module-upgrade, moved-block, and plan-triage procedures.
-- Existing logs become Terraform Cloud plans, previous apply errors, and validation output.
-- GitHub search finds module usage and workspace-specific code paths without reading every repo.
-- Old conversation memory captures what prior agents already learned about a workspace or module family.
+Exhaustive search provenance is intentionally omitted. The cited material above is the handoff raw material for deciding whether to open a PR and for drafting that PR if needed.
 
