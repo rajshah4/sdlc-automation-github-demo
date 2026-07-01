@@ -12,9 +12,11 @@ function renderResults() {
   list.innerHTML = "";
 
   const matches = pets.filter((pet) => {
+    if (pet.status !== "available") {
+      return false;
+    }
     return pet.name.toLowerCase().includes(query)
-      && (species === "" || pet.species === species)
-      && pet.status === "available";
+      && (species === "" || pet.species === species);
   });
 
   if (matches.length === 0) {
