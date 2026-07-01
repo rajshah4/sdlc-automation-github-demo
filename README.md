@@ -11,9 +11,9 @@ The target app is intentionally small: a Petstore catalog and adoption service.
 That keeps the demo easy to follow while still producing real artifacts: code
 diffs, tests, UI checks, review comments, incident notes, and PRs.
 
-The Azure DevOps demo remains preserved in its original repository. This repo is
-GitHub-first: labels are the automation boundary, GitHub remains the system of
-record, and OpenHands does the agent work only when a human asks for it.
+This repo is GitHub-first: labels are the automation boundary, GitHub remains
+the system of record, and OpenHands does the agent work only when a human asks
+for it.
 
 ## What Problem This Solves
 
@@ -41,6 +41,7 @@ one bounded automation, then posts evidence back where the team already works.
 ## What You'll See
 
 - A low-cost context scout shows which repo memory, skills, prior evidence, search results, and previous OpenHands runs can be reused before expensive model work.
+- An optional sidekick mode makes the context-saving pattern visible as separate read-only scout conversations before the implementation agent runs.
 - A sparse bug issue becomes a PR with an implementation branch and visible OpenSpec-style proposal/spec/design/task artifacts.
 - A PR receives an automated review comment rather than a silent background score.
 - QA output lands on the PR with concrete test files and command results. The repo also includes a prebuilt Playwright browser-evidence example with screenshot, GIF, video, and report generation.
@@ -59,6 +60,7 @@ repo-local knowledge, not a custom agent runtime.
 | OpenHands Automations | `automations/github/`, `automations/jira/` | Prompt presets registered in the Rajistics OpenHands instance. GitHub uses label-triggered work cells; Jira uses the `jira-direct` webhook for sparse task-to-PR demos. |
 | Repo-local skills | `skills/` | Reusable skills encode context reuse, story/spec, optional context-sidekick scouting, QA, SRE, and code-review behavior with scripts and references that customers can inspect. The story skill follows Fission-AI/OpenSpec lineage while avoiding live package installs during timed automation runs. |
 | Repo memory | `docs/repo-memory/` | Durable product rules, model-routing guidance, and previous run lessons keep future agents from rediscovering the same context. |
+| Sidekick mode | `automations/jira/jira-to-story-sidekick-v2/`, `skills/sdlc-sidekick-launcher/`, `skills/sdlc-context-sidekick/` | Optional multi-conversation path where lightweight scouts gather docs, logs, and repo context before the implementation agent runs. |
 | OpenSpec-style artifacts | `openspec/` | Repo-local context and generated change folders keep request, proposal, spec delta, design, and tasks version controlled. |
 | Deterministic scripts | `scripts/` | Preflight, label setup, fixture simulation, Petstore checks, and GCP helpers run before broader model reasoning where possible. |
 | GitHub templates and labels | `.github/` | Issues, PRs, and labels define the human approval boundaries. |
