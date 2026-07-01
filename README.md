@@ -28,10 +28,11 @@ where requests disappear into a black box. The common bottleneck is:
 This demo keeps that loop inside GitHub. A human applies a label, OpenHands runs
 one bounded automation, then posts evidence back where the team already works.
 
-## The Four Work Cells
+## The Five Work Cells
 
 | Work cell | Trigger | What OpenHands does | What humans control |
 | --- | --- | --- | --- |
+| **Context Scout** | Apply `openhands-context` to a sparse issue | Builds a cost-aware context reuse report from AGENTS.md, repo-local skills, prior reports, targeted repo search, and previous OpenHands run memory | Whether to proceed to build/review/QA/incident work |
 | **Bug to PR** | Apply `openhands-build` to a sparse bug issue | Clarifies the bug, checks repo-local docs and evidence, writes OpenSpec-style change artifacts, implements the fix, runs tests, and opens a PR | Scope, review, approval, and merge |
 | **Code Review** | Apply `openhands-review` to a PR | Reads the diff, checks risk areas, and posts review findings as a PR comment | Which findings block the PR |
 | **Automated QA** | Apply `openhands-qa` to a PR | Builds or updates test coverage, runs deterministic checks, and includes UI test evidence where applicable | Test acceptance and merge readiness |
@@ -39,6 +40,7 @@ one bounded automation, then posts evidence back where the team already works.
 
 ## What You'll See
 
+- A low-cost context scout shows which repo memory, skills, prior evidence, search results, and previous OpenHands runs can be reused before expensive model work.
 - A sparse bug issue becomes a PR with an implementation branch and visible OpenSpec-style proposal/spec/design/task artifacts.
 - A PR receives an automated review comment rather than a silent background score.
 - QA output lands on the PR with concrete test files and command results. The repo also includes a prebuilt Playwright browser-evidence example with screenshot, GIF, video, and report generation.
@@ -55,7 +57,8 @@ repo-local knowledge, not a custom agent runtime.
 | Capability | Where it lives | Why it matters |
 | --- | --- | --- |
 | OpenHands Automations | `automations/github/`, `automations/jira/` | Prompt presets registered in the Rajistics OpenHands instance. GitHub uses label-triggered work cells; Jira uses the `jira-direct` webhook for sparse task-to-PR demos. |
-| Repo-local skills | `skills/` | Reusable skills encode story/spec, optional context-sidekick scouting, QA, SRE, and code-review behavior with scripts and references that customers can inspect. The story skill follows Fission-AI/OpenSpec lineage while avoiding live package installs during timed automation runs. |
+| Repo-local skills | `skills/` | Reusable skills encode context reuse, story/spec, optional context-sidekick scouting, QA, SRE, and code-review behavior with scripts and references that customers can inspect. The story skill follows Fission-AI/OpenSpec lineage while avoiding live package installs during timed automation runs. |
+| Repo memory | `docs/repo-memory/` | Durable product rules, model-routing guidance, and previous run lessons keep future agents from rediscovering the same context. |
 | OpenSpec-style artifacts | `openspec/` | Repo-local context and generated change folders keep request, proposal, spec delta, design, and tasks version controlled. |
 | Deterministic scripts | `scripts/` | Preflight, label setup, fixture simulation, Petstore checks, and GCP helpers run before broader model reasoning where possible. |
 | GitHub templates and labels | `.github/` | Issues, PRs, and labels define the human approval boundaries. |
@@ -64,7 +67,7 @@ repo-local knowledge, not a custom agent runtime.
 
 Cost and security are part of the demo design: event-driven labels avoid
 unnecessary LLM calls, preflight scripts catch configuration issues without
-using a model, different LLM profiles can be used for coding/review/ops, and
+using a model, different LLM profiles can be used for scouting/coding/review/ops, and
 secrets stay in the OpenHands secret store or local `.env`, never in the repo.
 
 ## Fast Local Validation
@@ -72,6 +75,7 @@ secrets stay in the OpenHands secret store or local `.env`, never in the repo.
 ```bash
 python3 -m pytest -q
 python3 scripts/preflight_github_demo.py --offline
+python3 scripts/simulate_github_event.py --fixture tests/fixtures/github_issue_labeled_context.json
 python3 scripts/simulate_github_event.py --fixture tests/fixtures/github_issue_labeled_build.json
 ```
 
@@ -81,6 +85,7 @@ python3 scripts/simulate_github_event.py --fixture tests/fixtures/github_issue_l
 | --- | --- |
 | `app/` | Small Petstore app, static UI, Cloud Run surface, and app tests. |
 | `automations/` | OpenHands prompt-preset automation packages for GitHub and Jira. |
+| `docs/repo-memory/` | Durable memory for product rules, model routing, and previous OpenHands run lessons. |
 | `openspec/` | OpenSpec-style project context and generated change folders for story-to-PR work. |
 | `skills/` | Repo-local OpenHands skills with scripts and references. |
 | `scripts/` | Deterministic setup, registration, preflight, QA, and SRE helpers. |
@@ -122,6 +127,7 @@ No secrets belong in this repo. Store OpenHands, GitHub, Slack, and GCP credenti
 ## Demo Docs
 
 - [GitHub demo walkthrough](docs/github-demo-walkthrough.md)
+- [Enterprise memory and cost demo](docs/enterprise-memory-cost-demo.md)
 - [Setup checklist](docs/setup-checklist.md)
 - [Demo upgrade backlog](docs/demo-upgrades.md)
 - [Prebuilt UI and Playwright example](docs/ui-playwright-example.md)
