@@ -14,19 +14,17 @@ This report is generated before broad model exploration. It shows which existing
 
 ### 1. Durable Repo Memory
 - `AGENTS.md` (~630 tokens): repo rules, product constraints, commands, and reusable architecture notes.
-- `docs/repo-memory/petstore-intelligence.md` (~546 tokens): repo rules, product constraints, commands, and reusable architecture notes.
+- `docs/repo-memory/petstore-intelligence.md` (~544 tokens): repo rules, product constraints, commands, and reusable architecture notes.
 - `docs/repo-memory/model-routing-policy.md` (~416 tokens): repo rules, product constraints, commands, and reusable architecture notes.
 
 ### 2. Skills As Procedural Memory
-- `skills/sdlc-context-reuse/SKILL.md` (~780 tokens): task-specific workflow and stop conditions.
+- `skills/sdlc-context-reuse/SKILL.md` (~763 tokens): task-specific workflow and stop conditions.
 - `skills/sdlc-story/SKILL.md` (~1333 tokens): task-specific workflow and stop conditions.
 - `skills/sdlc-qa/SKILL.md` (~1406 tokens): task-specific workflow and stop conditions.
 - `skills/sdlc-code-review/SKILL.md` (~873 tokens): task-specific workflow and stop conditions.
 - `skills/sdlc-incident/SKILL.md` (~1362 tokens): task-specific workflow and stop conditions.
 
 ### 3. Existing Logs And Evidence
-- `docs/work-log.md` (~1453 tokens): prior validation, QA, incident, or operator evidence.
-- `docs/tested-demo-flow.md` (~1372 tokens): prior validation, QA, incident, or operator evidence.
 - `docs/qa-reports/family-friendly-filter.md` (~1401 tokens): prior validation, QA, incident, or operator evidence.
 - `docs/qa-reports/family-friendly-filter-playwright/qa-report.md` (~212 tokens): prior validation, QA, incident, or operator evidence.
 - `skills/sdlc-incident/references/cloud-run-petstore-incident.md` (~870 tokens): prior validation, QA, incident, or operator evidence.
@@ -67,9 +65,7 @@ Search terms: `filter`, `max`, `adoption`, `fee`, `before`, `building`, `show`, 
   - L6: def test_create_adoption_order_returns_totals_in_cents() -> None:
 
 ### 5. Previous Agent Runs / Conversation Memory
-- `docs/repo-memory/previous-agent-runs.md` (~313 tokens): prior OpenHands run IDs, PRs, decisions, and unresolved live-test notes.
-- `docs/tested-demo-flow.md` (~1372 tokens): prior OpenHands run IDs, PRs, decisions, and unresolved live-test notes.
-- `docs/work-log.md` (~1453 tokens): prior OpenHands run IDs, PRs, decisions, and unresolved live-test notes.
+- `docs/repo-memory/previous-agent-runs.md` (~307 tokens): durable lessons and reusable file-path hints from prior agent runs.
 
 ## Cost-Aware Model Routing
 
@@ -92,9 +88,9 @@ Search terms: `filter`, `max`, `adoption`, `fee`, `before`, `building`, `show`, 
 ## Token Reuse Estimate
 
 - Text files in repo scan: 103
-- Rough full-repo text estimate: ~66731 tokens
-- Focused context estimate for this run: ~13273 tokens
-- Illustrative context avoided before coding: ~53458 tokens
+- Rough full-repo text estimate: ~66906 tokens
+- Focused context estimate for this run: ~10423 tokens
+- Illustrative context avoided before coding: ~56483 tokens
 
 These are rough character-based estimates for live-demo comparison, not billing records. The point is the harness policy: load the known context first, then spend stronger model calls only where they change the outcome.
 

@@ -58,6 +58,16 @@ python3 scripts/simulate_github_event.py \
 python3 scripts/preflight_github_demo.py --offline
 ```
 
+## Live Validation Checklist
+
+For a customer-facing live run, keep environment-specific proof in local notes and show only the polished artifacts in GitHub:
+
+- The OpenHands automation is registered from `automations/github/openhands-context/`.
+- The automation clones the branch that contains `AGENTS.md`, `skills/sdlc-context-reuse/`, `docs/repo-memory/`, and `scripts/build_context_reuse_report.py`.
+- The scout automation uses a lower-cost model profile when available.
+- The runtime has a `GITHUB_TOKEN` secret with permission to comment on issues.
+- Applying `openhands-context` to a sparse issue creates a context report and posts a concise issue comment.
+
 ## What This Proves
 
 - Agents can use `AGENTS.md` as durable memory.

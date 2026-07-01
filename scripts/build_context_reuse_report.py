@@ -222,8 +222,6 @@ def collect_skills(root: Path, labels: tuple[str, ...]) -> list[Path]:
 
 def existing_logs(root: Path) -> list[Path]:
     candidates = [
-        root / "docs" / "work-log.md",
-        root / "docs" / "tested-demo-flow.md",
         root / "docs" / "qa-reports" / "family-friendly-filter.md",
         root / "docs" / "qa-reports" / "family-friendly-filter-playwright" / "qa-report.md",
         root / "skills" / "sdlc-incident" / "references" / "cloud-run-petstore-incident.md",
@@ -234,8 +232,6 @@ def existing_logs(root: Path) -> list[Path]:
 def previous_conversation_sources(root: Path) -> list[Path]:
     candidates = [
         root / "docs" / "repo-memory" / "previous-agent-runs.md",
-        root / "docs" / "tested-demo-flow.md",
-        root / "docs" / "work-log.md",
     ]
     return [path for path in candidates if path.exists()]
 
@@ -320,7 +316,7 @@ def render_report(root: Path, trigger: TriggerContext) -> str:
     lines.append("")
     lines.append("### 5. Previous Agent Runs / Conversation Memory")
     for path, tokens in token_table(conversation_paths, root):
-        lines.append(f"- `{path}` (~{tokens} tokens): prior OpenHands run IDs, PRs, decisions, and unresolved live-test notes.")
+        lines.append(f"- `{path}` (~{tokens} tokens): durable lessons and reusable file-path hints from prior agent runs.")
     lines.append("")
     lines.append("## Cost-Aware Model Routing")
     lines.append("")

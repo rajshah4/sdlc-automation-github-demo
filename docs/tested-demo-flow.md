@@ -11,6 +11,8 @@ outside the repo.
 ```bash
 python3 -m pytest -q
 python3 scripts/preflight_github_demo.py --offline
+python3 scripts/simulate_github_event.py --fixture tests/fixtures/github_issue_labeled_context.json
+python3 scripts/build_context_reuse_report.py --fixture tests/fixtures/github_issue_labeled_context.json --stdout
 python3 scripts/simulate_github_event.py --fixture tests/fixtures/github_issue_labeled_build.json
 python3 skills/sdlc-story/scripts/validate_open_spec.py skills/sdlc-story/references/openspec-change-template
 python3 skills/sdlc-qa/scripts/with_server.py --server "python3 -m http.server 4173 --directory app/web" --port 4173 -- python3 skills/sdlc-qa/scripts/static_ui_smoke.py --url http://localhost:4173
@@ -30,6 +32,7 @@ the workflow boundary.
 | --- | --- | --- |
 | Jira bug to PR | `automations/jira/jira-to-story/` | `jira:issue_created` from `jira-direct` |
 | Visible sidekick Jira bug to PR | `automations/jira/jira-to-story-sidekick-v2/` | `jira:issue_created` from `jira-direct`, label `sidekick-v2` |
+| GitHub context scout | `automations/github/openhands-context/` | `issues.labeled` |
 | GitHub build | `automations/github/openhands-build/` | `issues.labeled` |
 | GitHub QA | `automations/github/openhands-qa/` | `pull_request.labeled` or `issues.labeled` |
 | GitHub review | `automations/github/openhands-review/` | `pull_request.labeled` |

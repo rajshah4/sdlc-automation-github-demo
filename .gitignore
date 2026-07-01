@@ -8,6 +8,7 @@ __pycache__/
 .venv/
 automation-registration-results.json
 jira-automation-registration-results.json
+docs/work-log.md
 work/
 tmp/
 .local-demo-notes/
