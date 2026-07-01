@@ -26,6 +26,24 @@ What to show:
 
 4. On the resulting PR, add `openhands-review` and `openhands-qa` to show reuse across separate agents/work cells.
 
+## Live Trigger Mechanics
+
+The context scout is triggered by a GitHub issue label, not GitHub Actions and not a comment command.
+
+1. Create or reopen an issue in `rajshah4/sdlc-automation-github-demo`.
+2. Add the `openhands-context` label.
+3. The GitHub integration sends an `issues.labeled` event to OpenHands.
+4. The automation filter matches only issues in the configured repo where `label.name == 'openhands-context'`.
+5. The automation clones the configured repo/ref, loads `AGENTS.md`, `skills/`, `docs/repo-memory/`, and deterministic scripts, then posts a concise issue comment.
+
+To rerun the same issue, remove `openhands-context`, remove any terminal status label such as `openhands:done`, and add `openhands-context` again. For the cleanest live demo, create a fresh sparse issue and apply the label once.
+
+## What Is Stored Vs Pulled
+
+- Stored in OpenHands automation: trigger, filter, model profile, timeout, and prompt text.
+- Pulled from GitHub on each run: `AGENTS.md`, repo-local skills, repo memory docs, scripts, fixtures, and app code from the configured ref.
+- Local only: operator notes, raw validation breadcrumbs, run IDs, and environment-specific proof.
+
 ## Presenter Language
 
 Use this framing:

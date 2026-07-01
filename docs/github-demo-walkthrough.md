@@ -6,6 +6,8 @@ This is the live flow for the GitHub-native SDLC Automation Demo.
 
 For the memory-and-cost version of the demo, create or reuse a sparse GitHub issue and add `openhands-context` before `openhands-build`.
 
+This triggers the OpenHands automation through the GitHub `issues.labeled` event. It runs only on issues, skips items already marked `openhands:done`, and posts a context reuse comment before any coding work begins.
+
 OpenHands should produce a context reuse report that shows:
 
 - `AGENTS.md` durable repo memory
@@ -16,6 +18,8 @@ OpenHands should produce a context reuse report that shows:
 - recommended lower-cost scout and stronger coding/review model routing
 
 Use this as the setup for the rest of the live demo: the expensive model should start after the scout has narrowed context.
+
+If you need to run the scout again on the same issue, remove the status label that would cause the filter to skip the item, then remove and reapply `openhands-context`.
 
 ## 1. Create An Issue
 

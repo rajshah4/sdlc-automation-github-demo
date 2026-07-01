@@ -86,6 +86,7 @@ def main() -> int:
     parser.add_argument("--env-file", type=Path, help="load KEY=value entries without printing values")
     parser.add_argument("--repository", help="set GITHUB_DEMO_REPOSITORY for this run")
     parser.add_argument("--repo-url", help="set GITHUB_DEMO_REPO_URL for this run")
+    parser.add_argument("--ref", help="set GITHUB_DEMO_REF for repositories cloned by automations")
     args = parser.parse_args()
 
     if args.env_file:
@@ -94,6 +95,10 @@ def main() -> int:
         os.environ["GITHUB_DEMO_REPOSITORY"] = args.repository
     if args.repo_url:
         os.environ["GITHUB_DEMO_REPO_URL"] = args.repo_url
+    if args.ref:
+        os.environ["GITHUB_DEMO_REF"] = args.ref
+    else:
+        os.environ.setdefault("GITHUB_DEMO_REF", "main")
 
     dry_run = not args.apply
     host = (

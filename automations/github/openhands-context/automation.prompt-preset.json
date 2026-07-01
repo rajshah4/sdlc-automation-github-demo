@@ -12,7 +12,7 @@
     {
       "url": "${GITHUB_DEMO_REPO_URL}",
       "provider": "github",
-      "ref": "main"
+      "ref": "${GITHUB_DEMO_REF}"
     }
   ],
   "timeout": 300,

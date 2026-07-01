@@ -27,3 +27,13 @@ Apply:
 ```bash
 python3 scripts/register_github_automations.py --apply
 ```
+
+By default, registration clones `main` for each run. For a live demo branch, pass an explicit ref:
+
+```bash
+python3 scripts/register_github_automations.py \
+  --apply \
+  --repository rajshah4/sdlc-automation-github-demo \
+  --repo-url https://github.com/rajshah4/sdlc-automation-github-demo \
+  --ref codex/memory-cost-overlay
+```
