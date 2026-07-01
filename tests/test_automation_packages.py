@@ -60,7 +60,7 @@ def test_github_automation_specs_include_model_profiles() -> None:
             encoding="utf-8"
         )
     )
-    assert context_spec["llm_profile"] == "sdlc-scout"
+    assert context_spec["model"] == "Bedrock-Claude-Haiku-4-5"
     assert context_spec["repos"][0]["ref"] == "${GITHUB_DEMO_REF}"
 
 

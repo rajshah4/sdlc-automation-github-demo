@@ -36,19 +36,20 @@ summary. Do not read or print secret values.
 
 ## Launcher Command
 
-Run the launcher exactly once:
+Run the launcher exactly once. Use one shell command, not a backslash-wrapped
+multi-line command, so argument parsing is unambiguous:
 
 ```bash
-python3 scripts/launch_sidekick_v2.py \
-  --jira-key <ISSUE_KEY> \
-  --title "<ISSUE_SUMMARY>" \
-  --body "<ISSUE_DESCRIPTION_PLAIN_TEXT>" \
-  --full
+python3 scripts/launch_sidekick_v2.py --jira-key "<ISSUE_KEY>" --title "<ISSUE_SUMMARY>" --body "<ISSUE_DESCRIPTION_PLAIN_TEXT>" --full
 ```
 
 The script owns the default Rajistics host, scout model, main model, timeouts,
 parallel scout launch, 90-second main-start barrier, GitHub token verification,
 and final JSON summary. Runtime settings come from environment secrets.
+
+Run the terminal action with a timeout of at least 900 seconds. The launcher may
+produce little or no output until the final JSON summary; that is expected. Do
+not pipe the output to another command to make it look shorter.
 
 Required runtime secrets/settings:
 
@@ -68,7 +69,10 @@ without printing the value.
 - Do not pipe launcher output to `head`, `tail`, `tee`, or any truncating command.
 - Do not rerun the launcher after partial output. Reruns create duplicate scout
   and implementation conversations.
-- If a required setting is missing, print only the missing setting name.
+- If a required setting is missing, print only the missing setting name and stop.
+  Do not probe token lengths, environment inventories, or secret values.
+- If the launcher command times out, stop and report that the launcher timeout
+  was too short. Do not rerun it.
 
 ## Expected Demo Shape
 

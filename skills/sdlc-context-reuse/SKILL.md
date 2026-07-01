@@ -36,7 +36,8 @@ python3 scripts/build_context_reuse_report.py \
 ```
 
 4. Use the report as the handoff from the scout phase to build, QA, or review work.
-5. Update durable memory only when you learned a reusable fact. Keep issue-specific details in PRs, issue comments, or context reports.
+5. Do not add workflow-trigger labels such as `openhands-build`, `openhands-review`, or `openhands-qa`; recommend the next step and let a human apply the label.
+6. Update durable memory only when you learned a reusable fact. Keep issue-specific details in PRs, issue comments, or context reports.
 
 ## Model Routing Policy
 

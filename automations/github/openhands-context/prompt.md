@@ -18,6 +18,10 @@ python3 scripts/build_context_reuse_report.py --output docs/context-reuse/latest
 
 If you can map the trigger payload to a local fixture or issue title/body, pass that context to the script. Otherwise, generate the report from the issue title, body, and labels. Do not edit product code from this work cell.
 
+This work cell is report-only. Do not add `openhands-build`, `openhands-review`,
+or `openhands-qa`; do not open a PR; do not create branches or commits. Recommend
+the next label in the comment, but leave that decision to a human.
+
 ## What You Post Back To GitHub
 
 Post a concise issue comment with:
@@ -32,7 +36,9 @@ Post a concise issue comment with:
 
 Do not post a search transcript. It is fine to say where the scout learned something, but keep citations compact and tied to the decision: issue source, repo memory, skill, evidence file, or specific code/test path.
 
-When permissions allow, update status labels from `openhands:ready` or `openhands:in-progress` to `openhands:done` or `openhands:needs-human`.
+When permissions allow, update only context/status labels such as
+`openhands:done` or `openhands:needs-human`. Never add labels that trigger
+another work cell.
 
 For GitHub REST writeback, use the configured `GITHUB_TOKEN` secret; do not use a secret named `GITHUB`. Never print token values, token previews, authorization headers, or raw environment dumps. If no usable GitHub credential is available, finish the scout report in the OpenHands conversation and say that GitHub writeback needs secret configuration.
 
