@@ -28,7 +28,7 @@ Post a concise issue comment with:
 - repo files found by targeted search
 - prior OpenHands conversations or run records reused
 - recommended model tier for scout, implementation, QA, review, and incident phases
-- the report path or PR link when a report was committed
+- a full-report link to `https://github.com/rajshah4/sdlc-automation-github-demo/blob/main/docs/context-reuse/latest-context-reuse-report.md`, or a PR link when a fresh report was committed
 
 When permissions allow, update status labels from `openhands:ready` or `openhands:in-progress` to `openhands:done` or `openhands:needs-human`.
 
