@@ -160,4 +160,4 @@ python3 factory_runs/canvas-issue-88-workflow-pr-20260707-1318/helpers/update_fa
   --artifact factory_runs/canvas-issue-88-workflow-pr-20260707-1318/qa.md
 ```
 
-Result: recorded below after execution.
+Result: **exit 0 — success**. PR section `## 4. QA` updated at https://github.com/rajshah4/sdlc-automation-github-demo/pull/91 with QA status, evidence paths, and artifact link.
