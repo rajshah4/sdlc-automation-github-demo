@@ -1,0 +1,11 @@
+{
+  "api_url": "http://localhost:8000/api/conversations/51112f28-9d54-4de1-abc2-beb7e56ce70b",
+  "execution_status": "finished",
+  "id": "51112f28-9d54-4de1-abc2-beb7e56ce70b",
+  "title": "\ud83d\udc1b Incident: Pending Pets in Available-Pets Check",
+  "ui_url": "http://localhost:8000/conversations/51112f28-9d54-4de1-abc2-beb7e56ce70b",
+  "workspace": {
+    "kind": "LocalWorkspace",
+    "working_dir": "/Users/rajiv.shah/Code/sdlc-automation-github-demo"
+  }
+}

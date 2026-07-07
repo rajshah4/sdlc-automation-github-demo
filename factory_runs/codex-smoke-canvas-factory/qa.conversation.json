@@ -1,0 +1,12 @@
+{
+  "api_url": "http://localhost:8000/api/conversations/7729ee3a-63b8-4d1d-ad38-b2fcbc9ded9d",
+  "execution_status": "idle",
+  "id": "7729ee3a-63b8-4d1d-ad38-b2fcbc9ded9d",
+  "name": "qa",
+  "title": null,
+  "ui_url": "http://localhost:8000/conversations/7729ee3a-63b8-4d1d-ad38-b2fcbc9ded9d",
+  "workspace": {
+    "kind": "LocalWorkspace",
+    "working_dir": "/Users/rajiv.shah/Code/sdlc-automation-github-demo"
+  }
+}

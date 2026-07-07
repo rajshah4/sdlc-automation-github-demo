@@ -1,0 +1,62 @@
+[
+  {
+    "api_url": "http://localhost:8000/api/conversations/fc1aa845-62fd-47fe-b240-f927efb7f454",
+    "execution_status": "idle",
+    "id": "fc1aa845-62fd-47fe-b240-f927efb7f454",
+    "name": "context-scout",
+    "title": null,
+    "ui_url": "http://localhost:8000/conversations/fc1aa845-62fd-47fe-b240-f927efb7f454",
+    "workspace": {
+      "kind": "LocalWorkspace",
+      "working_dir": "/Users/rajiv.shah/Code/sdlc-automation-github-demo"
+    }
+  },
+  {
+    "api_url": "http://localhost:8000/api/conversations/08328969-a702-499d-8a09-802f2856e2dc",
+    "execution_status": "idle",
+    "id": "08328969-a702-499d-8a09-802f2856e2dc",
+    "name": "story-to-pr",
+    "title": null,
+    "ui_url": "http://localhost:8000/conversations/08328969-a702-499d-8a09-802f2856e2dc",
+    "workspace": {
+      "kind": "LocalWorkspace",
+      "working_dir": "/Users/rajiv.shah/Code/sdlc-automation-github-demo"
+    }
+  },
+  {
+    "api_url": "http://localhost:8000/api/conversations/51112f28-9d54-4de1-abc2-beb7e56ce70b",
+    "execution_status": "idle",
+    "id": "51112f28-9d54-4de1-abc2-beb7e56ce70b",
+    "name": "incident",
+    "title": null,
+    "ui_url": "http://localhost:8000/conversations/51112f28-9d54-4de1-abc2-beb7e56ce70b",
+    "workspace": {
+      "kind": "LocalWorkspace",
+      "working_dir": "/Users/rajiv.shah/Code/sdlc-automation-github-demo"
+    }
+  },
+  {
+    "api_url": "http://localhost:8000/api/conversations/d70df31e-1721-4a22-8617-27e67fab4f0a",
+    "execution_status": "idle",
+    "id": "d70df31e-1721-4a22-8617-27e67fab4f0a",
+    "name": "code-review",
+    "title": null,
+    "ui_url": "http://localhost:8000/conversations/d70df31e-1721-4a22-8617-27e67fab4f0a",
+    "workspace": {
+      "kind": "LocalWorkspace",
+      "working_dir": "/Users/rajiv.shah/Code/sdlc-automation-github-demo"
+    }
+  },
+  {
+    "api_url": "http://localhost:8000/api/conversations/7729ee3a-63b8-4d1d-ad38-b2fcbc9ded9d",
+    "execution_status": "idle",
+    "id": "7729ee3a-63b8-4d1d-ad38-b2fcbc9ded9d",
+    "name": "qa",
+    "title": null,
+    "ui_url": "http://localhost:8000/conversations/7729ee3a-63b8-4d1d-ad38-b2fcbc9ded9d",
+    "workspace": {
+      "kind": "LocalWorkspace",
+      "working_dir": "/Users/rajiv.shah/Code/sdlc-automation-github-demo"
+    }
+  }
+]

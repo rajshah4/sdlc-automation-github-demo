@@ -1,0 +1,11 @@
+{
+  "api_url": "http://localhost:8000/api/conversations/fc1aa845-62fd-47fe-b240-f927efb7f454",
+  "execution_status": "finished",
+  "id": "fc1aa845-62fd-47fe-b240-f927efb7f454",
+  "title": "\u2728 Filter Pets by Max Adoption Fee Feature",
+  "ui_url": "http://localhost:8000/conversations/fc1aa845-62fd-47fe-b240-f927efb7f454",
+  "workspace": {
+    "kind": "LocalWorkspace",
+    "working_dir": "/Users/rajiv.shah/Code/sdlc-automation-github-demo"
+  }
+}
