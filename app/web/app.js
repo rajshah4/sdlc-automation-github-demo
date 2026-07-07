@@ -5,16 +5,23 @@ const pets = [
   { id: "pet-103", name: "Nova", species: "dog", status: "pending", tags: ["active", "training"], fee: "$110" },
 ];
 
+function feeToCents(feeStr) {
+  return Math.round(parseFloat(feeStr.replace("$", "")) * 100);
+}
+
 function renderResults() {
   const query = document.querySelector("#query").value.trim().toLowerCase();
   const species = document.querySelector("#species").value;
+  const maxFeeInput = document.querySelector("#max-fee").value;
+  const maxFeeCents = maxFeeInput !== "" ? Math.round(parseFloat(maxFeeInput) * 100) : null;
   const list = document.querySelector("#results");
   list.innerHTML = "";
 
   const matches = pets.filter((pet) => {
     return pet.name.toLowerCase().includes(query)
       && (species === "" || pet.species === species)
-      && pet.status === "available";
+      && pet.status === "available"
+      && (maxFeeCents === null || feeToCents(pet.fee) <= maxFeeCents);
   });
 
   if (matches.length === 0) {
@@ -34,4 +41,5 @@ function renderResults() {
 }
 
 document.querySelector("#search-button").addEventListener("click", renderResults);
+document.querySelector("#max-fee").addEventListener("input", renderResults);
 renderResults();
