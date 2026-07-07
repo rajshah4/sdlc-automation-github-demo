@@ -17,7 +17,7 @@ body {
 
 .toolbar {
   display: grid;
-  grid-template-columns: 1fr minmax(180px, 240px) minmax(120px, 160px) auto;
+  grid-template-columns: minmax(160px, 1fr) minmax(150px, 200px) minmax(110px, 140px) minmax(90px, 120px) auto;
   gap: 16px;
   align-items: end;
 }
