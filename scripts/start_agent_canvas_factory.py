@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import json
 import subprocess
 import time
@@ -49,6 +50,7 @@ def build_variables(args: argparse.Namespace, run_id: str, repo: Path) -> dict[s
             qa_playwright_arg += f' --playwright-node-path "{args.playwright_node_path}"'
     return {
         "run_id": run_id,
+        "run_date": args.run_date,
         "repo_path": str(repo.resolve()),
         "repo_slug": args.repo_slug or git_remote_slug(repo),
         "request_title": args.request_title,
@@ -105,6 +107,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--repo-slug", help="GitHub owner/name, default from git remote")
     parser.add_argument("--prompt-file", type=Path, default=DEFAULT_SUPERVISOR_PROMPT)
     parser.add_argument("--run-id", help="stable run id; defaults to timestamp")
+    parser.add_argument("--run-date", default=dt.date.today().isoformat(), help="date to use in generated reports")
     parser.add_argument("--issue-number", type=int, default=101)
     parser.add_argument("--request-title", default="Filter pets by max adoption fee")
     parser.add_argument(

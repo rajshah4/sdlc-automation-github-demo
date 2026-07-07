@@ -8,6 +8,7 @@ historical context from the previous demo.
 ## Inputs
 
 - Run id: `{{run_id}}`
+- Run date: `{{run_date}}`
 - Repository: `{{repo_slug}}`
 - Local repository path: `{{repo_path}}`
 - Story issue: `#{{issue_number}}`
@@ -50,6 +51,7 @@ production settings.
 
 Write `factory_runs/{{run_id}}/story-to-pr.md` with:
 
+- run date exactly as `{{run_date}}`; do not invent or infer another date
 - branch name
 - OpenSpec-style change path
 - changed files

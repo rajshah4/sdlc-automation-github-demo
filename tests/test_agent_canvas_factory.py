@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import sys
+from types import SimpleNamespace
 from pathlib import Path
 
 
@@ -64,6 +65,13 @@ def test_delegate_payload_preserves_encrypted_settings_and_adds_tools(tmp_path: 
     assert context["load_project_skills"] is True
 
 
+def test_idle_is_not_a_terminal_canvas_status() -> None:
+    delegate = load_delegate_module()
+
+    assert "idle" not in delegate.TERMINAL_STATUSES
+    assert {"finished", "error", "stuck", "stopped"} <= delegate.TERMINAL_STATUSES
+
+
 def test_render_prompt_replaces_variables(tmp_path: Path) -> None:
     delegate = load_delegate_module()
     prompt = tmp_path / "prompt.md"
@@ -81,6 +89,8 @@ def test_supervisor_prompt_delegates_all_work_cells() -> None:
     assert "Do not write settings JSON files" in prompt
     assert "GitHub labels are not the trigger mechanism" in prompt
     assert "--base http://localhost:8000" in prompt
+    assert "--run-date" in prompt
+    assert "{{run_date}}" in prompt
     assert "{{code_review_profile_arg}}" in prompt
     assert "{{qa_playwright_arg}}" in prompt
     for name in ("story-to-pr", "code-review", "qa"):
@@ -104,6 +114,7 @@ def test_work_cell_prompts_are_self_contained() -> None:
         assert "factory_runs/{{run_id}}" in text
         assert "GitHub labels are not" in text
         assert "Use `{{repo_path}}` as the only working tree" in text
+        assert "{{run_date}}" in text
 
 
 def test_delegate_registry_append(tmp_path: Path) -> None:
@@ -132,6 +143,36 @@ def test_orchestrator_has_all_work_cells() -> None:
     assert module.cell_prompt_path(Path("/tmp/prompts"), "qa") == Path("/tmp/prompts/workcells/qa.md")
 
 
+def test_orchestrator_writes_missing_artifact_report(tmp_path: Path) -> None:
+    path = ROOT / "scripts" / "run_agent_canvas_factory.py"
+    spec = importlib.util.spec_from_file_location("run_agent_canvas_factory", path)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    sys.path.insert(0, str(ROOT / "scripts"))
+    spec.loader.exec_module(module)
+
+    args = SimpleNamespace(repo=tmp_path, run_id="run-1", run_date="2026-07-07")
+    entry = {
+        "id": "child-1",
+        "ui_url": "http://localhost:8000/conversations/child-1",
+        "artifact": "factory_runs/run-1/qa.md",
+    }
+
+    artifact = module.write_missing_artifact_report(
+        args=args,
+        cell="qa",
+        entry=entry,
+        status_response={"execution_status": "error"},
+        final_response={"response": ""},
+    )
+
+    assert artifact == tmp_path / "factory_runs" / "run-1" / "qa.md"
+    text = artifact.read_text(encoding="utf-8")
+    assert "Status: needs-human" in text
+    assert "Execution status: `error`" in text
+    assert "Run date: `2026-07-07`" in text
+
+
 def test_orchestrator_snapshots_prompts_before_delegating() -> None:
     factory = (ROOT / "scripts" / "run_agent_canvas_factory.py").read_text(encoding="utf-8")
 
@@ -143,6 +184,7 @@ def test_orchestrator_snapshots_prompts_before_delegating() -> None:
 def test_launcher_records_parent_conversation_artifact() -> None:
     launcher = (ROOT / "scripts" / "start_agent_canvas_factory.py").read_text(encoding="utf-8")
     assert "parent.conversation.json" in launcher
+    assert "--run-date" in launcher
     assert "--require-playwright-qa" in launcher
     assert "--playwright-node-path" in launcher
 
@@ -151,4 +193,5 @@ def test_qa_prompt_supports_required_playwright() -> None:
     qa_prompt = (ROOT / "agent-canvas" / "prompts" / "workcells" / "qa.md").read_text(encoding="utf-8")
     assert "{{qa_playwright_requirement}}" in qa_prompt
     assert "{{playwright_node_path}}" in qa_prompt
+    assert "scripts/run_petstore_playwright_qa.py" in qa_prompt
     assert "Playwright is required" in qa_prompt or "When Playwright is required" in qa_prompt

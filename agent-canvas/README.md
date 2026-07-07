@@ -36,6 +36,7 @@ flowchart TD
 | `../scripts/start_agent_canvas_factory.py` | Starts the parent conversation. |
 | `../scripts/run_agent_canvas_factory.py` | Deterministic parent-side orchestrator that starts and monitors child conversations. |
 | `../scripts/agent_canvas_delegate.py` | Creates, waits for, and inspects child conversations through the local Agent Canvas API. |
+| `../scripts/run_petstore_playwright_qa.py` | Runs the Petstore Playwright evidence flow on an available local port. |
 | `../docs/agent-canvas-dark-factory-demo.md` | Customer-facing walkthrough, reproduction recipe, and adaptation guide. |
 
 ## Quick Start

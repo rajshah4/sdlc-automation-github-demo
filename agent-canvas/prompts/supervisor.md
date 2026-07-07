@@ -10,6 +10,7 @@ safe, and produce one final lifecycle report.
 ## Demo Inputs
 
 - Run id: `{{run_id}}`
+- Run date: `{{run_date}}`
 - Repository: `{{repo_slug}}`
 - Local repository path: `{{repo_path}}`
 - Story issue: `#{{issue_number}}`
@@ -53,7 +54,7 @@ The orchestrator will run these child work cells in order: `story-to-pr`,
 `code-review`, and `qa`.
 
 ```bash
-python3 scripts/run_agent_canvas_factory.py --base http://localhost:8000 --repo "{{repo_path}}" --repo-slug "{{repo_slug}}" --run-id "{{run_id}}" --issue-number "{{issue_number}}" --request-title "{{request_title}}" --request-body "{{request_body}}" {{code_review_profile_arg}} {{qa_playwright_arg}}
+python3 scripts/run_agent_canvas_factory.py --base http://localhost:8000 --repo "{{repo_path}}" --repo-slug "{{repo_slug}}" --run-id "{{run_id}}" --run-date "{{run_date}}" --issue-number "{{issue_number}}" --request-title "{{request_title}}" --request-body "{{request_body}}" {{code_review_profile_arg}} {{qa_playwright_arg}}
 ```
 
 If the orchestrator command fails, stop and report `needs-human` with the error
@@ -75,6 +76,7 @@ settings, or profile payloads.
 Write `factory_runs/{{run_id}}/lifecycle-report.md` and include:
 
 - parent conversation purpose
+- run date exactly as `{{run_date}}`; do not invent or infer another date
 - child conversation table with work cell, status, id, UI URL, and artifact path
 - story request and assumptions
 - spec/change artifact path

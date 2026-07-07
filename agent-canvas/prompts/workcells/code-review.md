@@ -8,6 +8,7 @@ historical context from the previous demo.
 ## Inputs
 
 - Run id: `{{run_id}}`
+- Run date: `{{run_date}}`
 - Repository: `{{repo_slug}}`
 - Local repository path: `{{repo_path}}`
 - Story issue: `#{{issue_number}}`
@@ -31,6 +32,9 @@ automation context. Do not wait for or apply labels to start review.
 Focus on concrete bugs, regressions, missing tests, security risks, product
 assumptions, and demo-readiness issues. Do not claim tests passed unless you
 ran them or verified evidence produced by another work cell.
+Review only changes in the target branch or PR diff. Do not label existing
+baseline behavior as scope creep unless the diff shows it was introduced by
+this work.
 
 ## Human Control
 
@@ -41,6 +45,7 @@ resolve review findings as if you were a human reviewer.
 
 Write `factory_runs/{{run_id}}/code-review.md` with:
 
+- run date exactly as `{{run_date}}`; do not invent or infer another date
 - reviewed target: PR, branch, or local diff
 - findings ordered by severity
 - file and line references when available

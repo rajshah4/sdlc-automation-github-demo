@@ -8,6 +8,7 @@ historical context from the previous demo.
 ## Inputs
 
 - Run id: `{{run_id}}`
+- Run date: `{{run_date}}`
 - Repository: `{{repo_slug}}`
 - Local repository path: `{{repo_path}}`
 - Story issue: `#{{issue_number}}`
@@ -30,15 +31,27 @@ under `factory_runs/{{run_id}}/` if they exist.
 1. Run focused deterministic tests for the changed behavior.
 2. Add or update focused tests only when coverage is missing and safe.
 3. Run broader tests when focused tests pass.
-4. Capture browser evidence for UI-visible changes when the runtime supports
+4. When Playwright is required for the max-fee story and
+   `app/web/tests/max-adoption-fee-filter.playwright.mjs` exists, run this
+   deterministic wrapper before broader exploration:
+
+   ```bash
+   python3 scripts/run_petstore_playwright_qa.py \
+     --artifact-dir factory_runs/{{run_id}}/playwright-artifacts \
+     --playwright-node-path "{{playwright_node_path}}"
+   ```
+
+   If `{{playwright_node_path}}` is empty, omit the `--playwright-node-path`
+   line. Record the command, result, and artifact paths.
+5. Capture browser evidence for UI-visible changes when the runtime supports
    it. If browser execution is unavailable, use the repo's static UI fallback
    and clearly mark the evidence as fallback evidence.
-5. When Playwright is required, run or update a Playwright script that covers
+6. When Playwright is required, run or update a Playwright script that covers
    the changed UI behavior. For the max-fee story, the Playwright evidence must
    exercise the Max fee input, including at least one below-threshold filter and
    one exact-boundary scenario. Use `NODE_PATH={{playwright_node_path}}` when a
    Playwright node_modules path is provided.
-6. Do not install new dependencies during the timed demo unless explicitly
+7. Do not install new dependencies during the timed demo unless explicitly
    authorized.
 
 ## Human Control
@@ -50,6 +63,7 @@ apply labels, or bypass CI.
 
 Write `factory_runs/{{run_id}}/qa.md` with:
 
+- run date exactly as `{{run_date}}`; do not invent or infer another date
 - commands run
 - pass/fail results
 - test files added or changed

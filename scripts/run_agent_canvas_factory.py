@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import json
 import shutil
 import time
@@ -46,6 +47,7 @@ def cell_prompt_path(prompt_root: Path, cell: str) -> Path:
 def variables_for_cell(args: argparse.Namespace, cell: str) -> dict[str, str]:
     values = {
         "run_id": args.run_id,
+        "run_date": args.run_date,
         "repo_path": str(args.repo.resolve()),
         "repo_slug": args.repo_slug,
         "issue_number": str(args.issue_number),
@@ -70,6 +72,7 @@ def create_manifest(args: argparse.Namespace, run_dir: Path, parent_url: str | N
         "| Field | Value |",
         "| --- | --- |",
         f"| Run ID | `{args.run_id}` |",
+        f"| Run Date | `{args.run_date}` |",
         f"| Repository | `{args.repo_slug}` |",
         f"| Local Repo Path | `{args.repo.resolve()}` |",
         f"| Parent Conversation | {parent_url or 'unknown'} |",
@@ -106,6 +109,54 @@ def update_summary(run_dir: Path, entries: list[dict[str, Any]]) -> None:
         lines.append(f"| `{entry['name']}` | {status} | {link} | `{artifact}` |")
     lines.append("")
     (run_dir / "children-summary.md").write_text("\n".join(lines), encoding="utf-8")
+
+
+def write_missing_artifact_report(
+    *,
+    args: argparse.Namespace,
+    cell: str,
+    entry: dict[str, Any],
+    status_response: dict[str, Any],
+    final_response: dict[str, Any],
+) -> Path | None:
+    artifact = args.repo / entry["artifact"]
+    if artifact.exists():
+        return None
+
+    status = status_response.get("execution_status") or "unknown"
+    timeout = bool(status_response.get("wait_timeout"))
+    response = final_response.get("response") or ""
+    lines = [
+        f"# {cell} Work Cell Report",
+        "",
+        "Status: needs-human",
+        "",
+        "This artifact was written by the Agent Canvas factory orchestrator because",
+        f"the `{cell}` child did not write its expected report before reaching a",
+        "terminal or timeout state.",
+        "",
+        "## Run Metadata",
+        "",
+        f"- Run ID: `{args.run_id}`",
+        f"- Run date: `{args.run_date}`",
+        f"- Child conversation: {entry.get('ui_url') or entry.get('id') or 'unknown'}",
+        f"- Execution status: `{status}`",
+        f"- Wait timeout: `{str(timeout).lower()}`",
+        "",
+        "## Child Final Response",
+        "",
+        response.strip() or "_No final response was available from the child conversation._",
+        "",
+        "## Required Human Action",
+        "",
+        "- Open the child conversation and inspect the terminal error or timeout.",
+        "- Rerun this workcell after resolving the missing capability or prompt issue.",
+        "- Do not treat this gate as passed until the workcell writes its normal report.",
+        "",
+    ]
+    artifact.parent.mkdir(parents=True, exist_ok=True)
+    artifact.write_text("\n".join(lines), encoding="utf-8")
+    return artifact
 
 
 def start_cell(
@@ -229,6 +280,18 @@ def run_factory(args: argparse.Namespace) -> int:
             )
             entry["wait"] = canvas.conversation_summary(base, args.ui_base, status_response)
             entry["final_response_present"] = bool(final_response.get("response"))
+            if status_response.get("wait_timeout") or status_response.get("execution_status") in {
+                "error",
+                "stuck",
+                "stopped",
+            }:
+                write_missing_artifact_report(
+                    args=args,
+                    cell=cell,
+                    entry=entry,
+                    status_response=status_response,
+                    final_response=final_response,
+                )
             update_summary(run_dir, entries)
             if status_response.get("execution_status") in {"error", "stuck", "stopped"}:
                 break
@@ -245,13 +308,14 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--repo", type=Path, default=REPO_ROOT)
     parser.add_argument("--repo-slug", required=True)
     parser.add_argument("--run-id", required=True)
+    parser.add_argument("--run-date", default=dt.date.today().isoformat())
     parser.add_argument("--parent-url")
     parser.add_argument("--issue-number", type=int, default=101)
     parser.add_argument("--request-title", required=True)
     parser.add_argument("--request-body", required=True)
     parser.add_argument("--cells", nargs="+", choices=WORK_CELLS, default=list(ACTIVE_WORK_CELLS))
     parser.add_argument("--code-review-profile", help="Agent Canvas profile name to use only for the code-review child")
-    parser.add_argument("--child-max-iterations", type=int, default=60)
+    parser.add_argument("--child-max-iterations", type=int, default=100)
     parser.add_argument("--cell-timeout-seconds", type=int, default=1800)
     parser.add_argument("--poll-seconds", type=int, default=20)
     parser.add_argument("--include-task-tools", action="store_true")

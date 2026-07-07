@@ -24,7 +24,7 @@ DEFAULT_BASE_CANDIDATES = (
     "http://127.0.0.1:18000",
 )
 DEFAULT_UI_BASE = "http://localhost:8000"
-TERMINAL_STATUSES = {"finished", "error", "stuck", "stopped", "idle"}
+TERMINAL_STATUSES = {"finished", "error", "stuck", "stopped"}
 RUNNING_STATUSES = {"running", "starting"}
 DEFAULT_TOOLS = [
     {"name": "terminal", "params": {}},

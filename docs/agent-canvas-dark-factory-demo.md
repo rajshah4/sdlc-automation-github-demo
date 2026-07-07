@@ -55,6 +55,7 @@ flowchart TD
 | Parent launcher | `scripts/start_agent_canvas_factory.py` | Creates the visible supervisor conversation in local Agent Canvas. |
 | Orchestrator | `scripts/run_agent_canvas_factory.py` | Runs inside the parent conversation, creates child conversations, waits for each gate, and writes run artifacts. |
 | Canvas API helper | `scripts/agent_canvas_delegate.py` | Handles local Agent Canvas API calls, encrypted settings round-trip, profile selection, and polling. |
+| QA browser wrapper | `scripts/run_petstore_playwright_qa.py` | Runs the Petstore Playwright evidence flow on an available local port. |
 | Repo-local skills | `skills/sdlc-story`, `skills/sdlc-code-review`, `skills/sdlc-qa` | Domain instructions the child conversations use for story work, review, and QA. |
 | Run artifacts | `factory_runs/<run-id>/` | Manifest, child conversation metadata, reports, Playwright evidence, and lifecycle summary. |
 
@@ -145,6 +146,11 @@ Expected artifacts:
 | `qa.md` | QA delegate report. |
 | `playwright-artifacts/` | Optional screenshot, video, GIF, and QA report files when Playwright evidence is required. |
 | `lifecycle-report.md` | Parent-level lifecycle summary for review and demo narration. |
+
+If a delegated child conversation reaches an error, stopped, stuck, or timeout
+state before writing its expected report, the orchestrator writes a
+`needs-human` artifact at the expected path. That keeps the run auditable even
+when a workcell does not pass.
 
 ## How To Demo It
 
