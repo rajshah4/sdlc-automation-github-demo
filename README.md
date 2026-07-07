@@ -24,19 +24,20 @@ where requests disappear into a black box. The common bottleneck is:
 2. Engineers need to understand the issue, find the right code, implement a fix, add tests, and preserve review judgment.
 3. Demo operators need a path that is easy to explain, repeat, and inspect.
 
-The default demo keeps that loop inside GitHub. A human applies a label,
-OpenHands runs one bounded automation, then posts evidence back where the team
-already works. The next pattern is a complete delegated workflow: one request
-starts a supervisor conversation, and that parent conversation creates bounded
-child conversations for implementation, review, and QA.
+This repo shows two ways to run that loop:
+
+- **Step-by-Step Control:** a human applies labels, and each label triggers one
+  bounded OpenHands automation.
+- **Complete Automation:** one request starts a supervisor conversation, which
+  delegates implementation, review, and QA to child conversations.
 
 ## Choose Your Demo Path
 
-| Goal | Use this path | Starts from | Status |
+| Goal | Use this path | Starts from | Example PR |
 | --- | --- | --- | --- |
-| **Step-by-Step Control** | Human-gated labels and triggers | GitHub issue or PR label | Available on `main`; start with the [GitHub demo walkthrough](docs/github-demo-walkthrough.md) |
-| **Complete Automation: OpenHands Enterprise/Cloud** | Parent supervisor conversation with child conversations | Jira Task event | Live-tested in [PR #86](https://github.com/rajshah4/sdlc-automation-github-demo/pull/86) |
-| **Complete Automation: Agent Canvas** | Parent Canvas conversation with delegated child conversations | Agent Canvas supervisor prompt | Pattern staged in [PR #86](https://github.com/rajshah4/sdlc-automation-github-demo/pull/86), then reusable in the multi-agent demo |
+| **Step-by-Step Control** | Human-gated labels and triggers | GitHub issue or PR label | [PR #53](https://github.com/rajshah4/sdlc-automation-github-demo/pull/53) |
+| **Complete Automation: OpenHands Enterprise/Cloud** | Parent supervisor conversation with child conversations | Jira Task event | [PR #94](https://github.com/rajshah4/sdlc-automation-github-demo/pull/94) |
+| **Complete Automation: Agent Canvas** | Parent Canvas conversation with delegated child conversations | Agent Canvas supervisor prompt | [PR #89](https://github.com/rajshah4/sdlc-automation-github-demo/pull/89) |
 
 ## Two Ways To Run The SDLC Loop
 
@@ -64,7 +65,7 @@ Request
 
 | Work cell | Trigger | What OpenHands does | What humans control |
 | --- | --- | --- | --- |
-| **Context Scout** | Apply `openhands-context` to a sparse issue | Builds a cost-aware context reuse report from AGENTS.md, repo-local skills, prior reports, targeted repo search, and previous OpenHands run memory | Whether to proceed to build, review, or QA work |
+| **Context Scout** | Apply `openhands-context` to a sparse issue | Navigates existing business wiki/docs, repo context, logs, prior reports, and previous OpenHands run evidence before expensive model work | Whether to proceed to build, review, or QA work |
 | **Bug to PR** | Apply `openhands-build` to a sparse bug issue | Clarifies the bug, checks repo-local docs and evidence, writes OpenSpec-style change artifacts, implements the fix, runs tests, and opens a PR | Scope, review, approval, and merge |
 | **Code Review** | Apply `openhands-review` to a PR | Reads the diff, checks risk areas, and posts review findings as a PR comment | Which findings block the PR |
 | **Automated QA** | Apply `openhands-qa` to a PR | Builds or updates test coverage, runs deterministic checks, and includes UI test evidence where applicable | Test acceptance and merge readiness |
@@ -89,8 +90,9 @@ PR #86 carries the concrete files and the live-tested Replicated Jira flow.
 
 ## What You'll See
 
-- A low-cost context scout shows which repo memory, skills, prior evidence, search results, and previous OpenHands runs can be reused before expensive model work.
-- An optional sidekick mode makes the context-saving pattern visible as separate read-only scout conversations before the implementation agent runs.
+- A low-cost context scout shows which business wiki/docs, repo context, logs,
+  prior evidence, and previous OpenHands runs can be reused before expensive
+  model work.
 - A sparse bug issue becomes a PR with an implementation branch and visible OpenSpec-style proposal/spec/design/task artifacts.
 - A PR receives an automated review comment rather than a silent background score.
 - QA output lands on the PR with concrete test files and command results. The repo also includes a prebuilt Playwright browser-evidence example with screenshot, GIF, video, and report generation.
@@ -107,11 +109,9 @@ repo-local knowledge, not a custom agent runtime.
 
 | Capability | Where it lives | Why it matters |
 | --- | --- | --- |
-| OpenHands Automations | `automations/github/`, `automations/jira/` | Prompt presets registered in the Rajistics OpenHands instance. GitHub uses label-triggered work cells; Jira uses the `jira-direct` webhook for sparse task-to-PR demos. |
-| Repo-local skills | `skills/` | Reusable skills encode context reuse, story/spec, optional context-sidekick scouting, QA, and code-review behavior with scripts and references that customers can inspect. The story skill follows Fission-AI/OpenSpec lineage while avoiding live package installs during timed automation runs. |
+| OpenHands automations | `automations/github/`, `automations/jira/` | Event-triggered automations configured in OpenHands. GitHub labels and Jira webhooks start the work; GitHub and Jira remain the systems of record. |
+| Repo-local skills | `skills/` | Reusable skills encode context reuse, story/spec, QA, and code-review behavior with scripts and references that customers can inspect. |
 | Delegated factory pattern | PR #86 | Adds the parent-child supervisor path for OpenHands Enterprise/Cloud and Agent Canvas without replacing the label-driven automations. |
-| Repo memory | `docs/repo-memory/` | Durable product rules, model-routing guidance, and previous run lessons keep future agents from rediscovering the same context. |
-| Sidekick mode | `automations/jira/jira-to-story-sidekick-v2/`, `skills/sdlc-sidekick-launcher/`, `skills/sdlc-context-sidekick/` | Optional multi-conversation path where lightweight scouts gather docs, logs, and repo context before the implementation agent runs. |
 | OpenSpec-style artifacts | `openspec/` | Repo-local context and generated change folders keep request, proposal, spec delta, design, and tasks version controlled. |
 | Deterministic scripts | `scripts/` | Preflight, label setup, fixture simulation, and Petstore checks run before broader model reasoning where possible. |
 | GitHub templates and labels | `.github/` | Issues, PRs, and labels define the human approval boundaries. |
@@ -131,19 +131,6 @@ python3 scripts/preflight_github_demo.py --offline
 python3 scripts/simulate_github_event.py --fixture tests/fixtures/github_issue_labeled_context.json
 python3 scripts/simulate_github_event.py --fixture tests/fixtures/github_issue_labeled_build.json
 ```
-
-## Repo Map
-
-| Folder | Purpose |
-| --- | --- |
-| `app/` | Small Petstore app, static UI, and app tests. |
-| `automations/` | OpenHands prompt-preset automation packages for GitHub and Jira. |
-| `docs/repo-memory/` | Durable memory for product rules, model routing, and previous OpenHands run lessons. |
-| `openspec/` | OpenSpec-style project context and generated change folders for story-to-PR work. |
-| `skills/` | Repo-local OpenHands skills with scripts and references. |
-| `scripts/` | Deterministic setup, registration, preflight, and QA helpers. |
-| `docs/` | Customer-facing setup, walkthrough, and validation notes. |
-| `.github/` | Issue/PR templates and label definitions; the live demo uses OpenHands labels, not GitHub Actions. |
 
 ## Register OpenHands Automations
 
@@ -184,4 +171,3 @@ No secrets belong in this repo. Store OpenHands, GitHub, Jira, and Slack credent
 - [Setup checklist](docs/setup-checklist.md)
 - [Demo upgrade backlog](docs/demo-upgrades.md)
 - [Prebuilt UI and Playwright example](docs/ui-playwright-example.md)
-- [Tested flow and validation notes](docs/tested-demo-flow.md)
