@@ -12,6 +12,7 @@ function feeToCents(feeStr) {
 function renderResults() {
   const query = document.querySelector("#query").value.trim().toLowerCase();
   const species = document.querySelector("#species").value;
+  const familyFriendlyOnly = document.querySelector("#family-friendly").checked;
   const maxFeeInput = document.querySelector("#max-fee").value;
   const maxFeeCents = maxFeeInput !== "" ? Math.round(parseFloat(maxFeeInput) * 100) : null;
   const list = document.querySelector("#results");
@@ -20,6 +21,7 @@ function renderResults() {
   const matches = pets.filter((pet) => {
     return pet.name.toLowerCase().includes(query)
       && (species === "" || pet.species === species)
+      && (!familyFriendlyOnly || pet.tags.includes("family"))
       && pet.status === "available"
       && (maxFeeCents === null || feeToCents(pet.fee) <= maxFeeCents);
   });
@@ -41,5 +43,6 @@ function renderResults() {
 }
 
 document.querySelector("#search-button").addEventListener("click", renderResults);
+document.querySelector("#family-friendly").addEventListener("change", renderResults);
 document.querySelector("#max-fee").addEventListener("input", renderResults);
 renderResults();
