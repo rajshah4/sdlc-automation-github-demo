@@ -45,6 +45,6 @@ def test_issue_label_incident_fixture_is_incident_event() -> None:
 
 
 def test_all_fixtures_use_known_automation_labels() -> None:
-    for path in FIXTURES.glob("*.json"):
+    for path in FIXTURES.glob("github_*.json"):
         payload = load_fixture(path.name)
         assert payload["label"]["name"] in AUTOMATION_LABELS

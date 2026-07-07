@@ -1,6 +1,6 @@
 # Agent Instructions
 
-This is the GitHub-native SDLC Automation Demo. Customer-facing language should say "SDLC Automation Demo" and should not use "software factory."
+This is the GitHub-native SDLC Automation Demo. Customer-facing language should say "SDLC Automation Demo" for the productized demo. It is acceptable to use "software factory" when discussing the reusable delegated-conversation pattern customers can adapt for themselves.
 
 ## Repository Shape
 

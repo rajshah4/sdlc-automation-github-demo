@@ -1,0 +1,41 @@
+{
+  "name": "delegated-sdlc-factory",
+  "run_directory": "factory_runs/{{run_id}}",
+  "system_of_record": "github",
+  "supervisor": {
+    "prompt": "agent-canvas/prompts/supervisor.md",
+    "report": "factory_runs/{{run_id}}/lifecycle-report.md"
+  },
+  "cells": [
+    {
+      "name": "story-to-pr",
+      "prompt": "agent-canvas/prompts/workcells/story-to-pr.md",
+      "artifact": "factory_runs/{{run_id}}/story-to-pr.md",
+      "continue_on": ["done"],
+      "next": ["code-review", "qa"]
+    },
+    {
+      "name": "code-review",
+      "prompt": "agent-canvas/prompts/workcells/code-review.md",
+      "artifact": "factory_runs/{{run_id}}/code-review.md",
+      "continue_on": ["pass", "findings"],
+      "next": ["qa"]
+    },
+    {
+      "name": "qa",
+      "prompt": "agent-canvas/prompts/workcells/qa.md",
+      "artifact": "factory_runs/{{run_id}}/qa.md",
+      "continue_on": ["pass"],
+      "next": []
+    }
+  ],
+  "human_gates": [
+    "scope",
+    "credentials",
+    "security",
+    "review",
+    "merge",
+    "deployment",
+    "production-remediation"
+  ]
+}
