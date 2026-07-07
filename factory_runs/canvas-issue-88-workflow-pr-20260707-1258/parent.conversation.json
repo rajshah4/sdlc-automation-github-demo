@@ -1,0 +1,13 @@
+{
+  "api_url": "http://localhost:8000/api/conversations/8b057804-3921-4e30-844c-8a0ead00e681",
+  "execution_status": "idle",
+  "id": "8b057804-3921-4e30-844c-8a0ead00e681",
+  "role": "factory-supervisor",
+  "run_id": "canvas-issue-88-workflow-pr-20260707-1258",
+  "title": null,
+  "ui_url": "http://localhost:8000/conversations/8b057804-3921-4e30-844c-8a0ead00e681",
+  "workspace": {
+    "kind": "LocalWorkspace",
+    "working_dir": "/private/tmp/sdlc-agent-canvas-workflow-pr-20260707-1258"
+  }
+}
