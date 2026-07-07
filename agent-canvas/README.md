@@ -1,6 +1,9 @@
-# Agent Canvas SDLC Automation Demo
+# Agent Canvas SDLC Automation Recipe
 
-This folder contains the Agent Canvas version of the SDLC Automation Demo.
+This folder contains the Agent Canvas version of the SDLC Automation Demo. It is
+structured as a reusable software-factory recipe: one parent conversation acts
+as the orchestrator, and delegated child conversations perform bounded SDLC
+workcells.
 
 The existing GitHub automation demo is event-driven: a human adds GitHub labels,
 and each label creates a separate OpenHands automation run. This Canvas version
@@ -8,6 +11,9 @@ does not use labels as the trigger mechanism. It uses one visible parent
 conversation as the demo spine. The parent conversation delegates each lifecycle
 cell to child Agent Canvas conversations, then gathers their outputs into one
 lifecycle report.
+
+For the full customer-facing walkthrough, reproduction steps, and adaptation
+points, see `../docs/agent-canvas-dark-factory-demo.md`.
 
 ## Conversation Topology
 
@@ -30,7 +36,7 @@ flowchart TD
 | `../scripts/start_agent_canvas_factory.py` | Starts the parent conversation. |
 | `../scripts/run_agent_canvas_factory.py` | Deterministic parent-side orchestrator that starts and monitors child conversations. |
 | `../scripts/agent_canvas_delegate.py` | Creates, waits for, and inspects child conversations through the local Agent Canvas API. |
-| `../docs/agent-canvas-dark-factory-demo.md` | Operator walkthrough and demo narrative. |
+| `../docs/agent-canvas-dark-factory-demo.md` | Customer-facing walkthrough, reproduction recipe, and adaptation guide. |
 
 ## Quick Start
 
@@ -61,7 +67,7 @@ python3 scripts/start_agent_canvas_factory.py \
   --code-review-profile Minimax
 ```
 
-To stress-test the QA work cell with required Playwright UI evidence:
+To require Playwright UI evidence from the QA workcell:
 
 ```bash
 python3 scripts/start_agent_canvas_factory.py \
@@ -107,6 +113,6 @@ python3 scripts/start_agent_canvas_factory.py --render-only
 ## What This Does Not Change
 
 This folder is additive. It does not modify or replace the existing
-`automations/github/` label-triggered demo, and it does not add Jira or
-Rajistics automation. A Jira-triggered version can be built later as a separate
-demo after the Canvas path is stable.
+`automations/github/` label-triggered demo, and it does not add
+environment-specific Jira automation. Trigger adapters can be added separately
+after the Canvas recipe is stable.

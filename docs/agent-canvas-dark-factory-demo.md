@@ -1,159 +1,219 @@
-# Agent Canvas Dark Factory Demo
+# Agent Canvas Dark Software Factory Demo
 
-This is the delegated-conversation version of the GitHub-native SDLC Automation
-Demo in `rajshah4/sdlc-automation-github-demo`.
+This guide describes a reproducible Agent Canvas recipe for running an SDLC
+workflow with one supervisor conversation and delegated workcell conversations.
+Use it as a starting point for your own automated software factory: keep the
+orchestration pattern, then replace the workcell prompts, repo-specific skills,
+validation commands, and external trigger to match your environment.
 
-The existing GitHub-native demo uses GitHub labels as the work-cell trigger
-boundary. This version keeps one parent Agent Canvas conversation in front of
-the operator and lets that parent delegate the lifecycle to child
-conversations. Labels can be passed along as descriptive historical context, but
-they are not the trigger mechanism, gate, or sequencing control for this Canvas
-demo.
+This demo is additive to the existing GitHub-native SDLC automation demo. The
+GitHub-native demo uses GitHub labels as work-cell triggers. This Agent Canvas
+version does not use labels to start, gate, or sequence the workflow. Labels can
+be passed to a conversation as descriptive metadata, but the control plane is
+the parent Agent Canvas conversation.
 
-## What The Audience Sees
+## What This Demonstrates
 
-1. The operator starts one Canvas conversation: the supervisor.
-2. The supervisor runs the repo-local orchestrator, which creates a run
-   manifest and delegates story-to-PR.
-3. The story-to-PR child creates OpenSpec-style artifacts, implements the small
-   Petstore change, runs validation, and opens or prepares a draft PR.
-4. The supervisor delegates code review and QA as separate conversations.
-5. The supervisor writes one lifecycle report with every child conversation
-   link, artifact path, gate result, and human next step.
+The demo shows a multi-agent software factory pattern:
 
-## Why This Version Matters
+1. A human or external system provides a story request.
+2. One parent Agent Canvas conversation becomes the factory supervisor.
+3. The supervisor runs a repo-local orchestrator script.
+4. The orchestrator delegates bounded work to child conversations.
+5. Each child conversation produces an auditable artifact.
+6. The supervisor records the lifecycle, child links, gate outcomes, and human
+   next steps.
 
-The GitHub-label demo proves event-driven automation. The Canvas version proves
-orchestration: one parent agent can supervise a lifecycle while specialized
-children perform bounded work and report back. It makes delegation visible
-without using GitHub labels as the control plane.
+For this repo, the active workcells are:
 
-## Run It Locally
+| Gate | Delegate | Responsibility |
+| --- | --- | --- |
+| 1 | `story-to-pr` | Understand the story, update the repo, run focused validation, and prepare or update the PR. |
+| 2 | `code-review` | Review the branch and report blocking findings, residual risks, and suggested follow-up. |
+| 3 | `qa` | Run deterministic tests and, when requested, produce Playwright UI evidence. |
+
+## Architecture
+
+```mermaid
+flowchart TD
+    A["Story request"] --> B["Parent conversation: factory supervisor"]
+    B --> C["Repo-local orchestrator"]
+    C --> D["Child conversation: story-to-pr"]
+    C --> E["Child conversation: code-review"]
+    C --> F["Child conversation: QA"]
+    D --> G["Run artifacts"]
+    E --> G
+    F --> G
+    G --> B
+    B --> H["Lifecycle report and human gates"]
+```
+
+| Layer | Repo Location | Purpose |
+| --- | --- | --- |
+| Supervisor prompt | `agent-canvas/prompts/supervisor.md` | Tells the parent conversation how to run the factory and summarize the lifecycle. |
+| Workcell prompts | `agent-canvas/prompts/workcells/*.md` | Self-contained instructions for each delegated child conversation. |
+| Parent launcher | `scripts/start_agent_canvas_factory.py` | Creates the visible supervisor conversation in local Agent Canvas. |
+| Orchestrator | `scripts/run_agent_canvas_factory.py` | Runs inside the parent conversation, creates child conversations, waits for each gate, and writes run artifacts. |
+| Canvas API helper | `scripts/agent_canvas_delegate.py` | Handles local Agent Canvas API calls, encrypted settings round-trip, profile selection, and polling. |
+| Repo-local skills | `skills/sdlc-story`, `skills/sdlc-code-review`, `skills/sdlc-qa` | Domain instructions the child conversations use for story work, review, and QA. |
+| Run artifacts | `factory_runs/<run-id>/` | Manifest, child conversation metadata, reports, Playwright evidence, and lifecycle summary. |
+
+The child prompts are intentionally self-contained. Delegated conversations do
+not inherit hidden parent context, so each workcell prompt carries the inputs,
+success criteria, reporting contract, and safety boundaries needed for that
+specific gate.
+
+## Reproduce The Demo
 
 Prerequisites:
 
-- Agent Canvas is running locally.
-- `http://localhost:8000/server_info` returns Agent Server `1.31.0` or newer.
-- `$HOME/.openhands/agent-canvas/api-key.txt` exists, or one of
-  `SESSION_API_KEY`, `OH_SESSION_API_KEYS_0`, or `LOCAL_BACKEND_API_KEY` is set.
-- The repo is available locally from a path Agent Canvas can read. On macOS,
-  `Documents`, `Desktop`, and cloud-synced folders can be blocked by TCC/Full
-  Disk Access policy. Prefer a normal checkout under `~/Code` or a temporary
-  checkout under `/private/tmp` for the local demo.
+- Local Agent Canvas is running.
+- `http://localhost:8000/server_info` responds successfully.
+- The local Agent Canvas API key exists at
+  `$HOME/.openhands/agent-canvas/api-key.txt`, or an equivalent local session
+  key is configured.
+- The repository is checked out from a path Agent Canvas can read. On macOS,
+  folders under `Documents`, `Desktop`, or cloud-synced locations can be blocked
+  by Full Disk Access policy. A normal checkout under `~/Code` or a temporary
+  checkout under `/private/tmp` is a reliable local option.
 
-Start the supervisor:
+Start the supervisor from the repo root:
 
 ```bash
 python3 scripts/start_agent_canvas_factory.py \
-  --repo . \
-  --repo-slug rajshah4/sdlc-automation-github-demo
+  --base http://localhost:8000 \
+  --repo "$(pwd)" \
+  --repo-slug <github-owner>/<github-repo> \
+  --run-id demo-agent-canvas-001
 ```
 
-Optional custom story:
+The command prints the parent conversation URL. Open that URL in Agent Canvas.
+That parent conversation is the known supervisor for the run.
+
+To use a separate model profile for only the code-review delegate:
 
 ```bash
 python3 scripts/start_agent_canvas_factory.py \
-  --repo . \
-  --repo-slug rajshah4/sdlc-automation-github-demo \
-  --issue-number 214 \
-  --request-title "Filter pets by max adoption fee" \
-  --request-body "Families need to filter available pets by maximum adoption fee."
-```
-
-Optional separate code-review model profile:
-
-```bash
-python3 scripts/start_agent_canvas_factory.py \
-  --repo . \
-  --repo-slug rajshah4/sdlc-automation-github-demo \
+  --base http://localhost:8000 \
+  --repo "$(pwd)" \
+  --repo-slug <github-owner>/<github-repo> \
+  --run-id demo-agent-canvas-review-profile \
   --code-review-profile Minimax
 ```
 
-Optional Playwright QA stress run:
+To require Playwright browser evidence in the QA delegate:
 
 ```bash
 python3 scripts/start_agent_canvas_factory.py \
-  --repo . \
-  --repo-slug rajshah4/sdlc-automation-github-demo \
+  --base http://localhost:8000 \
+  --repo "$(pwd)" \
+  --repo-slug <github-owner>/<github-repo> \
+  --run-id demo-agent-canvas-playwright \
+  --code-review-profile Minimax \
   --require-playwright-qa \
   --playwright-node-path /path/to/node_modules
 ```
 
-The command prints the parent conversation link. Open that link in Canvas and
-watch the supervisor delegate.
+The Playwright path should point to an existing `node_modules` directory that
+contains Playwright for the local environment.
 
-This local Canvas path does not require registering a new OpenHands automation.
-The input can come from a GitHub issue, PR, or human-provided story; the operator
-passes the issue number, title, and body into the parent Canvas launcher.
+## Verify A Run
 
-## Run Artifacts
-
-Each run writes artifacts to:
+Each run writes artifacts under:
 
 ```text
 factory_runs/<run-id>/
 ```
 
-Expected files:
+Useful checks:
+
+```bash
+cat factory_runs/<run-id>/children-summary.md
+cat factory_runs/<run-id>/lifecycle-report.md
+```
+
+Expected artifacts:
 
 | File | Meaning |
 | --- | --- |
-| `parent.conversation.json` | Parent supervisor conversation id and UI/API links. |
-| `manifest.md` | Supervisor-created run manifest. |
-| `children.json` | Child conversation ids and UI/API links. |
-| `story-to-pr.*` | Build conversation metadata and report. |
-| `code-review.*` | Review conversation metadata and report. |
-| `qa.*` | QA conversation metadata and evidence summary. |
-| `lifecycle-report.md` | Final parent report for the live demo. |
+| `parent.conversation.json` | Parent supervisor conversation ID and URL. |
+| `manifest.md` | Run metadata, story request, and planned workcells. |
+| `children-summary.md` | Child conversation links and gate statuses. |
+| `children.json` | Machine-readable child conversation metadata. |
+| `story-to-pr.md` | Story delegate report. |
+| `code-review.md` | Code-review delegate report. |
+| `qa.md` | QA delegate report. |
+| `playwright-artifacts/` | Optional screenshot, video, GIF, and QA report files when Playwright evidence is required. |
+| `lifecycle-report.md` | Parent-level lifecycle summary for review and demo narration. |
 
-## Stability Notes
+## How To Demo It
 
-- A run from a Codex workspace under `Documents/Codex` failed safely at gate 0
-  with `Operation not permitted` when the parent tried to execute
-  `scripts/run_agent_canvas_factory.py`.
-- The same committed repo content run from `/private/tmp` completed the full
-  parent-to-child workflow: story-to-PR, code review with the `Minimax` profile,
-  and QA with Playwright screenshot, video, GIF, and report artifacts.
-- Treat filesystem access as a demo prerequisite, not an Agent Canvas
-  orchestration failure. If the parent reports `EPERM`, move the checkout or
-  grant the host app Full Disk Access before rerunning.
+This recipe is designed to be reproducible, not optimized to finish during a
+short live presentation. For customer demos, use a completed run as the primary
+artifact and optionally start a new run to show that the parent conversation
+delegates work in real time.
 
-## Demo Script
+Recommended walkthrough:
 
-Narrative:
+1. Open the parent conversation and identify it as the factory supervisor.
+2. Show the run manifest and the child conversation links.
+3. Open the `story-to-pr` child and show the implementation or PR artifact.
+4. Open the `code-review` child and show the independent review result. If a
+   separate profile was used, call out that the review delegate used that model
+   profile without changing the other delegates.
+5. Open the `qa` child and show deterministic test results plus Playwright
+   evidence when required.
+6. Open the PR and show that the PR body links to evidence and explains the
+   lifecycle.
+7. End on the lifecycle report and the explicit human gates.
+
+Suggested talk track:
 
 ```text
-"The old version used GitHub tags as separate work-cell triggers. In this
-version, I start one Canvas conversation. Labels are just background context,
-not the trigger. That supervisor does not code
-everything itself. It creates child conversations, gives each one a bounded
-contract, waits for evidence, and decides whether the next human gate is safe."
+This is a reusable Agent Canvas software-factory recipe. One parent
+conversation acts as the orchestrator. It does not do every job itself; it
+delegates bounded work to child conversations, waits for evidence, and records
+the lifecycle. Customers can keep this structure and replace the workcells,
+prompts, validation commands, and trigger source for their own engineering
+process.
 ```
 
-Callouts:
+## Adapt The Recipe
 
-- Parent conversation is the visible control plane.
-- Children are independent conversations with their own tools, final responses,
-  and Canvas links.
-- The parent does not hand-roll Canvas credentials or settings payloads; the
-  repo-local helper handles encrypted settings in memory.
-- Code review can use a different Agent Canvas profile via
-  `--code-review-profile`.
-- QA can be forced to run Playwright UI evidence via `--require-playwright-qa`.
-- The child prompts are self-contained and auditable in the repo.
-- GitHub remains the system of record for PRs and comments when credentials are
-  available.
-- Human authority stays at scope, review, merge, deploy, and remediation gates.
-- The existing GitHub-label automation demo remains intact; this Canvas demo is
-  an additive orchestration variant.
-- Jira and Rajistics automation are deliberately out of scope for this phase and
-  should be built as a separate follow-up once this Canvas demo is stable.
+Common adaptation points:
 
-## Fallbacks
+| Need | Where To Change It |
+| --- | --- |
+| Different SDLC stages | Update `ACTIVE_WORK_CELLS` in `scripts/run_agent_canvas_factory.py` and add a matching prompt under `agent-canvas/prompts/workcells/`. |
+| Different story format | Pass `--issue-number`, `--request-title`, and `--request-body`, or wrap the launcher with your own event adapter. |
+| Different model per gate | Pass `--code-review-profile`, or extend the runner to accept profile overrides for other workcells. |
+| Different validation | Update the repo-local skill and QA prompt for the target app, test runner, or evidence requirement. |
+| Different evidence standard | Update `agent-canvas/prompts/workcells/qa.md` and the QA scripts to require screenshots, traces, logs, or deployment checks. |
+| External trigger | Have GitHub, Jira, ServiceNow, or another system call the parent launcher with story metadata. Keep orchestration inside the parent workflow. |
 
-- If GitHub credentials are unavailable, the build child leaves a local branch
-  or diff and reports the missing capability at a safe level.
-- If browser tooling is unavailable, QA uses deterministic API/static UI checks
-  and marks the result as fallback evidence.
-- If any child hits `needs-human`, the supervisor records the blocker and stops
-  before unsafe work.
+An external trigger should provide inputs; it should not become the lifecycle
+orchestrator. The reproducible unit is the parent Agent Canvas conversation plus
+the repo-local workcell recipe.
+
+## Safety Boundaries
+
+- The existing GitHub-label demo remains intact.
+- Labels are not used to trigger, gate, or sequence this Canvas workflow.
+- Jira and environment-specific automations are outside this phase and should be
+  added as separate adapters once the Canvas recipe is stable.
+- The supervisor records blockers and stops before unsafe work when a child
+  reports `needs-human`, `fail`, or missing capability.
+- Human approval remains required for scope changes, PR review, merge,
+  deployment, production remediation, and secret access.
+
+## Local Setup Notes
+
+- If the parent reports `Operation not permitted` when running repo scripts,
+  move the checkout to a path Agent Canvas can read or grant the host app the
+  required local filesystem access.
+- If the code-review profile does not exist locally, omit
+  `--code-review-profile` or create a matching Agent Canvas profile first.
+- If Playwright is required, confirm the `--playwright-node-path` value points
+  to a working local `node_modules` directory before starting the run.
+- Runs are unattended and can take several minutes or longer, especially when a
+  delegate performs browser QA or a separate model profile is used.
