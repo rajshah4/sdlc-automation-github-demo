@@ -10,7 +10,7 @@ const execFileAsync = promisify(execFile);
 
 function parseArgs(argv) {
   const args = {
-    url: process.env.PETSTORE_WEB_URL || "http://localhost:4173",
+    url: process.env.PETSTORE_WEB_URL || "http://127.0.0.1:4173",
     artifactDir:
       process.env.PLAYWRIGHT_ARTIFACT_DIR ||
       "/tmp/sdlc-petstore-playwright/catalog-search",
@@ -87,7 +87,7 @@ async function convertVideoToGif(videoPath, gifPath) {
 async function writeReport({ artifactDir, url, screenshotPath, videoPath, gifPath, gifCreated, scenarios }) {
   const reportPath = path.join(artifactDir, "qa-report.md");
   const lines = [
-    "# Playwright QA Report: Petstore Catalog Search",
+    "# Playwright QA Report: Petstore Fee Sort UI",
     "",
     "Status: pass",
     "",
@@ -110,11 +110,11 @@ async function writeReport({ artifactDir, url, screenshotPath, videoPath, gifPat
     "",
     "```bash",
     "python3 skills/sdlc-qa/scripts/with_server.py \\",
-    "  --server \"python3 -m http.server 4173 --directory app/web\" \\",
+    "  --server \"python3 -m http.server 4173 --bind 127.0.0.1 --directory app/web\" \\",
     "  --port 4173 \\",
     "  -- node app/web/tests/catalog-search.playwright.mjs \\",
-    "     --url http://localhost:4173 \\",
-    "     --artifact-dir /tmp/sdlc-petstore-playwright/catalog-search",
+    "     --url http://127.0.0.1:4173 \\",
+    "     --artifact-dir docs/qa-reports/petstore-fee-sort-playwright",
     "```",
     "",
     "## Notes",
@@ -154,19 +154,28 @@ async function main() {
     await assertNames(page, ["Mochi", "Scout", "Pip"], "default available-pets view");
     scenarios.push("Default catalog shows available pets and excludes pending pets");
 
+    await page.getByLabel("Sort").selectOption("fee-asc");
+    await assertNames(page, ["Pip", "Mochi", "Scout"], "lowest-fee sort");
+    scenarios.push("Sort control orders available pets from lowest fee to highest fee");
+
+    const screenshotPath = path.join(artifactDir, "petstore-fee-sort.png");
+    await page.screenshot({ path: screenshotPath, fullPage: true });
+
+    await page.getByLabel("Sort").selectOption("fee-desc");
+    await assertNames(page, ["Scout", "Mochi", "Pip"], "highest-fee sort");
+    scenarios.push("Sort control can reverse the fee order");
+
     await page.getByLabel("Species").selectOption("dog");
     await page.getByRole("button", { name: "Find Pets" }).click();
     await assertNames(page, ["Scout"], "species filter");
-    scenarios.push("Species filter narrows results to available dogs");
+    scenarios.push("Species filter still works while sorting is enabled");
 
     await page.getByLabel("Species").selectOption("");
+    await page.getByLabel("Sort").selectOption("");
     await page.getByLabel("Pet name").fill("pip");
     await page.getByRole("button", { name: "Find Pets" }).click();
     await assertNames(page, ["Pip"], "name search");
     scenarios.push("Name search finds a matching available pet");
-
-    const screenshotPath = path.join(artifactDir, "catalog-search.png");
-    await page.screenshot({ path: screenshotPath, fullPage: true });
 
     await page.getByLabel("Pet name").fill("nova");
     await page.getByRole("button", { name: "Find Pets" }).click();
@@ -179,11 +188,11 @@ async function main() {
     await browser.close();
 
     const capturedVideoPath = await video.path();
-    const stableVideoPath = path.join(artifactDir, "catalog-search.webm");
+    const stableVideoPath = path.join(artifactDir, "petstore-fee-sort.webm");
     await fs.copyFile(capturedVideoPath, stableVideoPath);
     await fs.rm(videosDir, { recursive: true, force: true }).catch(() => {});
 
-    const gifPath = path.join(artifactDir, "catalog-search.gif");
+    const gifPath = path.join(artifactDir, "petstore-fee-sort.gif");
     const gifCreated = await convertVideoToGif(stableVideoPath, gifPath);
     const reportPath = await writeReport({
       artifactDir,

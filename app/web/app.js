@@ -8,6 +8,7 @@ const pets = [
 function renderResults() {
   const query = document.querySelector("#query").value.trim().toLowerCase();
   const species = document.querySelector("#species").value;
+  const sortOrder = document.querySelector("#sort-order").value;
   const list = document.querySelector("#results");
   list.innerHTML = "";
 
@@ -16,6 +17,15 @@ function renderResults() {
       && (species === "" || pet.species === species)
       && pet.status === "available";
   });
+
+  if (sortOrder === "fee-asc" || sortOrder === "fee-desc") {
+    const direction = sortOrder === "fee-asc" ? 1 : -1;
+    matches.sort((left, right) => {
+      const leftFee = Number.parseInt(left.fee.replace("$", ""), 10);
+      const rightFee = Number.parseInt(right.fee.replace("$", ""), 10);
+      return (leftFee - rightFee) * direction;
+    });
+  }
 
   if (matches.length === 0) {
     const empty = document.createElement("li");
@@ -34,4 +44,5 @@ function renderResults() {
 }
 
 document.querySelector("#search-button").addEventListener("click", renderResults);
+document.querySelector("#sort-order").addEventListener("change", renderResults);
 renderResults();
