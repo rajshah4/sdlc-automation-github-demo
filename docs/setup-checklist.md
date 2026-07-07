@@ -26,12 +26,12 @@ paste secret values into this file.
 - Automations are registered from `automations/github/*/automation.prompt-preset.json`
   and `automations/jira/*/automation.prompt-preset.json`.
 - If automation IDs differ from the defaults in
-  `scripts/preflight_live_connections.py`, set `JIRA_MAIN_AUTOMATION_ID`,
+  `scripts/validation/preflight_live_connections.py`, set `JIRA_MAIN_AUTOMATION_ID`,
   `JIRA_SIDEKICK_V2_AUTOMATION_ID`, and `GITHUB_QA_AUTOMATION_ID` locally.
 - Before the fast Jira-to-PR demo, run:
 
   ```bash
-  python3 scripts/preflight_live_connections.py \
+  python3 scripts/validation/preflight_live_connections.py \
     --env-file /path/to/local/.env \
     --mode main
   ```
@@ -40,7 +40,7 @@ paste secret values into this file.
   `jira-to-story-sidekick-v2`, then run:
 
   ```bash
-  python3 scripts/preflight_live_connections.py \
+  python3 scripts/validation/preflight_live_connections.py \
     --env-file /path/to/local/.env \
     --mode sidekick-v2
   ```

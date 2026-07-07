@@ -18,19 +18,19 @@ The packages use the OpenHands Automations prompt preset API instead of custom S
 Dry-run:
 
 ```bash
-python3 scripts/register_github_automations.py --dry-run
+python3 scripts/automations/register_github_automations.py --dry-run
 ```
 
 Apply:
 
 ```bash
-python3 scripts/register_github_automations.py --apply
+python3 scripts/automations/register_github_automations.py --apply
 ```
 
 By default, registration clones `main` for each run. For a live demo branch, pass an explicit ref:
 
 ```bash
-python3 scripts/register_github_automations.py \
+python3 scripts/automations/register_github_automations.py \
   --apply \
   --repository rajshah4/sdlc-automation-github-demo \
   --repo-url https://github.com/rajshah4/sdlc-automation-github-demo \

@@ -23,8 +23,8 @@ This is durable repo memory for the SDLC Automation Demo. Agents should read thi
 
 ```bash
 python3 -m pytest -q
-python3 scripts/preflight_github_demo.py --offline
-python3 scripts/simulate_github_event.py --fixture tests/fixtures/github_issue_labeled_build.json
+python3 scripts/validation/preflight_github_demo.py --offline
+python3 scripts/validation/simulate_github_event.py --fixture tests/fixtures/github_issue_labeled_build.json
 python3 scripts/build_context_reuse_report.py --fixture tests/fixtures/github_issue_labeled_context.json
 ```
 

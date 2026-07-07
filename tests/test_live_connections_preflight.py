@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def load_preflight() -> Any:
-    script = ROOT / "scripts" / "preflight_live_connections.py"
+    script = ROOT / "scripts" / "validation" / "preflight_live_connections.py"
     spec = importlib.util.spec_from_file_location("preflight_live_connections", script)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)

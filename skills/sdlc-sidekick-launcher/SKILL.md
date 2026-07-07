@@ -12,7 +12,7 @@ visible sidekick demo. The launcher conversation should unwrap the Jira event,
 start the sidekick orchestration, and print the resulting conversation index.
 
 The launcher does not implement code changes. It starts read-only scouts and the
-main Jira-to-PR implementation conversation through `scripts/launch_sidekick_v2.py`.
+main Jira-to-PR implementation conversation through `scripts/sidekick/launch_sidekick_v2.py`.
 
 ## Start Marker
 
@@ -40,7 +40,7 @@ Run the launcher exactly once. Use one shell command, not a backslash-wrapped
 multi-line command, so argument parsing is unambiguous:
 
 ```bash
-OPENHANDS_API_KEY_ORG="${OPENHANDS_API_KEY_ORG:-${OPENHANDS_API_KEY:-}}" GITHUB_TOKEN="${GITHUB_TOKEN}" python3 scripts/launch_sidekick_v2.py --jira-key "<ISSUE_KEY>" --title "<ISSUE_SUMMARY>" --body "<ISSUE_DESCRIPTION_PLAIN_TEXT>" --full
+OPENHANDS_API_KEY_ORG="${OPENHANDS_API_KEY_ORG:-${OPENHANDS_API_KEY:-}}" GITHUB_TOKEN="${GITHUB_TOKEN}" python3 scripts/sidekick/launch_sidekick_v2.py --jira-key "<ISSUE_KEY>" --title "<ISSUE_SUMMARY>" --body "<ISSUE_DESCRIPTION_PLAIN_TEXT>" --full
 ```
 
 The script owns the default Rajistics host, scout model, main model, timeouts,

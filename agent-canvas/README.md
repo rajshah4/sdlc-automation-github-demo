@@ -6,8 +6,7 @@ as the orchestrator, and delegated child conversations perform bounded SDLC
 workcells.
 
 The Canvas-specific prompts and executable helpers live together under this
-folder so the recipe can be reviewed, copied, or adapted as a unit. The matching
-root-level `scripts/` entries are compatibility wrappers for existing commands.
+folder so the recipe can be reviewed, copied, or adapted as a unit.
 
 The existing GitHub automation demo is event-driven: a human adds GitHub labels,
 and each label creates a separate OpenHands automation run. This Canvas version
@@ -37,10 +36,10 @@ flowchart TD
 | --- | --- |
 | `prompts/supervisor.md` | Initial prompt for the one parent conversation. |
 | `prompts/workcells/*.md` | Self-contained prompts for delegated child conversations. |
-| `scripts/start_agent_canvas_factory.py` | Starts the parent conversation. |
-| `scripts/run_agent_canvas_factory.py` | Deterministic parent-side orchestrator that starts and monitors child conversations. |
-| `scripts/agent_canvas_delegate.py` | Creates, waits for, and inspects child conversations through the local Agent Canvas API. |
-| `scripts/run_petstore_playwright_qa.py` | Runs the Petstore Playwright evidence flow on an available local port. |
+| `agent-canvas/scripts/start_agent_canvas_factory.py` | Starts the parent conversation. |
+| `agent-canvas/scripts/run_agent_canvas_factory.py` | Deterministic parent-side orchestrator that starts and monitors child conversations. |
+| `agent-canvas/scripts/agent_canvas_delegate.py` | Creates, waits for, and inspects child conversations through the local Agent Canvas API. |
+| `agent-canvas/scripts/run_petstore_playwright_qa.py` | Runs the Petstore Playwright evidence flow on an available local port. |
 | `../docs/agent-canvas-dark-factory-demo.md` | Customer-facing walkthrough, reproduction recipe, and adaptation guide. |
 
 ## Quick Start

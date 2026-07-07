@@ -5,12 +5,12 @@ explain, or operate. Raw timing notes and exploratory worklogs stay local.
 
 ## Sidekick Launcher Packaging
 
-- Move `scripts/launch_sidekick_v2.py` into
+- Move `scripts/sidekick/launch_sidekick_v2.py` into
   `skills/sdlc-sidekick-launcher/scripts/`.
 - Update `skills/sdlc-sidekick-launcher/SKILL.md`, the `sidekick-v2` automation
   prompt, tests, and setup docs to call the skill-local script.
-- Keep a thin top-level compatibility wrapper only if existing live automations
-  still reference `scripts/launch_sidekick_v2.py`.
+- Keep a thin compatibility shim only if existing live automations still
+  reference `scripts/sidekick/launch_sidekick_v2.py`.
 
 Why: the launcher is part of the sidekick skill's implementation. Keeping the
 script inside the skill folder would make the skill feel self-contained when a
@@ -56,7 +56,7 @@ should hold artifacts that reviewers and customers are expected to inspect.
 - Add a small script or documented command that toggles between:
   - fast mode: `jira-to-story` enabled, `sidekick-v2` disabled
   - visible sidekick mode: `jira-to-story` disabled, `sidekick-v2` enabled
-- Re-run `scripts/preflight_live_connections.py` after the toggle and print the
+- Re-run `scripts/validation/preflight_live_connections.py` after the toggle and print the
   active mode.
 
 Why: the current manual toggle is understandable, but a single command would

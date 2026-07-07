@@ -10,10 +10,10 @@ outside the repo.
 
 ```bash
 python3 -m pytest -q
-python3 scripts/preflight_github_demo.py --offline
-python3 scripts/simulate_github_event.py --fixture tests/fixtures/github_issue_labeled_context.json
+python3 scripts/validation/preflight_github_demo.py --offline
+python3 scripts/validation/simulate_github_event.py --fixture tests/fixtures/github_issue_labeled_context.json
 python3 scripts/build_context_reuse_report.py --fixture tests/fixtures/github_issue_labeled_context.json --stdout
-python3 scripts/simulate_github_event.py --fixture tests/fixtures/github_issue_labeled_build.json
+python3 scripts/validation/simulate_github_event.py --fixture tests/fixtures/github_issue_labeled_build.json
 python3 skills/sdlc-story/scripts/validate_open_spec.py skills/sdlc-story/references/openspec-change-template
 python3 skills/sdlc-qa/scripts/with_server.py --server "python3 -m http.server 4173 --directory app/web" --port 4173 -- python3 skills/sdlc-qa/scripts/static_ui_smoke.py --url http://localhost:4173
 ```
@@ -40,8 +40,8 @@ the workflow boundary.
 Register the packages with:
 
 ```bash
-python3 scripts/register_github_automations.py --apply
-python3 scripts/register_jira_automations.py --apply
+python3 scripts/automations/register_github_automations.py --apply
+python3 scripts/automations/register_jira_automations.py --apply
 ```
 
 ## Fast Jira-To-PR Demo

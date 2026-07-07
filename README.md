@@ -94,7 +94,7 @@ Use the path that matches the amount of control you want:
 
 | Pattern | Build guide | Copy/adapt these pieces |
 | --- | --- | --- |
-| **Step-by-Step Control** | [GitHub walkthrough](docs/github-demo-walkthrough.md), [GitHub automation packages](automations/github/README.md), [Jira automation packages](automations/jira/README.md), [script map](scripts/README.md) | One OpenHands automation per gate, repo-local skills, labels/webhooks, and `scripts/register_github_automations.py` or `scripts/register_jira_automations.py` |
+| **Step-by-Step Control** | [GitHub walkthrough](docs/github-demo-walkthrough.md), [GitHub automation packages](automations/github/README.md), [Jira automation packages](automations/jira/README.md), [script map](scripts/README.md) | One OpenHands automation per gate, repo-local skills, labels/webhooks, and `scripts/automations/register_github_automations.py` or `scripts/automations/register_jira_automations.py` |
 | **Complete Automation: Agent Canvas** | [Parent-child build guide](docs/build-parent-child-factory.md), [Agent Canvas recipe](agent-canvas/README.md), [factory demo notes](docs/agent-canvas-dark-factory-demo.md) | Parent supervisor prompt, child workcell prompts, `agent-canvas/scripts/run_agent_canvas_factory.py`, and `agent-canvas/scripts/agent_canvas_delegate.py` |
 | **Complete Automation: OpenHands Enterprise/Cloud** | [Parent-child build guide](docs/build-parent-child-factory.md), [PR #86](https://github.com/rajshah4/sdlc-automation-github-demo/pull/86), [Replicated runbook on the branch](https://github.com/rajshah4/sdlc-automation-github-demo/blob/feature/canvas-issue-101-max-adoption-fee-filter/docs/replicated-jira-delegated-factory-demo.md) | Prompt-preset automation, parent orchestrator, child prompts, app-conversation API helper, and reusable delegated-factory skill |
 
@@ -147,9 +147,9 @@ secrets stay in the OpenHands secret store or local `.env`, never in the repo.
 
 ```bash
 python3 -m pytest -q
-python3 scripts/preflight_github_demo.py --offline
-python3 scripts/simulate_github_event.py --fixture tests/fixtures/github_issue_labeled_context.json
-python3 scripts/simulate_github_event.py --fixture tests/fixtures/github_issue_labeled_build.json
+python3 scripts/validation/preflight_github_demo.py --offline
+python3 scripts/validation/simulate_github_event.py --fixture tests/fixtures/github_issue_labeled_context.json
+python3 scripts/validation/simulate_github_event.py --fixture tests/fixtures/github_issue_labeled_build.json
 ```
 
 ## Register OpenHands Automations
@@ -162,20 +162,20 @@ package lives under `automations/jira/jira-to-story-sidekick-v2/`.
 Dry-run the registration payloads:
 
 ```bash
-python3 scripts/register_github_automations.py --dry-run
-python3 scripts/register_jira_automations.py --dry-run
+python3 scripts/automations/register_github_automations.py --dry-run
+python3 scripts/automations/register_jira_automations.py --dry-run
 ```
 
 Apply registration when `OPENHANDS_HOST_GITHUB`, an OpenHands API key such as `OPENHANDS_API_KEY_GITHUB` or `OPENHANDS_API_KEY_ORG`, `GITHUB_DEMO_REPOSITORY`, and `GITHUB_DEMO_REPO_URL` are set:
 
 ```bash
-python3 scripts/register_github_automations.py --apply
+python3 scripts/automations/register_github_automations.py --apply
 ```
 
 Register Jira packages with:
 
 ```bash
-python3 scripts/register_jira_automations.py --apply
+python3 scripts/automations/register_jira_automations.py --apply
 ```
 
 For a fast live demo, keep `jira-to-story` enabled and `jira-to-story-sidekick-v2`

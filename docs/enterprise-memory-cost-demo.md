@@ -70,10 +70,10 @@ python3 scripts/build_context_reuse_report.py \
   --fixture tests/fixtures/github_issue_labeled_context.json \
   --stdout
 
-python3 scripts/simulate_github_event.py \
+python3 scripts/validation/simulate_github_event.py \
   --fixture tests/fixtures/github_issue_labeled_context.json
 
-python3 scripts/preflight_github_demo.py --offline
+python3 scripts/validation/preflight_github_demo.py --offline
 ```
 
 ## Live Validation Checklist

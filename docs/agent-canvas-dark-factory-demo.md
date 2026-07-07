@@ -65,8 +65,7 @@ success criteria, reporting contract, and safety boundaries needed for that
 specific gate.
 
 The Canvas-specific prompts and scripts are packaged under `agent-canvas/` so
-teams can review or copy the recipe as one unit. Root-level `scripts/` entries
-for this workflow are compatibility wrappers only.
+teams can review or copy the recipe as one unit.
 
 ## Reproduce The Demo
 

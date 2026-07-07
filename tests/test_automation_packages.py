@@ -108,7 +108,7 @@ def test_jira_registration_preserves_secret_placeholders(monkeypatch) -> None:
     monkeypatch.setenv("JIRA_API_BASE_URL", "https://jira.example.invalid")
 
     load_request = load_script_function(
-        ROOT / "scripts" / "register_jira_automations.py",
+        ROOT / "scripts" / "automations" / "register_jira_automations.py",
         "load_request",
     )
     payload = load_request(
@@ -150,7 +150,7 @@ def test_sidekick_v2_jira_automation_is_label_gated() -> None:
     assert "Do not implement the code change yourself" in prompt
     assert "exactly once" in prompt
     assert "export OPENHANDS_HOST" not in prompt
-    assert "python3 scripts/launch_sidekick_v2.py" not in prompt
+    assert "python3 scripts/sidekick/launch_sidekick_v2.py" not in prompt
     assert "child conversation" not in prompt
     assert "Parent conversation" not in prompt
 
@@ -161,7 +161,7 @@ def test_sidekick_launcher_skill_owns_launcher_details() -> None:
     )
 
     for phrase in [
-        "scripts/launch_sidekick_v2.py",
+        "scripts/sidekick/launch_sidekick_v2.py",
         "--jira-key",
         "--title",
         "--body",

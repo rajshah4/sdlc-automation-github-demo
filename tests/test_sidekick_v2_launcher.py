@@ -9,7 +9,7 @@ import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = ROOT / "scripts" / "launch_sidekick_v2.py"
+SCRIPT_PATH = ROOT / "scripts" / "sidekick" / "launch_sidekick_v2.py"
 
 
 def load_module():
