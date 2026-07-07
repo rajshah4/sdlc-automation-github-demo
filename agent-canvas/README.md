@@ -45,6 +45,13 @@ python3 scripts/start_agent_canvas_factory.py \
   --repo-slug rajshah4/sdlc-automation-github-demo
 ```
 
+Use a repository path that the local Agent Canvas runtime can read. On macOS,
+folders under `Documents`, `Desktop`, or cloud-synced locations may be blocked
+by TCC/Full Disk Access policy and can fail with `Operation not permitted` when
+the parent tries to run `scripts/run_agent_canvas_factory.py`. A normal
+developer checkout under `~/Code` or a temporary checkout under `/private/tmp`
+works well for local demos.
+
 To use a different Agent Canvas profile for the code-review child only:
 
 ```bash

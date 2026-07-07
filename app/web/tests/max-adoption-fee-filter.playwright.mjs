@@ -7,11 +7,7 @@
  *   - exact-boundary filter: max fee $75 includes Mochi at exactly the boundary
  *   - clearing max fee restores the full available-pet list
  *   - empty-state when max fee is below all available pets
- *
- * Note: The family-friendly + max-fee combination is covered in
- *   family-friendly-filter.playwright.mjs. The 5-column toolbar grid means
- *   the checkbox may be off the 1280px viewport at the far right; this script
- *   focuses on the max-fee input which is unambiguously on screen.
+ *   - family-friendly + max-fee combined filtering
  */
 import { createRequire } from "node:module";
 import { execFile } from "node:child_process";
@@ -99,6 +95,11 @@ async function convertVideoToGif(videoPath, gifPath) {
 
 async function writeReport({ artifactDir, url, screenshotPath, videoPath, gifPath, gifCreated, scenarios }) {
   const reportPath = path.join(artifactDir, "qa-report.md");
+  const targetUrl = new URL(url);
+  const targetPort = targetUrl.port || (targetUrl.protocol === "https:" ? "443" : "80");
+  const nodePathLine = process.env.NODE_PATH
+    ? `NODE_PATH=${process.env.NODE_PATH} \\`
+    : "# Set NODE_PATH=/path/to/node_modules if Playwright is installed outside this repo";
   const lines = [
     "# Playwright QA Report: Max Adoption Fee Filter (Issue #101)",
     "",
@@ -122,20 +123,20 @@ async function writeReport({ artifactDir, url, screenshotPath, videoPath, gifPat
     "## Commands",
     "",
     "```bash",
-    "NODE_PATH=/Users/rajiv.shah/Code/agent-canvas/node_modules \\",
+    nodePathLine,
     "python3 skills/sdlc-qa/scripts/with_server.py \\",
-    "  --server \"python3 -m http.server 4173 --directory app/web\" \\",
-    "  --port 4173 \\",
+    `  --server "python3 -m http.server ${targetPort} --directory app/web" \\`,
+    `  --port ${targetPort} \\`,
     "  -- node app/web/tests/max-adoption-fee-filter.playwright.mjs \\",
-    "     --url http://localhost:4173 \\",
-    "     --artifact-dir /tmp/sdlc-petstore-playwright/max-adoption-fee-filter",
+    `     --url ${url} \\`,
+    `     --artifact-dir ${artifactDir}`,
     "```",
     "",
     "## Notes",
     "",
     "- Pet fees: Mochi=$75, Scout=$125, Pip=$45. Nova is pending and never appears.",
     "- Boundary is inclusive: a pet whose fee equals the max is shown (tested at $75 = Mochi's exact fee).",
-    "- Family-friendly + max-fee coexistence is covered in family-friendly-filter.playwright.mjs.",
+    "- Family-friendly + max-fee coexistence is covered in this script.",
   ];
 
   await fs.writeFile(reportPath, `${lines.join("\n")}\n`, "utf8");
@@ -198,6 +199,27 @@ async function main() {
     await maxFeeInput.fill("");
     await assertNames(page, ["Mochi", "Scout", "Pip"], "clearing max fee restores full available list");
     scenarios.push("Clearing max-fee input restores the full 3-pet available list");
+
+    // --- Scenario 6: combined family-friendly + high max fee includes Scout ---
+    const familyFriendlyCheckbox = page.locator("#family-friendly");
+    await familyFriendlyCheckbox.check();
+    await maxFeeInput.fill("150");
+    await assertNames(page, ["Scout"], "family-friendly + max fee $150 includes Scout");
+    scenarios.push("Family-friendly + max fee $150 shows Scout ($125)");
+
+    // --- Scenario 7: combined family-friendly + low max fee excludes Scout ---
+    await maxFeeInput.fill("100");
+    await page.locator("#results .empty").waitFor();
+    const combinedEmptyText = await page.locator("#results .empty").textContent();
+    assert(
+      combinedEmptyText === "No available pets match this search.",
+      "family-friendly + max fee $100 should exclude Scout and show empty state",
+    );
+    scenarios.push("Family-friendly + max fee $100 excludes Scout ($125) and shows the empty state");
+
+    await familyFriendlyCheckbox.uncheck();
+    await maxFeeInput.fill("");
+    await assertNames(page, ["Mochi", "Scout", "Pip"], "clearing combined filters restores full list");
 
     await context.close();
     await browser.close();

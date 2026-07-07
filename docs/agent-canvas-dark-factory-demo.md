@@ -36,7 +36,10 @@ Prerequisites:
 - `http://localhost:8000/server_info` returns Agent Server `1.31.0` or newer.
 - `$HOME/.openhands/agent-canvas/api-key.txt` exists, or one of
   `SESSION_API_KEY`, `OH_SESSION_API_KEYS_0`, or `LOCAL_BACKEND_API_KEY` is set.
-- The repo is available locally.
+- The repo is available locally from a path Agent Canvas can read. On macOS,
+  `Documents`, `Desktop`, and cloud-synced folders can be blocked by TCC/Full
+  Disk Access policy. Prefer a normal checkout under `~/Code` or a temporary
+  checkout under `/private/tmp` for the local demo.
 
 Start the supervisor:
 
@@ -102,6 +105,18 @@ Expected files:
 | `code-review.*` | Review conversation metadata and report. |
 | `qa.*` | QA conversation metadata and evidence summary. |
 | `lifecycle-report.md` | Final parent report for the live demo. |
+
+## Stability Notes
+
+- A run from a Codex workspace under `Documents/Codex` failed safely at gate 0
+  with `Operation not permitted` when the parent tried to execute
+  `scripts/run_agent_canvas_factory.py`.
+- The same committed repo content run from `/private/tmp` completed the full
+  parent-to-child workflow: story-to-PR, code review with the `Minimax` profile,
+  and QA with Playwright screenshot, video, GIF, and report artifacts.
+- Treat filesystem access as a demo prerequisite, not an Agent Canvas
+  orchestration failure. If the parent reports `EPERM`, move the checkout or
+  grant the host app Full Disk Access before rerunning.
 
 ## Demo Script
 
