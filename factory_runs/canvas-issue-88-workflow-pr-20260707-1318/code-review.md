@@ -152,4 +152,4 @@ python3 factory_runs/canvas-issue-88-workflow-pr-20260707-1318/helpers/update_fa
   --artifact factory_runs/canvas-issue-88-workflow-pr-20260707-1318/code-review.md
 ```
 
-Result: see below (populated after running).
+Result: **success** — PR #91 `## 3. Code Review` section updated to `Review status: findings` with link to this artifact. Exit code 0.
