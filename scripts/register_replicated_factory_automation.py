@@ -47,7 +47,7 @@ def load_request() -> dict[str, Any]:
         "trigger": spec["trigger"],
         "repos": spec["repos"],
     }
-    for optional in ("timeout", "llm_profile"):
+    for optional in ("timeout",):
         if optional in spec:
             payload[optional] = spec[optional]
     return expand_env(payload)
