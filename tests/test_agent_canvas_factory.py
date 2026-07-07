@@ -173,6 +173,31 @@ def test_orchestrator_writes_missing_artifact_report(tmp_path: Path) -> None:
     assert "Run date: `2026-07-07`" in text
 
 
+def test_update_summary_labels_unwaited_idle_children_as_created(tmp_path: Path) -> None:
+    path = ROOT / "scripts" / "run_agent_canvas_factory.py"
+    spec = importlib.util.spec_from_file_location("run_agent_canvas_factory", path)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    sys.path.insert(0, str(ROOT / "scripts"))
+    spec.loader.exec_module(module)
+
+    module.update_summary(
+        tmp_path,
+        [
+            {
+                "name": "qa",
+                "id": "child-1",
+                "ui_url": "http://localhost:8000/conversations/child-1",
+                "artifact": "factory_runs/run-1/qa.md",
+                "execution_status": "idle",
+            }
+        ],
+    )
+
+    text = (tmp_path / "children-summary.md").read_text(encoding="utf-8")
+    assert "| `qa` | created |" in text
+
+
 def test_orchestrator_snapshots_prompts_before_delegating() -> None:
     factory = (ROOT / "scripts" / "run_agent_canvas_factory.py").read_text(encoding="utf-8")
 

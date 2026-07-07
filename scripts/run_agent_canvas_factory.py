@@ -105,10 +105,16 @@ def update_summary(run_dir: Path, entries: list[dict[str, Any]]) -> None:
         url = entry.get("ui_url") or ""
         link = f"[{entry.get('id')}]({url})" if url and entry.get("id") else entry.get("id", "")
         status = entry.get("wait", {}).get("execution_status") or entry.get("execution_status") or "unknown"
+        if status == "idle" and "wait" not in entry:
+            status = "created"
         artifact = entry.get("artifact") or ""
         lines.append(f"| `{entry['name']}` | {status} | {link} | `{artifact}` |")
     lines.append("")
     (run_dir / "children-summary.md").write_text("\n".join(lines), encoding="utf-8")
+
+
+def write_children(run_dir: Path, entries: list[dict[str, Any]]) -> None:
+    write_json(run_dir / "children.json", entries)
 
 
 def write_missing_artifact_report(
@@ -267,6 +273,7 @@ def run_factory(args: argparse.Namespace) -> int:
         )
         entries.append(entry)
         update_summary(run_dir, entries)
+        write_children(run_dir, entries)
 
         if not args.no_wait:
             status_response, final_response = wait_for_cell(
@@ -293,10 +300,11 @@ def run_factory(args: argparse.Namespace) -> int:
                     final_response=final_response,
                 )
             update_summary(run_dir, entries)
+            write_children(run_dir, entries)
             if status_response.get("execution_status") in {"error", "stuck", "stopped"}:
                 break
 
-    write_json(run_dir / "children.json", entries)
+    write_children(run_dir, entries)
     print(json.dumps({"run_dir": str(run_dir), "children": entries}, indent=2, sort_keys=True))
     return 0
 
