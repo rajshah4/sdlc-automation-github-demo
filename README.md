@@ -88,6 +88,26 @@ The current working branch for this pattern is
 [`feature/canvas-issue-101-max-adoption-fee-filter`](https://github.com/rajshah4/sdlc-automation-github-demo/tree/feature/canvas-issue-101-max-adoption-fee-filter).
 PR #86 carries the concrete files and the live-tested Replicated Jira flow.
 
+## Build Your Own Version
+
+Use the path that matches the amount of control you want:
+
+| Pattern | Build guide | Copy/adapt these pieces |
+| --- | --- | --- |
+| **Step-by-Step Control** | [GitHub walkthrough](docs/github-demo-walkthrough.md), [GitHub automation packages](automations/github/README.md), [Jira automation packages](automations/jira/README.md) | One OpenHands automation per gate, repo-local skills, labels/webhooks, and `scripts/register_github_automations.py` or `scripts/register_jira_automations.py` |
+| **Complete Automation: Agent Canvas** | [Agent Canvas recipe](agent-canvas/README.md), [factory demo notes](docs/agent-canvas-dark-factory-demo.md) | Parent supervisor prompt, child workcell prompts, `agent-canvas/scripts/run_agent_canvas_factory.py`, and `agent-canvas/scripts/agent_canvas_delegate.py` |
+| **Complete Automation: OpenHands Enterprise/Cloud** | [PR #86](https://github.com/rajshah4/sdlc-automation-github-demo/pull/86), [Replicated runbook on the branch](https://github.com/rajshah4/sdlc-automation-github-demo/blob/feature/canvas-issue-101-max-adoption-fee-filter/docs/replicated-jira-delegated-factory-demo.md) | Prompt-preset automation, parent orchestrator, child prompts, app-conversation API helper, and reusable delegated-factory skill |
+
+For the parent-child approaches, the design checklist is:
+
+1. Pick the event that starts the parent conversation.
+2. Write one parent prompt that owns orchestration and human gates.
+3. Write one child prompt per bounded workcell.
+4. Have the parent start child conversations, wait for final responses, and
+   record links/artifacts.
+5. Post the lifecycle summary back to Jira, GitHub, or the demo system of
+   record.
+
 ## What You'll See
 
 - A low-cost context scout shows which business wiki/docs, repo context, logs,
@@ -167,6 +187,7 @@ No secrets belong in this repo. Store OpenHands, GitHub, Jira, and Slack credent
 ## Demo Docs
 
 - [GitHub demo walkthrough](docs/github-demo-walkthrough.md)
+- [Agent Canvas delegated factory](agent-canvas/README.md)
 - [Enterprise memory and cost demo](docs/enterprise-memory-cost-demo.md)
 - [Setup checklist](docs/setup-checklist.md)
 - [Demo upgrade backlog](docs/demo-upgrades.md)
