@@ -32,7 +32,7 @@ def test_replicated_factory_is_opt_in_package() -> None:
     assert spec["trigger"]["source"] == "jira-direct"
     assert spec["trigger"]["on"] == "jira:issue_created"
     assert spec["timeout"] >= 3600
-    assert spec["model"] == "sdlc-coding"
+    assert spec["model"] == "Bedrock-Claude-Sonnet-4-5"
     assert "llm_profile" not in spec
 
 
@@ -47,7 +47,7 @@ def test_replicated_factory_registration_forwards_model_and_expands_ref(monkeypa
     )
     payload = module.load_request()
 
-    assert payload["model"] == "sdlc-coding"
+    assert payload["model"] == "Bedrock-Claude-Sonnet-4-5"
     assert payload["repos"][0]["ref"] == "feature/example-ref"
     assert "--branch feature/example-ref" in payload["prompt"]
     assert "${GITHUB_DEMO_REF}" not in payload["prompt"]

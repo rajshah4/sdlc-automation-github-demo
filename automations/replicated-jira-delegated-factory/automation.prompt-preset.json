@@ -16,5 +16,5 @@
     }
   ],
   "timeout": 3600,
-  "model": "sdlc-coding"
+  "model": "Bedrock-Claude-Sonnet-4-5"
 }
