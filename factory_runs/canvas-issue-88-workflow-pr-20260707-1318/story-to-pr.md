@@ -7,7 +7,7 @@
 - **Branch**: agent/issue-88-canvas-issue-88-workflow-pr-20260707-1318
 - **OpenSpec change path**: openspec/changes/canvas-issue-88-max-adoption-fee-filter/
 - **PR created by**: this workcell (delegated child conversation `canvas-issue-88-workflow-pr-20260707-1318`)
-- **PR link**: TBD — updated after push
+- **PR link**: https://github.com/rajshah4/sdlc-automation-github-demo/pull/91
 
 ---
 
