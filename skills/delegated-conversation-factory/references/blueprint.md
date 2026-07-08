@@ -47,11 +47,27 @@ factory_runs/<run-id>/
   lifecycle-report.md
 ```
 
-For OpenHands Replicated, child conversations run in separate sandboxes. A child
-may write `factory_runs/<run-id>/<work-cell>.md` inside its own workspace, but
-the parent will not see that file unless the child commits or pushes it. The
-parent-side durable artifact is the captured final response:
-`factory_runs/<run-id>/<work-cell>.final.md`.
+## State Model: Sandbox vs Shared Tree
+
+Before you wire up children, decide how child state reaches the parent, because
+it differs by runtime:
+
+- **Separate sandboxes (OpenHands Enterprise/Cloud/Replicated):** each child has
+  its own clone. A child may write `factory_runs/<run-id>/<work-cell>.md` inside
+  its own workspace, but the parent will not see that file unless the child
+  commits or pushes it. The parent-side durable artifact is the captured final
+  response: `factory_runs/<run-id>/<work-cell>.final.md`. Share durable output
+  through git (branch/PR) or the final-response contract. Children are isolated
+  and can run concurrently.
+- **Shared working tree (Agent Canvas):** the parent and all children use one
+  local repo (`worktree: false`). Artifact files are directly readable by the
+  parent, but there is one git HEAD — runs are not parallel-safe, run ids must be
+  unique (they help determine the branch name), and the run mutates the real
+  checkout.
+
+Rule of thumb: if children write files the parent must read, either use the
+shared-tree runtime or make each child commit/push and have the parent pull.
+Never assume a child's local file is visible to the parent across sandboxes.
 
 ## Gate Statuses
 

@@ -67,6 +67,31 @@ specific gate.
 The Canvas-specific prompts and scripts are packaged under `agent-canvas/` so
 teams can review or copy the recipe as one unit.
 
+## State Model: One Shared Working Tree
+
+On Agent Canvas the parent conversation, the orchestrator, and **every child
+conversation operate on the same local repository working directory**
+(`worktree: false`). This is the opposite of the Replicated/Cloud runtime, where
+each child gets its own isolated sandbox — see the "State Model: Separate
+Sandboxes" section of
+[`replicated-jira-delegated-factory-demo.md`](replicated-jira-delegated-factory-demo.md).
+
+What this means when you run or adapt the recipe:
+
+- **Artifacts are real files on one disk.** A child writes
+  `factory_runs/<run-id>/<cell>.md`, and the parent and later cells read it back
+  directly. No push or final-response round-trip is required to share evidence.
+- **There is one git HEAD, so runs are not parallel-safe.** The run checks out a
+  branch (`agent/issue-<n>-<run-id>`), commits, and — by default — pushes and
+  edits the PR. Do not start two runs against the same checkout, and do not
+  reuse a `--run-id`: the run id plus issue number determine the branch name, so
+  a re-run collides on the same branch. The orchestrator runs cells sequentially
+  for this reason.
+- **The run mutates your actual checkout.** For a side-effect-free run, pass
+  `--no-publish-run-artifacts` and `--no-pr-body-sync`, or point `--repo` at a
+  throwaway clone. For genuine parallelism, give each run its own clone or
+  `git worktree`.
+
 ## Reproduce The Demo
 
 Prerequisites:
