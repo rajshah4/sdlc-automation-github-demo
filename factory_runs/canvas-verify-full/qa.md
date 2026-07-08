@@ -156,4 +156,4 @@ python3 factory_runs/canvas-verify-full/helpers/update_factory_pr_section.py \
 
 ### Result
 
-_Recorded after execution below._
+Exit code 0 — success. PR #95 `## 4. QA` section updated with status and artifact link.
