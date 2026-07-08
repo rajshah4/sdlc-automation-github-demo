@@ -175,6 +175,19 @@ async function main() {
     assert(emptyText === "No available pets match this search.", "pending pet search should show empty state");
     scenarios.push("Pending pet remains hidden and shows the empty state");
 
+    // Max adoption fee filter: $100 keeps Mochi ($75) and Pip ($45), drops Scout ($125)
+    await page.getByLabel("Pet name").fill("");
+    await page.getByLabel("Max adoption fee ($)").fill("100");
+    await page.getByRole("button", { name: "Find Pets" }).click();
+    await assertNames(page, ["Mochi", "Pip"], "max fee filter at $100");
+    scenarios.push("Max adoption fee filter hides pets above budget");
+
+    // Clearing the max fee field restores all available pets
+    await page.getByLabel("Max adoption fee ($)").fill("");
+    await page.getByRole("button", { name: "Find Pets" }).click();
+    await assertNames(page, ["Mochi", "Scout", "Pip"], "max fee cleared restores full list");
+    scenarios.push("Clearing max fee input restores all available pets");
+
     await context.close();
     await browser.close();
 
