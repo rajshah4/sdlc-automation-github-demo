@@ -165,4 +165,4 @@ python3 factory_runs/canvas-verify-full/helpers/update_factory_pr_section.py \
   --artifact factory_runs/canvas-verify-full/code-review.md
 ```
 
-Result: _see below after execution_
+Result: success — PR #95 `## 3. Code Review` section updated (exit 0, output: PR URL echoed)
