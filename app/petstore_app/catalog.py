@@ -50,7 +50,7 @@ def search_pets(
             continue
         if normalized_species and normalized_species != pet.species:
             continue
-        if normalized_status and normalized_status != pet.status:
+        if normalized_status != pet.status:
             continue
         if normalized_tag and normalized_tag not in pet.tags:
             continue

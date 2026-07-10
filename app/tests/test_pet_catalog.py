@@ -50,3 +50,11 @@ def test_search_pets_no_fee_filter_when_max_fee_none() -> None:
     with_none = search_pets(max_fee_cents=None)
 
     assert [pet.id for pet in all_available] == [pet.id for pet in with_none]
+
+
+def test_search_pets_empty_status_returns_no_results() -> None:
+    """Empty status string should not bypass the filter - it should match literally."""
+    results = search_pets(status="")
+
+    assert results == [], "Empty status should return no results, not bypass filter"
+
