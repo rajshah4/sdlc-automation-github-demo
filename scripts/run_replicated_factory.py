@@ -233,8 +233,11 @@ def start_and_wait_cell(
         write_text(run_dir / f"{cell}.final.md", "")
         print(f"Delegated work cell timed out: {cell}", flush=True)
         return entry
-    events = oh.fetch_events(base=base, headers=headers, conversation_id=conversation_id)
-    final_text = oh.latest_agent_text(events)
+    final_text = oh.wait_for_agent_text(
+        base=base,
+        headers=headers,
+        conversation_id=conversation_id,
+    )
     execution_status = str(terminal.get("execution_status", "unknown")).lower()
     status = cell_status(cell, final_text, execution_status)
 

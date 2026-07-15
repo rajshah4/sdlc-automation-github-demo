@@ -84,3 +84,34 @@ def test_poll_conversation_turns_unresolved_pause_into_bounded_gate(monkeypatch)
 
     assert result["execution_status"] == "paused"
     assert result["execution_status_source"] == "sandbox"
+
+
+def test_wait_for_agent_text_retries_eventual_enterprise_index(monkeypatch) -> None:
+    delegate = delegate_module()
+    event_pages = [
+        [],
+        [
+            {
+                "source": "agent",
+                "llm_message": {
+                    "content": [{"type": "text", "text": "status: done"}],
+                },
+            }
+        ],
+    ]
+    sleeps: list[int] = []
+
+    monkeypatch.setattr(delegate, "fetch_events", lambda **_: event_pages.pop(0))
+    monkeypatch.setattr(delegate.time, "sleep", sleeps.append)
+
+    assert (
+        delegate.wait_for_agent_text(
+            base="https://example.test",
+            headers={},
+            conversation_id="conversation-1",
+            grace_seconds=30,
+            poll_seconds=3,
+        )
+        == "status: done"
+    )
+    assert sleeps == [3]

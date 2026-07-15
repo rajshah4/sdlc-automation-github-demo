@@ -24,6 +24,8 @@ TERMINAL_EXECUTION_STATUSES = {"finished", "error", "stuck", "stopped", "waiting
 TERMINAL_SANDBOX_STATUSES = {"ERROR", "MISSING"}
 PAUSED_SANDBOX_STATUS = "PAUSED"
 PROGRESS_INTERVAL_SECONDS = 60
+FINAL_RESPONSE_GRACE_SECONDS = 90
+FINAL_RESPONSE_POLL_SECONDS = 5
 
 
 class OpenHandsV1Error(RuntimeError):
@@ -315,6 +317,24 @@ def latest_agent_text(events: list[dict[str, Any]]) -> str:
     return ""
 
 
+def wait_for_agent_text(
+    *,
+    base: str,
+    headers: dict[str, str],
+    conversation_id: str,
+    grace_seconds: int = FINAL_RESPONSE_GRACE_SECONDS,
+    poll_seconds: int = FINAL_RESPONSE_POLL_SECONDS,
+) -> str:
+    """Allow the Enterprise event index to catch up after terminal status."""
+    deadline = time.monotonic() + max(0, grace_seconds)
+    while True:
+        events = fetch_events(base=base, headers=headers, conversation_id=conversation_id)
+        final_text = latest_agent_text(events)
+        if final_text or time.monotonic() >= deadline:
+            return final_text
+        time.sleep(max(1, poll_seconds))
+
+
 def conversation_summary(base: str, conversation_id: str, record: dict[str, Any] | None = None) -> dict[str, Any]:
     record = record or {}
     return {
@@ -379,9 +399,12 @@ def command_wait(args: argparse.Namespace) -> int:
         timeout_seconds=args.timeout_seconds,
         poll_seconds=args.poll_seconds,
     )
-    events = fetch_events(base=base, headers=headers, conversation_id=args.conversation_id)
     summary = conversation_summary(base, args.conversation_id, record)
-    summary["final_text"] = latest_agent_text(events)
+    summary["final_text"] = wait_for_agent_text(
+        base=base,
+        headers=headers,
+        conversation_id=args.conversation_id,
+    )
     print(json.dumps(summary, indent=2, sort_keys=True))
     status = str(record.get("execution_status", "")).lower()
     return 0 if status in {"finished", "idle"} else 1
