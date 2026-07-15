@@ -75,6 +75,15 @@ def post_prompt_preset(host: str, api_key: str, payload: dict[str, Any]) -> dict
         raise RuntimeError(f"OpenHands API returned {exc.code}: {body}") from exc
 
 
+def automation_api_key() -> str | None:
+    return (
+        os.getenv("OPENHANDS_API_KEY_ORG")
+        or os.getenv("OPENHANDS_API_KEY_JIRA")
+        or os.getenv("OPENHANDS_API_KEY_RAJISTICS")
+        or os.getenv("OPENHANDS_API_KEY")
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group()
@@ -103,12 +112,7 @@ def main() -> int:
         or os.getenv("OPENHANDS_HOST")
         or "https://app.replicated.rajistics.com"
     )
-    api_key = (
-        os.getenv("OPENHANDS_API_KEY_JIRA")
-        or os.getenv("OPENHANDS_API_KEY_RAJISTICS")
-        or os.getenv("OPENHANDS_API_KEY")
-        or os.getenv("OPENHANDS_API_KEY_ORG")
-    )
+    api_key = automation_api_key()
     if not api_key:
         print("OPENHANDS_API_KEY_RAJISTICS or OPENHANDS_API_KEY is required for --apply", file=sys.stderr)
         return 2
