@@ -10,6 +10,7 @@ class Pet:
     id: str
     name: str
     species: str
+    size: str
     status: str
     tags: tuple[str, ...]
     age_months: int
@@ -17,10 +18,10 @@ class Pet:
 
 
 PETS: tuple[Pet, ...] = (
-    Pet("pet-100", "Mochi", "cat", "available", ("calm", "indoor"), 18, 7500),
-    Pet("pet-101", "Scout", "dog", "available", ("active", "family"), 28, 12500),
-    Pet("pet-102", "Pip", "rabbit", "available", ("quiet", "indoor"), 9, 4500),
-    Pet("pet-103", "Nova", "dog", "pending", ("active", "training"), 14, 11000),
+    Pet("pet-100", "Mochi", "cat", "small", "available", ("calm", "indoor"), 18, 7500),
+    Pet("pet-101", "Scout", "dog", "medium", "available", ("active", "family"), 28, 12500),
+    Pet("pet-102", "Pip", "rabbit", "small", "available", ("quiet", "indoor"), 9, 4500),
+    Pet("pet-103", "Nova", "dog", "medium", "pending", ("active", "training"), 14, 11000),
 )
 
 
@@ -28,16 +29,18 @@ def search_pets(
     query: str = "",
     *,
     species: str | None = None,
+    size: str | None = None,
     status: str = "available",
     tag: str | None = None,
     max_results: int = 10,
 ) -> list[Pet]:
-    """Search pets by name, species, status, and tag."""
+    """Search pets by name, species, size, status, and tag."""
     if max_results < 1 or max_results > 50:
         raise ValueError("max_results must be between 1 and 50")
 
     normalized_query = query.strip().lower()
     normalized_species = species.strip().lower() if species else None
+    normalized_size = size.strip().lower() if size else None
     normalized_status = status.strip().lower()
     normalized_tag = tag.strip().lower() if tag else None
 
@@ -46,6 +49,8 @@ def search_pets(
         if normalized_query and normalized_query not in pet.name.lower():
             continue
         if normalized_species and normalized_species != pet.species:
+            continue
+        if normalized_size and normalized_size != pet.size:
             continue
         if normalized_status and normalized_status != pet.status:
             continue
