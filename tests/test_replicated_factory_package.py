@@ -97,6 +97,20 @@ def test_replicated_factory_orchestrator_uses_opt_in_prompt_root() -> None:
     )
     variables = module.variables_for_cell(args, "qa", "prior")
     assert variables["parent_final_artifact"] == "factory_runs/demo-run/qa.final.md"
+    assert module.cell_status("story-to-pr", "", "finished") == "needs-human"
+    assert module.cell_status("story-to-pr", "status: done", "finished") == "done"
+    assert module.gate_allows_next_cell("story-to-pr", "done")
+    assert not module.gate_allows_next_cell("story-to-pr", "finished")
+    assert module.gate_allows_next_cell(
+        "code-review",
+        "findings",
+        "status: findings\nblocking: no\nnext_gate: qa",
+    )
+    assert not module.gate_allows_next_cell(
+        "code-review",
+        "findings",
+        "status: findings\nblocking: yes\nnext_gate: stop",
+    )
 
 
 def test_delegated_factory_skill_points_to_replicated_template() -> None:
