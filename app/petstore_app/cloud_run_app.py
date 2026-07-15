@@ -90,8 +90,11 @@ def incident() -> dict[str, Any] | None:
 
 
 def visible_pets() -> list[Pet]:
-    if current_mode() == INCIDENT_MODE:
-        return list(PETS)
+    """Return only available pets regardless of operational mode.
+    
+    Incident mode affects observability (logs, health checks, UI banners)
+    but not business logic. Customers should never see pending pets.
+    """
     return [pet for pet in PETS if pet.status == "available"]
 
 
