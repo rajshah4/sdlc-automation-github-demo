@@ -30,11 +30,29 @@ def search_pets(
     species: str | None = None,
     status: str = "available",
     tag: str | None = None,
+    max_age_months: int | None = None,
     max_results: int = 10,
 ) -> list[Pet]:
-    """Search pets by name, species, status, and tag."""
+    """Search pets by name, species, status, tag, and maximum age.
+    
+    Args:
+        query: Text to match against pet names (case-insensitive).
+        species: Optional species filter (e.g., "dog", "cat").
+        status: Status filter (default: "available").
+        tag: Optional tag filter.
+        max_age_months: Optional maximum age in months (inclusive).
+        max_results: Maximum number of results (1-50).
+    
+    Returns:
+        List of matching pets, up to max_results.
+    
+    Raises:
+        ValueError: If max_results is out of range or max_age_months is negative.
+    """
     if max_results < 1 or max_results > 50:
         raise ValueError("max_results must be between 1 and 50")
+    if max_age_months is not None and max_age_months < 0:
+        raise ValueError("max_age_months cannot be negative")
 
     normalized_query = query.strip().lower()
     normalized_species = species.strip().lower() if species else None
@@ -50,6 +68,8 @@ def search_pets(
         if normalized_status and normalized_status != pet.status:
             continue
         if normalized_tag and normalized_tag not in pet.tags:
+            continue
+        if max_age_months is not None and pet.age_months > max_age_months:
             continue
         matches.append(pet)
 
