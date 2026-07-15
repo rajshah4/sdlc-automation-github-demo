@@ -8,6 +8,7 @@ const pets = [
 function renderResults() {
   const query = document.querySelector("#query").value.trim().toLowerCase();
   const species = document.querySelector("#species").value;
+  const sortBy = document.querySelector("#sort-by").value;
   const list = document.querySelector("#results");
   list.innerHTML = "";
 
@@ -16,6 +17,10 @@ function renderResults() {
       && (species === "" || pet.species === species)
       && pet.status === "available";
   });
+
+  if (sortBy === "name") {
+    matches.sort((a, b) => a.name.localeCompare(b.name));
+  }
 
   if (matches.length === 0) {
     const empty = document.createElement("li");
