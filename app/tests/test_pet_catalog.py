@@ -3,6 +3,27 @@ import pytest
 from petstore_app.catalog import search_pets
 
 
+def test_search_pets_default_excludes_pending_pets() -> None:
+    results = search_pets()
+
+    pet_ids = [pet.id for pet in results]
+    assert "pet-100" in pet_ids
+    assert "pet-101" in pet_ids
+    assert "pet-102" in pet_ids
+    assert "pet-103" not in pet_ids
+    assert all(pet.status == "available" for pet in results)
+
+
+def test_search_pets_explicit_status_available_excludes_pending_pets() -> None:
+    results = search_pets(status="available")
+
+    pet_ids = [pet.id for pet in results]
+    assert "pet-100" in pet_ids
+    assert "pet-101" in pet_ids
+    assert "pet-102" in pet_ids
+    assert "pet-103" not in pet_ids
+
+
 def test_search_pets_filters_by_species_and_status() -> None:
     results = search_pets(species="dog")
 
