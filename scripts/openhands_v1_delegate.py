@@ -22,6 +22,10 @@ from typing import Any
 DEFAULT_BASE_URL = "https://app.replicated.rajistics.com"
 TERMINAL_EXECUTION_STATUSES = {"finished", "error", "stuck", "stopped", "waiting_for_confirmation"}
 TERMINAL_SANDBOX_STATUSES = {"ERROR", "MISSING"}
+PAUSED_SANDBOX_STATUS = "PAUSED"
+PROGRESS_INTERVAL_SECONDS = 60
+FINAL_RESPONSE_GRACE_SECONDS = 90
+FINAL_RESPONSE_POLL_SECONDS = 5
 
 
 class OpenHandsV1Error(RuntimeError):
@@ -187,6 +191,8 @@ def poll_conversation(
     poll_seconds: int = 20,
 ) -> dict[str, Any]:
     deadline = time.monotonic() + timeout_seconds
+    next_progress_at = 0.0
+    last_reported_state: tuple[str, str] | None = None
     while time.monotonic() < deadline:
         conversations = request_json(
             "GET",
@@ -195,10 +201,38 @@ def poll_conversation(
             timeout=60,
         )
         conversation = conversations[0] if isinstance(conversations, list) and conversations else {}
-        execution_status = str(conversation.get("execution_status", "")).lower()
+        execution_status = str(conversation.get("execution_status") or "").lower()
         sandbox_status = str(conversation.get("sandbox_status", ""))
-        if execution_status in TERMINAL_EXECUTION_STATUSES or sandbox_status in TERMINAL_SANDBOX_STATUSES:
+        now = time.monotonic()
+        state = (execution_status or "unknown", sandbox_status or "unknown")
+        if state != last_reported_state or now >= next_progress_at:
+            print(
+                f"OpenHands child {conversation_id}: execution={state[0]} sandbox={state[1]}",
+                flush=True,
+            )
+            last_reported_state = state
+            next_progress_at = now + PROGRESS_INTERVAL_SECONDS
+
+        if execution_status in TERMINAL_EXECUTION_STATUSES:
             return conversation
+
+        if sandbox_status in TERMINAL_SANDBOX_STATUSES:
+            recovered = dict(conversation)
+            recovered["execution_status"] = execution_status or "error"
+            recovered["execution_status_source"] = "sandbox"
+            return recovered
+
+        # Enterprise may pause a completed sandbox and clear execution_status
+        # from the app-conversation list record. The durable event stream still
+        # contains the final full_state transition, so recover it before
+        # treating PAUSED as a human gate.
+        if sandbox_status == PAUSED_SANDBOX_STATUS:
+            events = fetch_events(base=base, headers=headers, conversation_id=conversation_id)
+            recovered_status = latest_execution_status(events)
+            recovered = dict(conversation)
+            recovered["execution_status"] = recovered_status or "paused"
+            recovered["execution_status_source"] = "events" if recovered_status else "sandbox"
+            return recovered
         time.sleep(poll_seconds)
     raise TimeoutError(f"Timed out waiting for OpenHands conversation {conversation_id}")
 
@@ -242,6 +276,32 @@ def content_text(content: Any) -> str:
     return "\n".join(chunk for chunk in chunks if chunk)
 
 
+def latest_execution_status(events: list[dict[str, Any]]) -> str:
+    """Recover the latest durable execution state from conversation events."""
+    for event in reversed(events):
+        action = event.get("action") if isinstance(event.get("action"), dict) else {}
+        if action.get("kind") == "FinishAction":
+            return "finished"
+
+        kind = event.get("kind") or event.get("type")
+        if kind == "ConversationErrorEvent":
+            return "error"
+        if kind != "ConversationStateUpdateEvent":
+            continue
+
+        key = event.get("key")
+        value = event.get("value")
+        if key == "execution_status" and isinstance(value, str):
+            status = value.lower()
+        elif key == "full_state" and isinstance(value, dict):
+            status = str(value.get("execution_status", "")).lower()
+        else:
+            continue
+        if status:
+            return status
+    return ""
+
+
 def latest_agent_text(events: list[dict[str, Any]]) -> str:
     for event in reversed(events):
         action = event.get("action") if isinstance(event.get("action"), dict) else {}
@@ -257,6 +317,24 @@ def latest_agent_text(events: list[dict[str, Any]]) -> str:
     return ""
 
 
+def wait_for_agent_text(
+    *,
+    base: str,
+    headers: dict[str, str],
+    conversation_id: str,
+    grace_seconds: int = FINAL_RESPONSE_GRACE_SECONDS,
+    poll_seconds: int = FINAL_RESPONSE_POLL_SECONDS,
+) -> str:
+    """Allow the Enterprise event index to catch up after terminal status."""
+    deadline = time.monotonic() + max(0, grace_seconds)
+    while True:
+        events = fetch_events(base=base, headers=headers, conversation_id=conversation_id)
+        final_text = latest_agent_text(events)
+        if final_text or time.monotonic() >= deadline:
+            return final_text
+        time.sleep(max(1, poll_seconds))
+
+
 def conversation_summary(base: str, conversation_id: str, record: dict[str, Any] | None = None) -> dict[str, Any]:
     record = record or {}
     return {
@@ -265,6 +343,7 @@ def conversation_summary(base: str, conversation_id: str, record: dict[str, Any]
         "api_url": f"{base.rstrip('/')}/api/v1/app-conversations?ids={urllib.parse.quote(conversation_id)}",
         "title": record.get("title"),
         "execution_status": record.get("execution_status"),
+        "execution_status_source": record.get("execution_status_source"),
         "sandbox_status": record.get("sandbox_status"),
         "selected_repository": record.get("selected_repository"),
         "selected_branch": record.get("selected_branch"),
@@ -320,9 +399,12 @@ def command_wait(args: argparse.Namespace) -> int:
         timeout_seconds=args.timeout_seconds,
         poll_seconds=args.poll_seconds,
     )
-    events = fetch_events(base=base, headers=headers, conversation_id=args.conversation_id)
     summary = conversation_summary(base, args.conversation_id, record)
-    summary["final_text"] = latest_agent_text(events)
+    summary["final_text"] = wait_for_agent_text(
+        base=base,
+        headers=headers,
+        conversation_id=args.conversation_id,
+    )
     print(json.dumps(summary, indent=2, sort_keys=True))
     status = str(record.get("execution_status", "")).lower()
     return 0 if status in {"finished", "idle"} else 1
