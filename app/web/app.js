@@ -8,13 +8,15 @@ const pets = [
 function renderResults() {
   const query = document.querySelector("#query").value.trim().toLowerCase();
   const species = document.querySelector("#species").value;
+  const indoorOnly = document.querySelector("#indoor-only").checked;
   const list = document.querySelector("#results");
   list.innerHTML = "";
 
   const matches = pets.filter((pet) => {
     return pet.name.toLowerCase().includes(query)
       && (species === "" || pet.species === species)
-      && pet.status === "available";
+      && pet.status === "available"
+      && (!indoorOnly || pet.tags.includes("indoor"));
   });
 
   if (matches.length === 0) {
