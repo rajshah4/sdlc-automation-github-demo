@@ -3,6 +3,15 @@ import pytest
 from petstore_app.catalog import search_pets
 
 
+def test_search_pets_default_excludes_pending() -> None:
+    """Default search should only return available pets."""
+    results = search_pets()
+
+    pet_names = [pet.name for pet in results]
+    assert "Nova" not in pet_names
+    assert all(pet.status == "available" for pet in results)
+
+
 def test_search_pets_filters_by_species_and_status() -> None:
     results = search_pets(species="dog")
 
@@ -13,6 +22,15 @@ def test_search_pets_can_find_pending_pets_when_requested() -> None:
     results = search_pets(species="dog", status="pending")
 
     assert [pet.name for pet in results] == ["Nova"]
+
+
+def test_search_pets_empty_status_excludes_pending() -> None:
+    """Regression test: empty status string should default to available-only."""
+    results = search_pets(status="")
+
+    pet_names = [pet.name for pet in results]
+    assert "Nova" not in pet_names
+    assert all(pet.status == "available" for pet in results)
 
 
 def test_search_pets_filters_by_tag() -> None:
