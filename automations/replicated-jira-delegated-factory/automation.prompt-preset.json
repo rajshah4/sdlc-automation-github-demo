@@ -16,5 +16,6 @@
     }
   ],
   "timeout": 1800,
+  "keep_alive": true,
   "model": "Bedrock-Claude-Sonnet-4-5"
 }
