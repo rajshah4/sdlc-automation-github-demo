@@ -2,7 +2,7 @@
 
 This folder contains the GitHub-native automation package set for the SDLC Automation Demo.
 
-The packages use the OpenHands Automations prompt preset API instead of custom SDK tarballs. That keeps registration simple, avoids ad hoc dependency installation, and makes the prompt visible in the OpenHands UI.
+The packages use the OpenHands Automations prompt preset API instead of custom SDK tarballs. That keeps registration simple, avoids ad hoc dependency installation, and makes the prompt visible in the OpenHands UI. Each package sets `keep_alive: true` so a completed sandbox remains available until the normal runtime cleanup policy removes it.
 
 ## Work Cells
 
@@ -36,3 +36,12 @@ python3 scripts/automations/register_github_automations.py \
   --repo-url https://github.com/rajshah4/sdlc-automation-github-demo \
   --ref codex/memory-cost-overlay
 ```
+
+After rebuilding or replacing an OpenHands installation, run the registration
+command again. Automation metadata and generated package storage may have
+different lifecycles, so successful registration is part of the deployment
+process rather than a one-time setup step.
+
+Before a live demo, confirm that the GitHub organization is claimed by the
+intended OpenHands organization, the GitHub App can access this repository, and
+the installed automation runner is compatible with the runtime version.

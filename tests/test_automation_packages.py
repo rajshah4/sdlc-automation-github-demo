@@ -64,6 +64,22 @@ def test_github_automation_specs_include_model_profiles() -> None:
     assert context_spec["repos"][0]["ref"] == "${GITHUB_DEMO_REF}"
 
 
+def test_github_registration_preserves_keep_alive(monkeypatch) -> None:
+    monkeypatch.setenv("GITHUB_DEMO_REPOSITORY", "example/demo")
+    monkeypatch.setenv("GITHUB_DEMO_REPO_URL", "https://github.com/example/demo")
+    monkeypatch.setenv("GITHUB_DEMO_REF", "main")
+
+    load_request = load_script_function(
+        ROOT / "scripts" / "automations" / "register_github_automations.py",
+        "load_request",
+    )
+    payload = load_request(
+        AUTOMATIONS / "openhands-build" / "automation.prompt-preset.json"
+    )
+
+    assert payload["keep_alive"] is True
+
+
 def test_build_prompt_is_a_short_orchestrator() -> None:
     prompt = (AUTOMATIONS / "openhands-build" / "prompt.md").read_text(
         encoding="utf-8"
