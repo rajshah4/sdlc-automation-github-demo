@@ -30,9 +30,10 @@ def search_pets(
     species: str | None = None,
     status: str = "available",
     tag: str | None = None,
+    temperament: str | None = None,
     max_results: int = 10,
 ) -> list[Pet]:
-    """Search pets by name, species, status, and tag."""
+    """Search pets by name, species, status, tag, and temperament."""
     if max_results < 1 or max_results > 50:
         raise ValueError("max_results must be between 1 and 50")
 
@@ -40,6 +41,7 @@ def search_pets(
     normalized_species = species.strip().lower() if species else None
     normalized_status = status.strip().lower()
     normalized_tag = tag.strip().lower() if tag else None
+    normalized_temperament = temperament.strip().lower() if temperament else None
 
     matches: list[Pet] = []
     for pet in PETS:
@@ -50,6 +52,8 @@ def search_pets(
         if normalized_status and normalized_status != pet.status:
             continue
         if normalized_tag and normalized_tag not in pet.tags:
+            continue
+        if normalized_temperament and normalized_temperament not in pet.tags:
             continue
         matches.append(pet)
 

@@ -36,7 +36,8 @@ python3 scripts/run_replicated_factory.py \
   --repo-slug rajshah4/sdlc-automation-github-demo \
   --branch ${GITHUB_DEMO_REF} \
   --issue-key <ISSUE_KEY> \
-  --cell-timeout-seconds 1200 \
+  --start-timeout-seconds 180 \
+  --cell-timeout-seconds 600 \
   --post-jira-comment
 ```
 
@@ -71,7 +72,6 @@ If the OpenHands API key or Jira secrets are unavailable, do not hand-roll a
 different automation. Write a concise `needs-human` report explaining which
 capability is missing and what to configure next.
 
-If the parent automation reaches the active run timeout before all children
-finish, keep the child conversation links already created and report that the
-Replicated automation service needs a longer `AUTOMATION_MAX_RUN_DURATION` for
-the full delegated demo.
+If the parent reaches its active run timeout before all children finish, keep
+the child conversation links already created and report the remaining work as a
+human follow-up. The installed Replicated automation limit is 30 minutes.
