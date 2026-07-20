@@ -36,7 +36,8 @@ python3 scripts/run_replicated_factory.py \
   --repo-slug rajshah4/sdlc-automation-github-demo \
   --branch ${GITHUB_DEMO_REF} \
   --issue-key <ISSUE_KEY> \
-  --cell-timeout-seconds 1200 \
+  --start-timeout-seconds 180 \
+  --cell-timeout-seconds 900 \
   --post-jira-comment
 ```
 

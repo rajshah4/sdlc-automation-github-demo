@@ -39,6 +39,8 @@ def search_pets(
     normalized_query = query.strip().lower()
     normalized_species = species.strip().lower() if species else None
     normalized_status = status.strip().lower()
+    if not normalized_status:
+        normalized_status = "available"
     normalized_tag = tag.strip().lower() if tag else None
 
     matches: list[Pet] = []

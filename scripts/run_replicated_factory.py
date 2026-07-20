@@ -17,6 +17,11 @@ import openhands_v1_delegate as oh
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROMPT_ROOT = REPO_ROOT / "automations" / "replicated-jira-delegated-factory" / "workcells"
 ACTIVE_WORK_CELLS = ("story-to-pr", "code-review", "qa")
+SUCCESS_STATUSES = {
+    "story-to-pr": {"done"},
+    "code-review": {"pass", "findings"},
+    "qa": {"pass"},
+}
 
 
 def write_json(path: Path, data: Any) -> None:
@@ -124,6 +129,34 @@ def parse_status(final_text: str, fallback: str) -> str:
     return fallback
 
 
+def parse_contract_field(final_text: str, field: str) -> str:
+    prefix = field.lower() + ":"
+    for line in final_text.splitlines():
+        if line.lower().startswith(prefix):
+            return line.split(":", 1)[1].strip().split()[0].lower()
+    return ""
+
+
+def cell_status(cell: str, final_text: str, _execution_status: str) -> str:
+    contract_status = parse_status(final_text, "")
+    if contract_status in SUCCESS_STATUSES[cell] or contract_status in {"needs-human", "failed"}:
+        return contract_status
+    return "needs-human"
+
+
+def gate_allows_next_cell(cell: str, status: str, final_text: str = "") -> bool:
+    if status not in SUCCESS_STATUSES[cell]:
+        return False
+    if cell == "code-review":
+        blocking = parse_contract_field(final_text, "blocking")
+        next_gate = parse_contract_field(final_text, "next_gate")
+        if blocking == "yes" or next_gate == "stop":
+            return False
+        if status == "findings" and blocking != "no":
+            return False
+    return True
+
+
 def variables_for_cell(args: argparse.Namespace, cell: str, prior_summary: str) -> dict[str, str]:
     return {
         "run_id": args.run_id,
@@ -148,6 +181,7 @@ def start_and_wait_cell(
     cell: str,
     prior_summary: str,
 ) -> dict[str, Any]:
+    print(f"Starting delegated work cell: {cell}", flush=True)
     prompt = oh.render_prompt(PROMPT_ROOT / f"{cell}.md", variables_for_cell(args, cell, prior_summary))
     start = oh.start_app_conversation(
         base=base,
@@ -183,22 +217,41 @@ def start_and_wait_cell(
     entry.update(oh.conversation_summary(base, conversation_id))
     write_json(run_dir / f"{cell}.conversation.json", entry)
 
-    terminal = oh.poll_conversation(
+    try:
+        terminal = oh.poll_conversation(
+            base=base,
+            headers=headers,
+            conversation_id=conversation_id,
+            timeout_seconds=args.cell_timeout_seconds,
+            poll_seconds=args.poll_seconds,
+        )
+    except TimeoutError:
+        entry["status"] = "needs-human"
+        entry["final_text"] = ""
+        entry["error"] = "Child conversation exceeded its bounded wait time."
+        write_json(run_dir / f"{cell}.wait.json", entry)
+        write_text(run_dir / f"{cell}.final.md", "")
+        print(f"Delegated work cell timed out: {cell}", flush=True)
+        return entry
+    final_text = oh.wait_for_agent_text(
         base=base,
         headers=headers,
         conversation_id=conversation_id,
-        timeout_seconds=args.cell_timeout_seconds,
-        poll_seconds=args.poll_seconds,
     )
-    events = oh.fetch_events(base=base, headers=headers, conversation_id=conversation_id)
-    final_text = oh.latest_agent_text(events)
-    status = parse_status(final_text, str(terminal.get("execution_status", "unknown")).lower())
+    execution_status = str(terminal.get("execution_status", "unknown")).lower()
+    status = cell_status(cell, final_text, execution_status)
 
     entry["wait"] = oh.conversation_summary(base, conversation_id, terminal)
     entry["status"] = status
     entry["final_text"] = final_text
+    if not final_text:
+        entry["error"] = (
+            "Child conversation ended without the required final response; "
+            "inspect the child link before continuing."
+        )
     write_json(run_dir / f"{cell}.wait.json", entry["wait"])
     write_text(run_dir / f"{cell}.final.md", final_text + ("\n" if final_text else ""))
+    print(f"Completed delegated work cell: {cell} status={status}", flush=True)
     return entry
 
 
@@ -293,18 +346,32 @@ def run_factory(args: argparse.Namespace) -> int:
     entries: list[dict[str, Any]] = []
     prior_summary = ""
     for cell in args.cells:
-        entry = start_and_wait_cell(
-            args=args,
-            base=base,
-            headers=headers,
-            run_dir=run_dir,
-            cell=cell,
-            prior_summary=prior_summary,
-        )
+        try:
+            entry = start_and_wait_cell(
+                args=args,
+                base=base,
+                headers=headers,
+                run_dir=run_dir,
+                cell=cell,
+                prior_summary=prior_summary,
+            )
+        except Exception as exc:
+            entry = {
+                "name": cell,
+                "status": "needs-human",
+                "error": "The work cell could not be completed; inspect the parent conversation.",
+                "error_type": type(exc).__name__,
+                "final_text": "",
+            }
+            print(f"Delegated work cell could not complete: {cell} ({type(exc).__name__})", flush=True)
         entries.append(entry)
         write_json(run_dir / "children.json", entries)
         prior_summary += f"\n\n## {cell}\nstatus: {entry.get('status')}\nurl: {entry.get('ui_url')}\n{entry.get('final_text', '')}"
-        if entry.get("status") in {"failed", "needs-human"}:
+        if not gate_allows_next_cell(
+            cell,
+            str(entry.get("status", "unknown")),
+            str(entry.get("final_text", "")),
+        ):
             break
 
     report = lifecycle_report(args, entries)
@@ -329,7 +396,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--cells", nargs="+", choices=ACTIVE_WORK_CELLS, default=list(ACTIVE_WORK_CELLS))
     parser.add_argument("--child-llm-model")
     parser.add_argument("--start-timeout-seconds", type=int, default=600)
-    parser.add_argument("--cell-timeout-seconds", type=int, default=1800)
+    parser.add_argument("--cell-timeout-seconds", type=int, default=900)
     parser.add_argument("--poll-seconds", type=int, default=20)
     parser.add_argument("--post-jira-comment", action="store_true")
     return parser
