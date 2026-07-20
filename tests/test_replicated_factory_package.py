@@ -34,7 +34,7 @@ def test_replicated_factory_is_opt_in_package() -> None:
     assert "openhands-foundry-parent" in spec["trigger"]["filter"]
     assert "foundry-it-demo" in spec["trigger"]["filter"]
     assert "rtl-request" in spec["trigger"]["filter"]
-    assert spec["timeout"] >= 3600
+    assert spec["timeout"] == 1800
     assert spec["model"] == "Bedrock-Claude-Sonnet-4-5"
     assert "llm_profile" not in spec
 

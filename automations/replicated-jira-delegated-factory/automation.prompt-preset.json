@@ -15,6 +15,6 @@
       "ref": "${GITHUB_DEMO_REF}"
     }
   ],
-  "timeout": 3600,
+  "timeout": 1800,
   "model": "Bedrock-Claude-Sonnet-4-5"
 }
