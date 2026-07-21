@@ -241,6 +241,19 @@ def test_story_review_qa_handoff_is_sequential() -> None:
     assert "Do not add `openhands:done`" in review_prompt
     assert "add `openhands:done`" in qa_prompt
 
+    review_spec = json.loads(
+        (AUTOMATIONS / "openhands-review" / "automation.prompt-preset.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    qa_spec = json.loads(
+        (AUTOMATIONS / "openhands-qa" / "automation.prompt-preset.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert "openhands:in-progress" not in review_spec["trigger"]["filter"]
+    assert "openhands:in-progress" not in qa_spec["trigger"]["filter"]
+
 
 def test_jira_prompt_preserves_keep_alive() -> None:
     spec = json.loads(
