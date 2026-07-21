@@ -59,6 +59,10 @@ async function assertCount(page, expected, scenario) {
   );
 }
 
+async function pauseForEvidence(page) {
+  await page.waitForTimeout(500);
+}
+
 async function commandExists(command) {
   try {
     await execFileAsync(command, ["-version"]);
@@ -86,6 +90,8 @@ async function convertVideoToGif(videoPath, gifPath) {
 
 async function writeReport({ artifactDir, url, screenshotPath, videoPath, gifPath, gifCreated, scenarios }) {
   const reportPath = path.join(artifactDir, "qa-report.md");
+  const port = new URL(url).port || "4173";
+  const artifactArg = path.relative(process.cwd(), artifactDir) || ".";
   const lines = [
     "# Playwright QA Report: Petstore Catalog Count",
     "",
@@ -111,11 +117,11 @@ async function writeReport({ artifactDir, url, screenshotPath, videoPath, gifPat
     "",
     "```bash",
     "python3 skills/sdlc-qa/scripts/with_server.py \\",
-    "  --server \"python3 -m http.server 4173 --directory app/web\" \\",
-    "  --port 4173 \\",
+    `  --server \"python3 -m http.server ${port} --directory app/web\" \\`,
+    `  --port ${port} \\`,
     "  -- node app/web/tests/catalog-count.playwright.mjs \\",
-    "     --url http://localhost:4173 \\",
-    "     --artifact-dir /tmp/sdlc-petstore-playwright/catalog-count",
+    `     --url ${url} \\`,
+    `     --artifact-dir ${artifactArg}`,
     "```",
     "",
     "## Notes",
@@ -156,37 +162,49 @@ async function main() {
     
     await assertCount(page, "3 pets available", "default available count");
     scenarios.push("Default catalog shows count of 3 available pets");
+    await pauseForEvidence(page);
 
     await page.getByLabel("Species").selectOption("dog");
     await page.getByRole("button", { name: "Find Pets" }).click();
     await assertCount(page, "1 pet available", "species filter count with singular");
     scenarios.push("Count updates to 1 pet (singular) when filtering by species");
+    await pauseForEvidence(page);
 
     await page.getByLabel("Species").selectOption("cat");
     await page.getByRole("button", { name: "Find Pets" }).click();
     await assertCount(page, "1 pet available", "cat species count");
     scenarios.push("Count shows 1 available cat (Mochi)");
+    await pauseForEvidence(page);
 
     await page.getByLabel("Species").selectOption("");
     await page.getByLabel("Pet name").fill("Mochi");
     await page.getByRole("button", { name: "Find Pets" }).click();
     await assertCount(page, "1 pet available", "name search count");
     scenarios.push("Count updates correctly with name search");
+    await pauseForEvidence(page);
 
     await page.getByLabel("Pet name").fill("");
     await page.getByRole("button", { name: "Find Pets" }).click();
     await assertCount(page, "3 pets available", "reset to all available count with plural");
     scenarios.push("Count returns to 3 pets (plural) after clearing filters");
+    await pauseForEvidence(page);
 
     await page.getByLabel("Pet name").fill("nova");
     await page.getByRole("button", { name: "Find Pets" }).click();
     await assertCount(page, "0 pets available", "pending pet excluded from count");
     scenarios.push("Count shows 0 when searching for pending pet (Nova)");
+    await pauseForEvidence(page);
 
     await page.getByLabel("Pet name").fill("nonexistent");
     await page.getByRole("button", { name: "Find Pets" }).click();
     await assertCount(page, "0 pets available", "zero count for no matches");
     scenarios.push("Count shows 0 for non-existent pet name");
+
+    await page.getByLabel("Pet name").fill("");
+    await page.getByRole("button", { name: "Find Pets" }).click();
+    await assertCount(page, "3 pets available", "final populated catalog count");
+    scenarios.push("Final evidence view restores all 3 available pets");
+    await pauseForEvidence(page);
 
     const screenshotPath = path.join(artifactDir, "catalog-count.png");
     await page.screenshot({ path: screenshotPath, fullPage: true });
