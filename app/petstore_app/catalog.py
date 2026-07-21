@@ -41,13 +41,16 @@ def search_pets(
     normalized_status = status.strip().lower()
     normalized_tag = tag.strip().lower() if tag else None
 
+    if not normalized_status:
+        normalized_status = "available"
+
     matches: list[Pet] = []
     for pet in PETS:
         if normalized_query and normalized_query not in pet.name.lower():
             continue
         if normalized_species and normalized_species != pet.species:
             continue
-        if normalized_status and normalized_status != pet.status:
+        if normalized_status != pet.status:
             continue
         if normalized_tag and normalized_tag not in pet.tags:
             continue
