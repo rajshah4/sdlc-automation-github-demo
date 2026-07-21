@@ -25,3 +25,20 @@ def test_search_pets_filters_by_tag() -> None:
 def test_search_pets_validates_max_results(max_results: int) -> None:
     with pytest.raises(ValueError, match="max_results"):
         search_pets(max_results=max_results)
+
+
+def test_search_pets_defaults_to_available_when_empty_status() -> None:
+    """Regression test for KAN-69: empty status should not bypass the filter."""
+    results = search_pets(species="dog", status="")
+
+    assert [pet.id for pet in results] == ["pet-101"]
+    assert all(pet.status == "available" for pet in results)
+
+
+def test_search_pets_excludes_pending_by_default() -> None:
+    """Verify that Nova (pending) does not appear in default search results."""
+    results = search_pets()
+
+    pet_ids = [pet.id for pet in results]
+    assert "pet-103" not in pet_ids
+    assert all(pet.status == "available" for pet in results)
