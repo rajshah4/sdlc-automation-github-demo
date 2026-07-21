@@ -18,6 +18,7 @@ AUTOMATION_ROOT = REPO_ROOT / "automations" / "jira"
 DEFAULTS = {
     "JIRA_DEMO_PROJECT_KEY": "KAN",
     "GITHUB_DEMO_REPO_URL": "https://github.com/rajshah4/sdlc-automation-github-demo",
+    "GITHUB_DEMO_REF": "main",
 }
 
 
@@ -92,6 +93,7 @@ def main() -> int:
     parser.add_argument("--include", action="append", help="automation folder to include; repeatable")
     parser.add_argument("--project-key", help="set JIRA_DEMO_PROJECT_KEY for this run")
     parser.add_argument("--repo-url", help="set GITHUB_DEMO_REPO_URL for this run")
+    parser.add_argument("--ref", help="set GITHUB_DEMO_REF for the cloned repository")
     args = parser.parse_args()
 
     if args.env_file:
@@ -102,6 +104,8 @@ def main() -> int:
         os.environ["JIRA_DEMO_PROJECT_KEY"] = args.project_key
     if args.repo_url:
         os.environ["GITHUB_DEMO_REPO_URL"] = args.repo_url
+    if args.ref:
+        os.environ["GITHUB_DEMO_REF"] = args.ref
 
     dry_run = not args.apply
     host = (

@@ -4,7 +4,7 @@ You are the `openhands-qa` work cell for the GitHub-native SDLC Automation Demo.
 
 ## What Triggered This
 
-This automation runs when a human adds the `openhands-qa` label to a GitHub PR.
+This automation runs when code review, or a human, adds the `openhands-qa` label to a GitHub PR.
 Use the event payload as the primary source for the PR number and repository.
 If this automation was manually dispatched and no event payload is available,
 select the newest open PR in `rajshah4/sdlc-automation-github-demo` that has the
@@ -19,7 +19,7 @@ Use a lower-cost scout/model profile for context gathering when the runtime supp
 
 ## What You Do
 
-1. Read the PR diff, changed files, linked issue, OpenSpec-style change folder, and existing tests. Treat the diff as the primary source for QA scope; the PR body may be sparse and should not need to prescribe test steps.
+1. Read the PR diff, changed files, linked issue, OpenSpec-style change folder, and existing tests. Add `openhands:in-progress` when permissions allow. Treat the diff as the primary source for QA scope; the PR body may be sparse and should not need to prescribe test steps.
 2. Use `skills/sdlc-qa/SKILL.md` and, when available, the official OpenHands QA changes behavior.
 3. Identify changed behavior and decide whether it is backend, UI-visible, automation, docs, or mixed.
 4. Map tests to the OpenSpec-style acceptance criteria when a spec exists.
@@ -29,6 +29,7 @@ Use a lower-cost scout/model profile for context gathering when the runtime supp
 8. For UI-visible changes, prefer Playwright or BrowserToolSet. Use `app/web/tests/catalog-search.playwright.mjs` as the baseline example for the expected artifact shape. Generate a maintainable browser smoke/spec when missing, run the static UI, capture screenshot/video, convert video to GIF when `ffmpeg` is available, and write a concise QA report. Commit useful generated specs and lightweight demo artifacts to the PR branch when permitted.
 9. Fall back to dependency-free DOM/static checks only when Playwright/browser execution is unavailable, and clearly label that as fallback evidence.
 10. Post a QA report and push any test/evidence commits to the PR branch when permitted.
+11. After the report is posted, remove the one-shot `openhands-qa` trigger and `openhands:in-progress`, then add `openhands:done`. If QA cannot complete, use `openhands:needs-human` instead of `openhands:done`.
 
 ## What You Post Back To GitHub
 

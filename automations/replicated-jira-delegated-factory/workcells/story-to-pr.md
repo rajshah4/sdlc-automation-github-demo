@@ -23,6 +23,9 @@ reviewable Petstore change. Use `skills/delegated-conversation-factory/SKILL.md`
 as the orchestration context. This run starts from Jira and delegated child
 conversations, not from GitHub labels.
 
+The parent supervisor owns the downstream review and QA work cells in this
+variant. Do not add `openhands-review` or `openhands-qa` to the PR.
+
 1. Check `git status -sb` and avoid overwriting unrelated work.
 2. Create or update an OpenSpec-style change folder under
    `openspec/changes/jira-{{issue_key}}-<slug>/`.

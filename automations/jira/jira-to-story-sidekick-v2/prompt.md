@@ -32,8 +32,9 @@ and script. Do not use `GITHUB` or `GH_TOKEN`. Do not print secret values.
 - Step 0 launcher conversation prints the index and timing summary.
 - Three visible read-only scout conversations search docs, logs, and repo.
 - Main implementation conversation fixes the bug, opens the PR, and adds
-  `openhands-qa`.
-- The GitHub QA automation runs as the post-PR validation conversation.
+  `openhands-review`.
+- The GitHub review automation posts findings and adds `openhands-qa`.
+- The GitHub QA automation runs as the final validation conversation.
 
 Use this viewer-facing sequence when summarizing the run:
 
@@ -42,8 +43,9 @@ Use this viewer-facing sequence when summarizing the run:
 - Step 2B: Logs scout finds symptom evidence.
 - Step 2C: Repo scout finds likely implementation and test files.
 - Step 3: Main implementation agent fixes the bug, adds tests, opens the PR,
-  and triggers QA.
-- Step 4: GitHub QA automation validates the PR and leaves the human review gate
+  and triggers review.
+- Step 4: GitHub review automation posts findings and triggers QA.
+- Step 5: GitHub QA automation validates the PR and leaves the human merge gate
   intact.
 
 ## Human Control

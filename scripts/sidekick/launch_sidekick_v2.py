@@ -739,7 +739,8 @@ def timing_summary(
         "main_start_barrier_seconds": main_start_barrier_seconds,
         "main_elapsed_seconds": main_result.elapsed_to_finished_seconds if main_result else None,
         "qa_timing_note": (
-            "QA runs in the separate GitHub automation after the main agent adds openhands-qa."
+            "Review starts after the main agent adds openhands-review; review then "
+            "adds openhands-qa for the separate QA automation."
         ),
     }
     if summary["total_launcher_elapsed_seconds"] and not main_result:
