@@ -17,10 +17,10 @@ class Pet:
 
 
 PETS: tuple[Pet, ...] = (
-    Pet("pet-100", "Mochi", "cat", "available", ("calm", "indoor"), 18, 7500),
-    Pet("pet-101", "Scout", "dog", "available", ("active", "family"), 28, 12500),
-    Pet("pet-102", "Pip", "rabbit", "available", ("quiet", "indoor"), 9, 4500),
-    Pet("pet-103", "Nova", "dog", "pending", ("active", "training"), 14, 11000),
+    Pet("pet-100", "Mochi", "cat", "available", ("calm", "indoor", "basic"), 18, 7500),
+    Pet("pet-101", "Scout", "dog", "available", ("active", "family", "intermediate"), 28, 12500),
+    Pet("pet-102", "Pip", "rabbit", "available", ("quiet", "indoor", "basic"), 9, 4500),
+    Pet("pet-103", "Nova", "dog", "pending", ("active", "training", "advanced"), 14, 11000),
 )
 
 
@@ -30,9 +30,10 @@ def search_pets(
     species: str | None = None,
     status: str = "available",
     tag: str | None = None,
+    training_level: str | None = None,
     max_results: int = 10,
 ) -> list[Pet]:
-    """Search pets by name, species, status, and tag."""
+    """Search pets by name, species, status, tag, and training level."""
     if max_results < 1 or max_results > 50:
         raise ValueError("max_results must be between 1 and 50")
 
@@ -40,6 +41,7 @@ def search_pets(
     normalized_species = species.strip().lower() if species else None
     normalized_status = status.strip().lower()
     normalized_tag = tag.strip().lower() if tag else None
+    normalized_training_level = training_level.strip().lower() if training_level else None
 
     matches: list[Pet] = []
     for pet in PETS:
@@ -50,6 +52,8 @@ def search_pets(
         if normalized_status and normalized_status != pet.status:
             continue
         if normalized_tag and normalized_tag not in pet.tags:
+            continue
+        if normalized_training_level and normalized_training_level not in pet.tags:
             continue
         matches.append(pet)
 
