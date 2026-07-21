@@ -87,11 +87,12 @@ Avoid:
 
 When a draft PR is ready:
 
-- For Jira demo PRs, add `openhands-qa` when the repo supports the QA automation. This intentionally starts a second QA conversation.
-- Add `openhands-review` only when review automation is explicitly part of the demo flow.
+- Add `openhands-review` when the repo supports the chained review automation. This starts a separate review conversation.
+- Do not add `openhands-qa` from story-to-PR. The review work cell adds it only after posting its review result.
+- A parent-child supervisor may suppress both labels when it explicitly owns downstream orchestration.
 - Do not add labels that can cause loops or duplicate runs.
 - If labels cannot be changed, mention the recommended next work cell in the PR or issue comment.
-- Keep the human gate explicit: QA evidence informs reviewers, but humans still approve, merge, and deploy.
+- Keep the human gate explicit: review and QA evidence inform humans, but humans still approve, merge, and deploy.
 
 ## Human-In-The-Loop Stop Conditions
 

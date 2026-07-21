@@ -248,4 +248,5 @@ def test_timing_summary_calls_out_launcher_and_handoff_segments() -> None:
     assert "Step 0 automation output is the index" in summary["index_note"]
     assert summary["scout_slowest_finished_seconds"] == 60.0
     assert summary["main_elapsed_seconds"] == 150.0
-    assert "QA runs in the separate GitHub automation" in summary["qa_timing_note"]
+    assert "Review starts after the main agent adds openhands-review" in summary["qa_timing_note"]
+    assert "openhands-qa" in summary["qa_timing_note"]

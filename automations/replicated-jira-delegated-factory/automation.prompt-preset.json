@@ -6,7 +6,7 @@
     "type": "event",
     "source": "jira-direct",
     "on": "jira:issue_created",
-    "filter": "issue.fields.project.key == '${JIRA_DEMO_PROJECT_KEY}' && issue.fields.issuetype.name == 'Task'"
+    "filter": "issue.fields.project.key == '${JIRA_DEMO_PROJECT_KEY}' && issue.fields.issuetype.name == 'Task' && !contains(issue.fields.labels, 'openhands-foundry-parent') && !contains(issue.fields.labels, 'foundry-it-demo') && !contains(issue.fields.labels, 'rtl-request')"
   },
   "repos": [
     {
@@ -15,6 +15,7 @@
       "ref": "${GITHUB_DEMO_REF}"
     }
   ],
-  "timeout": 3600,
+  "timeout": 1800,
+  "keep_alive": true,
   "model": "Bedrock-Claude-Sonnet-4-5"
 }

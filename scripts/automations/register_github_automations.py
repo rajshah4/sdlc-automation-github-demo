@@ -48,12 +48,9 @@ def load_request(spec_path: Path) -> dict[str, Any]:
         "prompt": prompt_path.read_text(encoding="utf-8"),
         "trigger": expand_env(spec["trigger"]),
     }
-    if "timeout" in spec:
-        request["timeout"] = expand_env(spec["timeout"])
-    if "repos" in spec:
-        request["repos"] = expand_env(spec["repos"])
-    if "model" in spec:
-        request["model"] = expand_env(spec["model"])
+    for optional in ("timeout", "keep_alive", "repos", "model"):
+        if optional in spec:
+            request[optional] = expand_env(spec[optional])
     return request
 
 

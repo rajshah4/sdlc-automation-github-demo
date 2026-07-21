@@ -44,6 +44,9 @@ python3 scripts/automations/register_github_automations.py --apply
 python3 scripts/automations/register_jira_automations.py --apply
 ```
 
+Use the same explicit `--ref` with both registration scripts when validating a
+demo branch before it is merged. Customer installations normally use `main`.
+
 ## Fast Jira-To-PR Demo
 
 Use this when you want the most reliable live customer demo.
@@ -52,9 +55,9 @@ Use this when you want the most reliable live customer demo.
 2. Run the live read-only preflight in `main` mode.
 3. Create a sparse Jira Task in the demo project.
 4. Show OpenHands finding docs/log evidence, locating the repo files, adding a
-   focused regression test, opening a PR, and applying `openhands-qa`.
-5. Show the separate QA automation starting from the PR label.
-6. Stop at human review. The automation does not approve, merge, deploy, or
+   focused regression test, opening a PR, and applying `openhands-review`.
+5. Show review posting findings and applying `openhands-qa`.
+6. Show QA posting test evidence, then stop at human review. The automation does not approve, merge, deploy, or
    bypass branch protection.
 
 Viewer-facing story:
@@ -63,7 +66,7 @@ Viewer-facing story:
 - OpenHands uses repo-local docs and logs to understand the bug.
 - OpenHands finds the implementation and test files.
 - OpenHands creates a PR with tests and evidence.
-- QA runs as a second conversation.
+- Code review and QA run as separate PR-label conversations.
 - Humans keep merge authority.
 
 ## Visible Sidekick Demo
@@ -76,7 +79,7 @@ Use this when you want the multi-conversation “wow” moment.
 4. Show the Step 0 launcher conversation as the index.
 5. Open the visible docs, logs, and repo scout conversations.
 6. Open the main implementation conversation and PR.
-7. Show the QA handoff label and keep human review as the final gate.
+7. Show review hand off to QA and keep human merge authority as the final gate.
 
 Expected visible sequence:
 
@@ -85,7 +88,9 @@ Expected visible sequence:
 - `DEMO_STEP 2B`: logs scout finds symptom evidence.
 - `DEMO_STEP 2C`: repo scout finds likely implementation and test files.
 - `DEMO_STEP 3`: main implementation fixes the bug, adds tests, opens the PR,
-  and adds `openhands-qa`.
+  and adds `openhands-review`.
+- `DEMO_STEP 4`: review posts findings and adds `openhands-qa`.
+- `DEMO_STEP 5`: QA posts test evidence.
 
 The sidekick launcher command and operational guardrails live in
 `skills/sdlc-sidekick-launcher/` so the automation prompt stays readable.

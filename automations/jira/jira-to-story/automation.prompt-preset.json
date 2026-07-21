@@ -11,9 +11,10 @@
   "repos": [
     {
       "url": "${GITHUB_DEMO_REPO_URL}",
-      "ref": "main"
+      "ref": "${GITHUB_DEMO_REF}"
     }
   ],
   "timeout": 900,
+  "keep_alive": true,
   "model": "Bedrock-Claude-Sonnet-4-5-fast"
 }

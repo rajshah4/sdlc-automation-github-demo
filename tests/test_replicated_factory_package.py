@@ -31,7 +31,10 @@ def test_replicated_factory_is_opt_in_package() -> None:
     assert spec["preset"] == "prompt"
     assert spec["trigger"]["source"] == "jira-direct"
     assert spec["trigger"]["on"] == "jira:issue_created"
-    assert spec["timeout"] >= 3600
+    assert "openhands-foundry-parent" in spec["trigger"]["filter"]
+    assert "foundry-it-demo" in spec["trigger"]["filter"]
+    assert "rtl-request" in spec["trigger"]["filter"]
+    assert spec["timeout"] == 1800
     assert spec["model"] == "Bedrock-Claude-Sonnet-4-5"
     assert "llm_profile" not in spec
 
@@ -51,6 +54,18 @@ def test_replicated_factory_registration_forwards_model_and_expands_ref(monkeypa
     assert payload["repos"][0]["ref"] == "feature/example-ref"
     assert "--branch feature/example-ref" in payload["prompt"]
     assert "${GITHUB_DEMO_REF}" not in payload["prompt"]
+
+
+def test_replicated_factory_registration_prefers_org_automation_key(monkeypatch) -> None:
+    module = load_module(
+        ROOT / "scripts" / "register_replicated_factory_automation.py",
+        "register_replicated_factory_automation_key",
+    )
+    monkeypatch.setenv("OPENHANDS_API_KEY_ORG", "org-key")
+    monkeypatch.setenv("OPENHANDS_API_KEY_JIRA", "jira-key")
+    monkeypatch.setenv("OPENHANDS_API_KEY_RAJISTICS", "rajistics-key")
+
+    assert module.automation_api_key() == "org-key"
 
 
 def test_replicated_factory_parent_prompt_delegates_and_stays_alive() -> None:
@@ -97,6 +112,20 @@ def test_replicated_factory_orchestrator_uses_opt_in_prompt_root() -> None:
     )
     variables = module.variables_for_cell(args, "qa", "prior")
     assert variables["parent_final_artifact"] == "factory_runs/demo-run/qa.final.md"
+    assert module.cell_status("story-to-pr", "", "finished") == "needs-human"
+    assert module.cell_status("story-to-pr", "status: done", "finished") == "done"
+    assert module.gate_allows_next_cell("story-to-pr", "done")
+    assert not module.gate_allows_next_cell("story-to-pr", "finished")
+    assert module.gate_allows_next_cell(
+        "code-review",
+        "findings",
+        "status: findings\nblocking: no\nnext_gate: qa",
+    )
+    assert not module.gate_allows_next_cell(
+        "code-review",
+        "findings",
+        "status: findings\nblocking: yes\nnext_gate: stop",
+    )
 
 
 def test_delegated_factory_skill_points_to_replicated_template() -> None:

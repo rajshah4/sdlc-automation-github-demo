@@ -16,5 +16,6 @@
     }
   ],
   "timeout": 300,
+  "keep_alive": true,
   "model": "Bedrock-Claude-Haiku-4-5"
 }

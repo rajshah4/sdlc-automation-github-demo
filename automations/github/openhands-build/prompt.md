@@ -15,7 +15,7 @@ Before editing, load `AGENTS.md`, `skills/sdlc-context-reuse/SKILL.md`, the stor
 1. Read the trigger payload and issue context.
 2. Load and follow `skills/sdlc-story/SKILL.md`.
 3. Create or update the implementation PR with evidence, tests, assumptions, and human gates.
-4. Hand off QA/review through repo labels when appropriate.
+4. When the PR is ready, add `openhands-review` as the final GitHub mutation. Do not add `openhands-qa`; review owns that handoff.
 
 ## What You Post Back To GitHub
 

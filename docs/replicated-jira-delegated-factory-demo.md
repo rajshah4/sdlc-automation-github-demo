@@ -65,9 +65,9 @@ JIRA_SERVICE_ACCOUNT_EMAIL
 ```
 
 For the full delegated run, the parent automation needs enough active runtime
-to wait for child conversations. Use `timeout: 3600` in this opt-in package and
-make sure the Replicated automation service allows a matching
-`AUTOMATION_MAX_RUN_DURATION`.
+to wait for child conversations. This package uses the Enterprise maximum of
+`timeout: 1800` and `keep_alive: true`; normal runtime cleanup policy controls
+how long the completed sandbox remains available.
 
 ## Register The Opt-In Automation
 
@@ -85,6 +85,9 @@ python3 scripts/register_replicated_factory_automation.py --apply
 
 This script registers only the opt-in delegated factory package. It does not
 register or modify the existing automation packages.
+
+Re-register this package after replacing or rebuilding the OpenHands server so
+the generated automation package is present on the new installation.
 
 ## Live Demo Script
 

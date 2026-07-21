@@ -89,8 +89,9 @@ The launcher creates top-level conversations:
 - Step 2B: Logs scout finds symptom evidence.
 - Step 2C: Repo scout finds likely implementation and test files.
 - Step 3: Main implementation agent fixes the bug, adds tests, opens the PR,
-  and adds `openhands-qa`.
-- Step 4: GitHub QA automation validates the PR and leaves human PR review
+  and adds `openhands-review`.
+- Step 4: GitHub review automation posts findings and adds `openhands-qa`.
+- Step 5: GitHub QA automation validates the PR and leaves the human merge gate
   intact.
 
 The Step 0 response is the visible index for the demo. Make it easy for a viewer
@@ -104,6 +105,6 @@ Print the complete launcher JSON summary. Include:
 - scout conversation links
 - main implementation conversation link
 - PR link when available in the main conversation summary
-- QA trigger or label handoff status when available
+- review/QA trigger or label handoff status when available
 
 Humans still approve PR review, merge, deployment, and risky follow-up.

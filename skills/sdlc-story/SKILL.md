@@ -69,7 +69,7 @@ Sparse issues are the primary demo path. The ticket should not need repo names, 
 9. Add or update focused tests.
 10. Run the narrowest useful validation first.
 11. Open a draft PR with OpenSpec change link, evidence, and human-review notes.
-12. For Jira demo PRs, add `openhands-qa` after opening or updating the PR so the QA work cell starts as a second conversation. Do not add `openhands-review` automatically unless the demo operator explicitly asks for review automation.
+12. After opening or updating the PR, add `openhands-review` as the final GitHub mutation so code review starts as a separate conversation. Do not add `openhands-qa`; the review work cell owns that handoff. A parent-child supervisor may explicitly override this when it owns downstream orchestration itself.
 
 ## Evidence Waypoints
 
@@ -158,4 +158,4 @@ The PR body must show:
 - residual risks
 - reminder that humans approve review and merge decisions
 
-When the repo supports the QA automation, add `openhands-qa` to the PR after it is created or updated. This handoff starts automated validation only; it must not approve, merge, bypass branch protection, or remove human PR review.
+When the repo supports the chained automations, add `openhands-review` to the PR after it is created or updated. Code review then adds `openhands-qa` after posting its findings. These handoffs start bounded automation work only; they must not approve, merge, bypass branch protection, or remove human PR review.
