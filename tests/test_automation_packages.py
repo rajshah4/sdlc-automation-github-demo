@@ -236,7 +236,8 @@ def test_story_review_qa_handoff_is_sequential() -> None:
 
     assert "Add `openhands-review` as the final GitHub mutation" in story_prompt
     assert "Do not add `openhands-qa`" in story_prompt
-    assert "add `openhands-qa` as the final GitHub mutation" in review_prompt
+    assert "add `openhands-qa`" in review_prompt
+    assert "before posting the final review" in review_prompt
     assert "Do not add `openhands:done`" in review_prompt
     assert "add `openhands:done`" in qa_prompt
 

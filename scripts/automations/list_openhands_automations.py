@@ -49,6 +49,7 @@ def summarize(automation: dict[str, Any]) -> dict[str, Any]:
         "id": automation.get("id"),
         "name": automation.get("name"),
         "enabled": automation.get("enabled"),
+        "keep_alive": automation.get("keep_alive"),
         "model": automation.get("model"),
         "timeout": automation.get("timeout"),
         "trigger": {
