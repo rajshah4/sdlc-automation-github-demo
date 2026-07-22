@@ -25,3 +25,11 @@ def test_search_pets_filters_by_tag() -> None:
 def test_search_pets_validates_max_results(max_results: int) -> None:
     with pytest.raises(ValueError, match="max_results"):
         search_pets(max_results=max_results)
+
+
+def test_search_pets_defaults_to_available_when_status_is_empty() -> None:
+    """Regression test for KAN-122: empty status string should default to available."""
+    results = search_pets(species="dog", status="")
+
+    assert [pet.id for pet in results] == ["pet-101"]
+    assert all(pet.status == "available" for pet in results)
