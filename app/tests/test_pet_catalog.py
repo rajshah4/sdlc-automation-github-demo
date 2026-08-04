@@ -9,6 +9,17 @@ def test_search_pets_filters_by_species_and_status() -> None:
     assert [pet.id for pet in results] == ["pet-101"]
 
 
+def test_search_pets_defaults_empty_status_to_available() -> None:
+    """Regression test for KAN-139: empty status should default to available."""
+    results = search_pets(status="")
+
+    pet_ids = [pet.id for pet in results]
+    assert "pet-103" not in pet_ids, "Nova (pending) should not appear in default search"
+    assert "pet-100" in pet_ids, "Mochi (available) should appear"
+    assert "pet-101" in pet_ids, "Scout (available) should appear"
+    assert "pet-102" in pet_ids, "Pip (available) should appear"
+
+
 def test_search_pets_can_find_pending_pets_when_requested() -> None:
     results = search_pets(species="dog", status="pending")
 
