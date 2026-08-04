@@ -25,3 +25,19 @@ def test_search_pets_filters_by_tag() -> None:
 def test_search_pets_validates_max_results(max_results: int) -> None:
     with pytest.raises(ValueError, match="max_results"):
         search_pets(max_results=max_results)
+
+
+def test_search_pets_default_returns_only_available() -> None:
+    """Test that default search returns only available pets, not pending ones."""
+    results = search_pets()
+
+    assert len(results) == 3
+    assert all(pet.status == "available" for pet in results)
+    assert "Nova" not in [pet.name for pet in results]
+
+
+def test_search_pets_with_empty_status_should_not_return_all_pets() -> None:
+    """Test that passing empty status doesn't bypass the status filter."""
+    results = search_pets(status="")
+
+    assert "Nova" not in [pet.name for pet in results], "Pending pet 'Nova' should not be returned with empty status"
