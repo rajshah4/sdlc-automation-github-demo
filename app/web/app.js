@@ -34,4 +34,9 @@ function renderResults() {
 }
 
 document.querySelector("#search-button").addEventListener("click", renderResults);
+document.querySelector("#clear-button").addEventListener("click", () => {
+  document.querySelector("#query").value = "";
+  document.querySelector("#species").value = "";
+  renderResults();
+});
 renderResults();
