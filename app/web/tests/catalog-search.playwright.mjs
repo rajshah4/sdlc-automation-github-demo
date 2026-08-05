@@ -171,9 +171,18 @@ async function main() {
     await page.getByLabel("Pet name").fill("nova");
     await page.getByRole("button", { name: "Find Pets" }).click();
     await page.locator("#results .empty").waitFor();
-    const emptyText = await page.locator("#results .empty").textContent();
+    const emptyText = await page.locator("#results .empty span").textContent();
     assert(emptyText === "No available pets match this search.", "pending pet search should show empty state");
     scenarios.push("Pending pet remains hidden and shows the empty state");
+
+    const clearButton = page.locator("#results .clear-filters-button");
+    await clearButton.waitFor();
+    assert(await clearButton.textContent() === "Clear filters", "clear filters button should be visible");
+    scenarios.push("Clear filters button appears in empty state");
+
+    await clearButton.click();
+    await assertNames(page, ["Mochi", "Scout", "Pip"], "after clearing filters");
+    scenarios.push("Clear filters button resets search and shows all available pets");
 
     await context.close();
     await browser.close();

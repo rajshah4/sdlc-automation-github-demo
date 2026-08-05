@@ -20,7 +20,21 @@ function renderResults() {
   if (matches.length === 0) {
     const empty = document.createElement("li");
     empty.className = "empty";
-    empty.textContent = "No available pets match this search.";
+    
+    const message = document.createElement("span");
+    message.textContent = "No available pets match this search.";
+    empty.appendChild(message);
+    
+    const clearButton = document.createElement("button");
+    clearButton.className = "clear-filters-button";
+    clearButton.textContent = "Clear filters";
+    clearButton.addEventListener("click", () => {
+      document.querySelector("#query").value = "";
+      document.querySelector("#species").value = "";
+      renderResults();
+    });
+    empty.appendChild(clearButton);
+    
     list.appendChild(empty);
     return;
   }

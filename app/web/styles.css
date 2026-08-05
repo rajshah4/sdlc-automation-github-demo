@@ -72,8 +72,23 @@ button {
 }
 
 .pet span,
-.empty {
+.empty span {
   color: #5c6670;
+}
+
+.clear-filters-button {
+  min-height: 36px;
+  border: 1px solid #205ea8;
+  border-radius: 6px;
+  background: white;
+  color: #205ea8;
+  font-weight: 600;
+  padding: 0 16px;
+  cursor: pointer;
+}
+
+.clear-filters-button:hover {
+  background: #f0f5fa;
 }
 
 @media (max-width: 760px) {
