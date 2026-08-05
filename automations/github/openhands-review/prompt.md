@@ -25,6 +25,20 @@ Use a lower-cost scout/model profile for context gathering when the runtime supp
 
 Do not claim tests passed unless you ran them or the PR evidence clearly shows them.
 
+## Conversation Link
+
+This automation's OpenHands conversation URL is appended to the end of this
+prompt by the runtime. Include it in your review comment so reviewers can
+trace the review back to the agent session that produced it. Add it as a
+concise line near the end of the comment:
+
+`OpenHands conversation: <url>`
+
+Copy the URL exactly as provided — do not write a shell variable or
+placeholder. On self-hosted deployments the URL is injected by a custom
+automation script; see `docs/automation-conversation-link-gap.md` for the
+background and the workaround.
+
 ## What You Post Back To GitHub
 
 Post a review comment with status, risk, findings, test gaps, open questions, and residual risk. If no blocking issues are found, say that clearly. The `openhands-qa` handoff must already be present before this final post.

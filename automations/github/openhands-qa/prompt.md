@@ -31,6 +31,20 @@ Use a lower-cost scout/model profile for context gathering when the runtime supp
 10. Post a QA report and push any test/evidence commits to the PR branch when permitted.
 11. After the report is posted, remove the one-shot `openhands-qa` trigger and any stale `openhands:in-progress` status, then add `openhands:done`. If QA cannot complete, use `openhands:needs-human` instead of `openhands:done`.
 
+## Conversation Link
+
+This automation's OpenHands conversation URL is appended to the end of this
+prompt by the runtime. Include it in your QA report so reviewers can trace
+the QA work back to the agent session that produced it. Add it as a concise
+line near the end of the report:
+
+`OpenHands conversation: <url>`
+
+Copy the URL exactly as provided — do not write a shell variable or
+placeholder. On self-hosted deployments the URL is injected by a custom
+automation script; see `docs/automation-conversation-link-gap.md` for the
+background and the workaround.
+
 ## What You Post Back To GitHub
 
 Post a PR comment with status, commands run, test results, files changed, UI evidence if applicable, artifact links, and remaining risk. Do not report UI success without UI evidence.
@@ -44,10 +58,6 @@ For UI-visible changes, include the automated-QA demo artifact shape when possib
 - fallback notes only if browser execution was unavailable
 
 Keep result comments focused on test evidence, files changed, and human next steps.
-
-Do not include unresolved placeholders such as `${AUTOMATION_SESSION_URL}` in
-GitHub comments. Include a conversation/session link only when the runtime gives
-you the concrete URL; otherwise omit that line.
 
 ## Human Control
 
