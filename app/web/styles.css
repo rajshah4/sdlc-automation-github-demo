@@ -71,6 +71,24 @@ button {
   padding: 16px;
 }
 
+.fee-breakdown {
+  display: grid;
+  gap: 4px;
+  font-size: 14px;
+  text-align: right;
+}
+
+.fee-item {
+  color: #5c6670;
+}
+
+.fee-total {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid #d7dce3;
+  font-weight: 650;
+}
+
 .pet span,
 .empty {
   color: #5c6670;
