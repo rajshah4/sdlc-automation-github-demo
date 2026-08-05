@@ -14,6 +14,20 @@ A sparse Jira Task is the source of truth.
 4. Capture evidence, tests, assumptions, and human gates.
 5. Add `openhands-review` as the final GitHub mutation. Do not add `openhands-qa`; review owns that handoff.
 
+## Conversation Link
+
+This automation's OpenHands conversation URL is appended to the end of this
+prompt by the runtime. Include it in the pull-request description so reviewers
+can trace the work back to the agent session that produced it. Add it as a
+concise line near the end of the PR body:
+
+`OpenHands conversation: <url>`
+
+Copy the URL exactly as provided — do not write a shell variable or
+placeholder. On self-hosted deployments the URL is injected by a custom
+automation script; see `docs/automation-conversation-link-gap.md` for the
+background and the workaround.
+
 ## What You Post Back To Jira
 
 - Draft PR link or updated PR link.
