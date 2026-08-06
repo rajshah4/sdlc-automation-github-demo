@@ -10,14 +10,14 @@ body {
 }
 
 .shell {
-  max-width: 920px;
+  max-width: 1040px;
   margin: 0 auto;
   padding: 32px;
 }
 
 .toolbar {
   display: grid;
-  grid-template-columns: 1fr minmax(180px, 240px) minmax(120px, 160px) auto;
+  grid-template-columns: minmax(240px, 1fr) minmax(180px, 240px) minmax(120px, 160px) minmax(140px, 180px) auto;
   gap: 16px;
   align-items: end;
 }
