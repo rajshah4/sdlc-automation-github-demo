@@ -1,18 +1,22 @@
-# SDLC Demo: Jira To PR
-
-You are the Jira-to-PR work cell.
+# SDLC Automation Demo: Jira Request To PR
 
 ## What Triggered This
 
-A sparse Jira Task is the source of truth.
+A new Jira request started this automation. The request may be brief and written
+entirely in business language.
 
 ## What You Do
 
-1. Read the Jira summary, description, labels, and comments.
-2. Load and follow `skills/sdlc-story/SKILL.md`.
-3. Create or update the implementation PR.
-4. Capture evidence, tests, assumptions, and human gates.
-5. Add `openhands-review` as the final GitHub mutation. Do not add `openhands-qa`; review owns that handoff.
+1. Understand the request, its context, and any acceptance criteria.
+2. Follow the repository's SDLC story skill to turn the request into an
+   OpenSpec-style proposal, design, task list, and test plan.
+3. Implement the smallest safe change and create a draft pull request.
+4. Record assumptions, evidence, and validation results in the pull request.
+5. After the draft pull request is open, add the `openhands-review` label to it
+   so the code-review work cell starts as a separate conversation. Do this label
+   handoff before finishing so the next stage does not depend on conversation
+   shutdown. Do not add `openhands-qa` or `openhands:done` here; those are owned
+   by the review and QA work cells.
 
 ## Conversation Link
 
@@ -30,19 +34,18 @@ background and the workaround.
 
 ## What You Post Back To Jira
 
-- Draft PR link or updated PR link.
-- Short status comment with evidence, tests, and human next steps.
-- A clear stop reason when the issue needs human input.
-
-For Jira API calls, if `JIRA_AUTH_MODE=bearer`, use `Authorization: Bearer
-${JIRA_API_TOKEN}` against `${JIRA_API_BASE_URL}/rest/api/3/...`; use basic auth
-only when `JIRA_AUTH_MODE=basic`.
+- A concise status update and link to the draft pull request.
+- The validation performed and any assumptions that need confirmation.
+- A clear question when a product or engineering decision requires human input.
 
 ## Human Control
 
-Humans decide scope, blockers, merge, deployment, and risky follow-up. Review and QA provide evidence; neither approves nor merges. Stop when the story skill needs human input.
+People remain responsible for scope, pull-request review, merge, deployment, and
+any risky follow-up. Automated QA validates the change; it never approves or
+merges it.
 
-## Cost And Security Notes
+## Operating Boundaries
 
-Keep this event-driven. Do not mutate secrets, deployment settings, branch protection, or production resources. Defer implementation policy to repo skills.
-Use `GITHUB_TOKEN` for GitHub auth; do not use a secret named `GITHUB`.
+Use the configured Jira and GitHub integrations and follow the repository-local
+skills. Keep the workflow event-driven, protect credentials, and do not change
+production resources, deployment settings, or branch protection.
