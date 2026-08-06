@@ -9,6 +9,7 @@ function renderResults() {
   const query = document.querySelector("#query").value.trim().toLowerCase();
   const species = document.querySelector("#species").value;
   const list = document.querySelector("#results");
+  const countElement = document.querySelector("#count");
   list.innerHTML = "";
 
   const matches = pets.filter((pet) => {
@@ -16,6 +17,10 @@ function renderResults() {
       && (species === "" || pet.species === species)
       && pet.status === "available";
   });
+
+  const count = matches.length;
+  const countText = count === 1 ? "1 pet available" : `${count} pets available`;
+  countElement.textContent = countText;
 
   if (matches.length === 0) {
     const empty = document.createElement("li");

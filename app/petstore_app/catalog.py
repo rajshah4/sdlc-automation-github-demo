@@ -54,3 +54,41 @@ def search_pets(
         matches.append(pet)
 
     return matches[:max_results]
+
+
+def count_available(
+    query: str = "",
+    *,
+    species: str | None = None,
+    status: str = "available",
+    tag: str | None = None,
+) -> int:
+    """Count pets matching the given criteria.
+
+    Args:
+        query: Pet name search term
+        species: Filter by species (e.g., "dog", "cat", "rabbit")
+        status: Pet availability status (default: "available")
+        tag: Filter by tag
+
+    Returns:
+        Number of pets matching all criteria
+    """
+    normalized_query = query.strip().lower()
+    normalized_species = species.strip().lower() if species else None
+    normalized_status = status.strip().lower()
+    normalized_tag = tag.strip().lower() if tag else None
+
+    count = 0
+    for pet in PETS:
+        if normalized_query and normalized_query not in pet.name.lower():
+            continue
+        if normalized_species and normalized_species != pet.species:
+            continue
+        if normalized_status and normalized_status != pet.status:
+            continue
+        if normalized_tag and normalized_tag not in pet.tags:
+            continue
+        count += 1
+
+    return count
