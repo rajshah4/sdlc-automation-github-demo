@@ -11,10 +11,15 @@ function renderResults() {
   const list = document.querySelector("#results");
   list.innerHTML = "";
 
+  // Product requirement: default search must show ONLY available pets.
+  // Pending pets must never appear in customer-facing results.
+  // See: docs/wiki/petstore-catalog-availability.md
   const matches = pets.filter((pet) => {
-    return pet.name.toLowerCase().includes(query)
-      && (species === "" || pet.species === species)
-      && pet.status === "available";
+    const nameMatches = pet.name.toLowerCase().includes(query);
+    const speciesMatches = species === "" || pet.species === species;
+    const isAvailable = pet.status === "available";
+    
+    return nameMatches && speciesMatches && isAvailable;
   });
 
   if (matches.length === 0) {
