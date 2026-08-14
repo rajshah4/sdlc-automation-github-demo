@@ -1,0 +1,55 @@
+[
+  {
+    "api_url": "http://localhost:8000/api/conversations/443c27f5-e551-440d-be2c-0f64be999263",
+    "artifact": "factory_runs/canvas-verify-full/story-to-pr.md",
+    "execution_status": "idle",
+    "final_response_present": true,
+    "id": "443c27f5-e551-440d-be2c-0f64be999263",
+    "name": "story-to-pr",
+    "title": null,
+    "ui_url": "http://localhost:8000/conversations/443c27f5-e551-440d-be2c-0f64be999263",
+    "wait": {
+      "api_url": "http://localhost:8000/api/conversations/443c27f5-e551-440d-be2c-0f64be999263",
+      "execution_status": "finished",
+      "id": "443c27f5-e551-440d-be2c-0f64be999263",
+      "title": "\u2728 Filter Pets by Max Adoption Fee PR",
+      "ui_url": "http://localhost:8000/conversations/443c27f5-e551-440d-be2c-0f64be999263",
+      "workspace": {
+        "kind": "LocalWorkspace",
+        "working_dir": "/Users/rajiv.shah/Code/sdlc-automation-github-demo"
+      }
+    },
+    "workspace": {
+      "kind": "LocalWorkspace",
+      "working_dir": "/Users/rajiv.shah/Code/sdlc-automation-github-demo"
+    }
+  },
+  {
+    "api_url": "http://localhost:8000/api/conversations/1c04ba31-12f6-482a-95c9-7bbd6362a896",
+    "artifact": "factory_runs/canvas-verify-full/code-review.md",
+    "execution_status": "idle",
+    "handoff": true,
+    "id": "1c04ba31-12f6-482a-95c9-7bbd6362a896",
+    "name": "code-review",
+    "title": null,
+    "ui_url": "http://localhost:8000/conversations/1c04ba31-12f6-482a-95c9-7bbd6362a896",
+    "workspace": {
+      "kind": "LocalWorkspace",
+      "working_dir": "/Users/rajiv.shah/Code/sdlc-automation-github-demo"
+    }
+  },
+  {
+    "api_url": "http://localhost:8000/api/conversations/ec076c1e-7525-484d-bb32-8d91a6bc578d",
+    "artifact": "factory_runs/canvas-verify-full/qa.md",
+    "execution_status": "idle",
+    "handoff": true,
+    "id": "ec076c1e-7525-484d-bb32-8d91a6bc578d",
+    "name": "qa",
+    "title": null,
+    "ui_url": "http://localhost:8000/conversations/ec076c1e-7525-484d-bb32-8d91a6bc578d",
+    "workspace": {
+      "kind": "LocalWorkspace",
+      "working_dir": "/Users/rajiv.shah/Code/sdlc-automation-github-demo"
+    }
+  }
+]
