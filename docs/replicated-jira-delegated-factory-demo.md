@@ -47,6 +47,29 @@ flowchart TD
     C --> H["Jira summary comment"]
 ```
 
+## State Model: Separate Sandboxes
+
+On OpenHands Enterprise/Cloud (Replicated) each child conversation runs in its
+**own sandbox with its own clone of the repository**. Children do not share a
+filesystem with the parent or with each other. This is the opposite of the Agent
+Canvas runtime, where everything shares one working tree — see the "State Model:
+One Shared Working Tree" section of
+[`agent-canvas-dark-factory-demo.md`](agent-canvas-dark-factory-demo.md).
+
+What this means when you run or adapt the pattern:
+
+- **Loose files do not come back.** A file a child writes to
+  `factory_runs/<run-id>/<cell>.md` stays inside that child's sandbox and is
+  invisible to the parent unless the child commits or pushes it. The parent
+  captures each child's **final response text** and saves it as
+  `factory_runs/<run-id>/<cell>.final.md`. Put required evidence in the final
+  response, not only in a local file.
+- **Durable outputs go through git or the final response** — a branch, a PR, or
+  the parsed final-response contract — never the local filesystem alone.
+- **Children are isolated, so they can run concurrently** without git
+  working-tree conflicts; each has its own clone. Here, sequencing cells is a
+  workflow choice (the gate order), not a filesystem constraint.
+
 ## Required Rajistics Setup
 
 The `jira-direct` custom webhook source must already exist on
