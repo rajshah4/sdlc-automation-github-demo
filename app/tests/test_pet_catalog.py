@@ -25,3 +25,17 @@ def test_search_pets_filters_by_tag() -> None:
 def test_search_pets_validates_max_results(max_results: int) -> None:
     with pytest.raises(ValueError, match="max_results"):
         search_pets(max_results=max_results)
+
+
+def test_search_pets_defaults_to_available_when_status_is_empty() -> None:
+    results = search_pets(status="")
+
+    assert all(pet.status == "available" for pet in results)
+    assert [pet.name for pet in results] == ["Mochi", "Scout", "Pip"]
+
+
+def test_search_pets_defaults_to_available_when_status_is_whitespace() -> None:
+    results = search_pets(status="   ")
+
+    assert all(pet.status == "available" for pet in results)
+    assert [pet.name for pet in results] == ["Mochi", "Scout", "Pip"]
