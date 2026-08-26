@@ -55,16 +55,38 @@ Sparse issues are the primary demo path. The ticket should not need repo names, 
 - Keep Jira comments concise: status, evidence waypoints, PR link, tests, and any human questions.
 - Do not require the Jira ticket to mention logs, docs, repository names, file paths, or error codes.
 
+## Native Sub-Agent Context Pass
+
+Before creating change artifacts or editing files, use native TaskToolSet delegation when the `task` tool is available. Launch exactly two independent `code-explorer` calls in the same assistant turn so an agent configured with `tool_concurrency_limit: 2` can run them concurrently and show both delegations in the conversation.
+
+Give each scout only the Jira or GitHub key, URL, title, description, and acceptance criteria needed to understand the request. Do not forward the raw webhook payload, secrets, environment values, or unrelated comments.
+
+1. `requirements-evidence-scout`: Read at most six relevant files from `README.md`, `AGENTS.md`, `openspec/project.md`, `docs/wiki/`, and `docs/logs/`. Return acceptance clues, relevant docs and log evidence, assumptions, unanswered questions, confidence, and any human stop condition.
+2. `code-test-scout`: Read at most six relevant files from `AGENTS.md`, `docs/repo-memory/`, `app/`, and `tests/`. Return current behavior, likely implementation and test files, the smallest useful validation target, risks, confidence, and any human stop condition.
+
+Use those exact descriptions for the task calls so the sub-agent cards are easy to identify during the demo. Each scout prompt must state:
+
+- read only; do not edit files or mutate git
+- do not install packages or call external services
+- do not read secrets, credentials, `.env` files, or token-bearing remotes
+- do not create branches, commits, PRs, comments, labels, or Jira updates
+- do not invoke other skills or launch additional sub-agents
+- return a compact evidence report with concrete paths and no implementation diff
+
+The parent agent owns synthesis and every mutation: OpenSpec artifacts, source and test edits, validation, branch and commit operations, the draft PR, labels, and Jira or GitHub updates. Never delegate those responsibilities from this skill because concurrent writers can race in the shared workspace.
+
+TaskToolSet calls are synchronous from the parent's perspective. Wait for both observations, use successful findings as context pointers, and continue in the parent. If the task tool is unavailable or a scout fails, do not retry repeatedly and do not fail the story-to-PR run. State the fallback briefly, then use `skills/sdlc-context-reuse/SKILL.md`, `scripts/build_context_reuse_report.py`, or the bounded direct exploration below.
+
 ## Workflow
 
-0. Use `skills/sdlc-context-reuse/SKILL.md` or `scripts/build_context_reuse_report.py` to reuse durable context before broad exploration.
-1. Read `README.md`, `AGENTS.md`, and the issue context.
+0. Run the native sub-agent context pass when available; otherwise use the deterministic context-reuse fallback.
+1. Read `README.md`, `AGENTS.md`, the issue context, and the two scout reports when present.
 2. Read `references/story-artifacts.md`, `references/open-spec-template.md`, and `references/petstore-implementation-map.md`.
 3. Run `python3 skills/sdlc-story/scripts/extract_acceptance_criteria.py "<issue title>"` with the issue body on stdin when useful.
 4. Create or update an OpenSpec-style change folder at `openspec/changes/github-issue-<number>-<slug>/` or `openspec/changes/jira-<issue-key>-<slug>/`.
 5. Include `proposal.md`, `design.md`, `tasks.md`, and at least one `specs/<capability>/spec.md` file.
 6. Validate the change folder with `python3 skills/sdlc-story/scripts/validate_open_spec.py <change-folder>`.
-7. Search docs, logs, app code, and tests to find the smallest safe code change.
+7. Search only the additional docs, logs, app code, and tests needed after the scout reports to find the smallest safe code change.
 8. Implement the narrow change that satisfies the spec delta.
 9. Add or update focused tests.
 10. Run the narrowest useful validation first.
