@@ -1,8 +1,8 @@
 const pets = [
-  { id: "pet-100", name: "Mochi", species: "cat", status: "available", tags: ["calm", "indoor"], fee: "$75" },
-  { id: "pet-101", name: "Scout", species: "dog", status: "available", tags: ["active", "family"], fee: "$125" },
-  { id: "pet-102", name: "Pip", species: "rabbit", status: "available", tags: ["quiet", "indoor"], fee: "$45" },
-  { id: "pet-103", name: "Nova", species: "dog", status: "pending", tags: ["active", "training"], fee: "$110" },
+  { id: "pet-100", name: "Mochi", species: "cat", status: "available", tags: ["calm", "indoor"], fee: "$75", baseFee: "$50", vaccinationFee: "$15", microchipFee: "$10" },
+  { id: "pet-101", name: "Scout", species: "dog", status: "available", tags: ["active", "family"], fee: "$125", baseFee: "$90", vaccinationFee: "$20", microchipFee: "$15" },
+  { id: "pet-102", name: "Pip", species: "rabbit", status: "available", tags: ["quiet", "indoor"], fee: "$45", baseFee: "$30", vaccinationFee: "$10", microchipFee: "$5" },
+  { id: "pet-103", name: "Nova", species: "dog", status: "pending", tags: ["active", "training"], fee: "$110", baseFee: "$80", vaccinationFee: "$20", microchipFee: "$10" },
 ];
 
 function renderResults() {
@@ -28,7 +28,16 @@ function renderResults() {
   for (const pet of matches) {
     const item = document.createElement("li");
     item.className = "pet";
-    item.innerHTML = `<strong>${pet.name}</strong><span>${pet.species} · ${pet.tags.join(", ")}</span><b>${pet.fee}</b>`;
+    item.innerHTML = `
+      <strong>${pet.name}</strong>
+      <span>${pet.species} · ${pet.tags.join(", ")}</span>
+      <div class="fee-breakdown">
+        <div class="fee-item">Base Fee: ${pet.baseFee}</div>
+        <div class="fee-item">Vaccination: ${pet.vaccinationFee}</div>
+        <div class="fee-item">Microchip: ${pet.microchipFee}</div>
+        <div class="fee-total">Total: <b>${pet.fee}</b></div>
+      </div>
+    `;
     list.appendChild(item);
   }
 }

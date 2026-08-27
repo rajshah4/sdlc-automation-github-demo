@@ -14,13 +14,16 @@ class Pet:
     tags: tuple[str, ...]
     age_months: int
     adoption_fee_cents: int
+    base_fee_cents: int
+    vaccination_fee_cents: int
+    microchip_fee_cents: int
 
 
 PETS: tuple[Pet, ...] = (
-    Pet("pet-100", "Mochi", "cat", "available", ("calm", "indoor"), 18, 7500),
-    Pet("pet-101", "Scout", "dog", "available", ("active", "family"), 28, 12500),
-    Pet("pet-102", "Pip", "rabbit", "available", ("quiet", "indoor"), 9, 4500),
-    Pet("pet-103", "Nova", "dog", "pending", ("active", "training"), 14, 11000),
+    Pet("pet-100", "Mochi", "cat", "available", ("calm", "indoor"), 18, 7500, 5000, 1500, 1000),
+    Pet("pet-101", "Scout", "dog", "available", ("active", "family"), 28, 12500, 9000, 2000, 1500),
+    Pet("pet-102", "Pip", "rabbit", "available", ("quiet", "indoor"), 9, 4500, 3000, 1000, 500),
+    Pet("pet-103", "Nova", "dog", "pending", ("active", "training"), 14, 11000, 8000, 2000, 1000),
 )
 
 
