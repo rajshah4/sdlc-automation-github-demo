@@ -5,6 +5,33 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
+def format_age(months: int) -> str:
+    """Format age in months as years and months.
+    
+    Args:
+        months: Age in months
+        
+    Returns:
+        Formatted string like '2 years 3 months', '1 year', '5 months', etc.
+    """
+    if months < 0:
+        raise ValueError("Age cannot be negative")
+    
+    years = months // 12
+    remaining_months = months % 12
+    
+    parts = []
+    if years > 0:
+        parts.append(f"{years} year" if years == 1 else f"{years} years")
+    if remaining_months > 0:
+        parts.append(f"{remaining_months} month" if remaining_months == 1 else f"{remaining_months} months")
+    
+    if not parts:
+        return "0 months"
+    
+    return " ".join(parts)
+
+
 @dataclass(frozen=True)
 class Pet:
     id: str
