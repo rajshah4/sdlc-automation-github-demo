@@ -25,3 +25,10 @@ def test_search_pets_filters_by_tag() -> None:
 def test_search_pets_validates_max_results(max_results: int) -> None:
     with pytest.raises(ValueError, match="max_results"):
         search_pets(max_results=max_results)
+
+
+def test_search_pets_does_not_return_pending_pets_when_status_is_empty() -> None:
+    """Regression test: empty status should not bypass the availability filter."""
+    results = search_pets(status="")
+
+    assert len(results) == 0, "Empty status should not return any pets"
