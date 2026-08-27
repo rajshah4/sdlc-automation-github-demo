@@ -30,6 +30,7 @@ def create_adoption_order(
     donation_cents: int = 0,
 ) -> AdoptionOrder:
     """Create a reviewable adoption order summary."""
+    pet_id = pet_id.strip()
     pet = _find_pet(pet_id)
     if pet.status != "available":
         raise ValueError("pet is not available for adoption")

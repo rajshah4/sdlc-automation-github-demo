@@ -29,3 +29,39 @@ def test_create_adoption_order_rejects_invalid_email() -> None:
 def test_create_adoption_order_rejects_negative_donation() -> None:
     with pytest.raises(ValueError, match="donation"):
         create_adoption_order("pet-100", "casey@example.com", donation_cents=-1)
+
+
+def test_create_adoption_order_trims_leading_whitespace() -> None:
+    order = create_adoption_order(
+        " pet-100",
+        "casey@example.com",
+        donation_cents=1000,
+    )
+
+    assert order.pet_id == "pet-100"
+    assert order.adoption_fee_cents == 7500
+    assert order.total_cents == 8500
+
+
+def test_create_adoption_order_trims_trailing_whitespace() -> None:
+    order = create_adoption_order(
+        "pet-100 ",
+        "casey@example.com",
+        donation_cents=500,
+    )
+
+    assert order.pet_id == "pet-100"
+    assert order.adoption_fee_cents == 7500
+    assert order.total_cents == 8000
+
+
+def test_create_adoption_order_trims_surrounding_whitespace() -> None:
+    order = create_adoption_order(
+        " pet-100 ",
+        "casey@example.com",
+    )
+
+    assert order.pet_id == "pet-100"
+    assert order.adoption_fee_cents == 7500
+    assert order.total_cents == 7500
+
