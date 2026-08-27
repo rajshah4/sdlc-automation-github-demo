@@ -34,4 +34,17 @@ function renderResults() {
 }
 
 document.querySelector("#search-button").addEventListener("click", renderResults);
+
+document.querySelector("#query").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    renderResults();
+  }
+});
+
+document.querySelector("#species").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    renderResults();
+  }
+});
+
 renderResults();

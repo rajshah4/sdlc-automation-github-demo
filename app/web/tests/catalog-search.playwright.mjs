@@ -165,6 +165,17 @@ async function main() {
     await assertNames(page, ["Pip"], "name search");
     scenarios.push("Name search finds a matching available pet");
 
+    await page.getByLabel("Pet name").fill("mochi");
+    await page.getByLabel("Pet name").press("Enter");
+    await assertNames(page, ["Mochi"], "name search with Enter key");
+    scenarios.push("Enter key in name field triggers search");
+
+    await page.getByLabel("Pet name").fill("");
+    await page.getByLabel("Species").selectOption("dog");
+    await page.getByLabel("Species").press("Enter");
+    await assertNames(page, ["Scout"], "species filter with Enter key");
+    scenarios.push("Enter key in species dropdown triggers search");
+
     const screenshotPath = path.join(artifactDir, "catalog-search.png");
     await page.screenshot({ path: screenshotPath, fullPage: true });
 
