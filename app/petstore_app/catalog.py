@@ -28,7 +28,7 @@ def search_pets(
     query: str = "",
     *,
     species: str | None = None,
-    status: str = "available",
+    status: str | None = "available",
     tag: str | None = None,
     max_results: int = 10,
 ) -> list[Pet]:
@@ -38,7 +38,9 @@ def search_pets(
 
     normalized_query = query.strip().lower()
     normalized_species = species.strip().lower() if species else None
-    normalized_status = status.strip().lower()
+    normalized_status = (status or "available").strip().lower()
+    if not normalized_status:
+        normalized_status = "available"
     normalized_tag = tag.strip().lower() if tag else None
 
     matches: list[Pet] = []
@@ -47,7 +49,7 @@ def search_pets(
             continue
         if normalized_species and normalized_species != pet.species:
             continue
-        if normalized_status and normalized_status != pet.status:
+        if normalized_status != pet.status:
             continue
         if normalized_tag and normalized_tag not in pet.tags:
             continue
