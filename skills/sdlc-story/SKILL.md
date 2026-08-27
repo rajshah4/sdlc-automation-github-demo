@@ -48,12 +48,6 @@ Sparse issues are the primary demo path. The ticket should not need repo names, 
 - Do not run `git remote -v`, `gh auth status`, or any command that prints token-bearing remote URLs. Use GitHub tools or API calls for PR creation and label/comment updates, and never echo auth-bearing remotes, token previews, or authorization headers.
 - Never merge, bypass review, change branch protection, or alter deployment settings.
 
-## Repository Layout Boundaries
-
-- Do not create new top-level directories in the repository.
-- Put story artifacts under the existing `openspec/changes/` hierarchy and keep implementation and tests within existing repository areas.
-- If the requested change genuinely requires a new top-level directory, stop and request explicit human approval before creating it.
-
 ## Jira Boundaries
 
 - Treat Jira Tasks as source issues when the automation starts from a Jira webhook.
