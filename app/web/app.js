@@ -11,10 +11,14 @@ function renderResults() {
   const list = document.querySelector("#results");
   list.innerHTML = "";
 
+  // KAN-125: Default customer-facing search must show ONLY available pets.
+  // Pending pets should never appear unless explicitly requested by support staff.
   const matches = pets.filter((pet) => {
-    return pet.name.toLowerCase().includes(query)
-      && (species === "" || pet.species === species)
-      && pet.status === "available";
+    const matchesQuery = pet.name.toLowerCase().includes(query);
+    const matchesSpecies = species === "" || pet.species === species;
+    const isAvailable = pet.status === "available";
+    
+    return matchesQuery && matchesSpecies && isAvailable;
   });
 
   if (matches.length === 0) {
