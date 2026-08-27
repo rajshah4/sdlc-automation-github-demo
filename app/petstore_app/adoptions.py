@@ -17,8 +17,9 @@ class AdoptionOrder:
 
 
 def _find_pet(pet_id: str) -> Pet:
+    normalized_pet_id = pet_id.strip()
     for pet in PETS:
-        if pet.id == pet_id:
+        if pet.id == normalized_pet_id:
             return pet
     raise ValueError("pet_id was not found")
 
