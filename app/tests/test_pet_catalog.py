@@ -15,6 +15,16 @@ def test_search_pets_can_find_pending_pets_when_requested() -> None:
     assert [pet.name for pet in results] == ["Nova"]
 
 
+def test_search_pets_with_empty_status_defaults_to_available() -> None:
+    """Empty status string should default to available, not show all pets."""
+    results = search_pets(status="")
+
+    # Should only return available pets, not pending ones
+    assert all(pet.status == "available" for pet in results)
+    # Nova (pet-103) is pending and should not be included
+    assert "pet-103" not in [pet.id for pet in results]
+
+
 def test_search_pets_filters_by_tag() -> None:
     results = search_pets(tag="indoor")
 
