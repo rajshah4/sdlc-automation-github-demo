@@ -165,6 +165,14 @@ async function main() {
     await assertNames(page, ["Pip"], "name search");
     scenarios.push("Name search finds a matching available pet");
 
+    await page.getByRole("button", { name: "Clear Filters" }).click();
+    await assertNames(page, ["Mochi", "Scout", "Pip"], "cleared filters");
+    const queryValue = await page.getByLabel("Pet name").inputValue();
+    const speciesValue = await page.getByLabel("Species").inputValue();
+    assert(queryValue === "", "name input should be empty after clear");
+    assert(speciesValue === "", "species dropdown should be reset to 'Any' after clear");
+    scenarios.push("Clear Filters button resets all filters and shows all available pets");
+
     const screenshotPath = path.join(artifactDir, "catalog-search.png");
     await page.screenshot({ path: screenshotPath, fullPage: true });
 
