@@ -55,21 +55,24 @@ Sparse issues are the primary demo path. The ticket should not need repo names, 
 - Keep Jira comments concise: status, evidence waypoints, PR link, tests, and any human questions.
 - Do not require the Jira ticket to mention logs, docs, repository names, file paths, or error codes.
 
+## Delegation and Context Gathering
+
+Before creating change artifacts or editing files, identify what is uncertain about the request and what evidence would reduce that uncertainty. Every Jira-triggered story must launch at least one read-only sub-agent through the native `task` tool, normally using the `code-explorer` type. Choose each sub-agent's role, prompt, scope, and evidence request from the actual story rather than following a fixed decomposition.
+
+Start with the highest-value independent investigation. Add a second concurrent sub-agent only when another perspective will materially improve the evidence; useful perspectives can include product requirements, repository documentation or logs, current code behavior, and focused test coverage. Use no more than two sub-agents, and give each only the issue context it needs. Never forward raw webhook payloads, secrets, credentials, environment values, or unrelated comments.
+
+Sub-agents gather evidence and return concrete paths, relevant behavior, risks, confidence, and unanswered questions. They must not edit files, mutate git, install packages, call external services, create PRs, or update Jira. The parent owns synthesis and every mutation. If the native `task` tool is unavailable or every delegated investigation fails, stop before creating artifacts or editing files and report the blocker instead of silently replacing delegation with direct work. For non-Jira requests, the parent may use bounded direct exploration when delegation would not add value.
+
 ## Workflow
 
-0. Use `skills/sdlc-context-reuse/SKILL.md` or `scripts/build_context_reuse_report.py` to reuse durable context before broad exploration.
-1. Read `README.md`, `AGENTS.md`, and the issue context.
-2. Read `references/story-artifacts.md`, `references/open-spec-template.md`, and `references/petstore-implementation-map.md`.
-3. Run `python3 skills/sdlc-story/scripts/extract_acceptance_criteria.py "<issue title>"` with the issue body on stdin when useful.
-4. Create or update an OpenSpec-style change folder at `openspec/changes/github-issue-<number>-<slug>/` or `openspec/changes/jira-<issue-key>-<slug>/`.
-5. Include `proposal.md`, `design.md`, `tasks.md`, and at least one `specs/<capability>/spec.md` file.
-6. Validate the change folder with `python3 skills/sdlc-story/scripts/validate_open_spec.py <change-folder>`.
-7. Search docs, logs, app code, and tests to find the smallest safe code change.
-8. Implement the narrow change that satisfies the spec delta.
-9. Add or update focused tests.
-10. Run the narrowest useful validation first.
-11. Open a draft PR with OpenSpec change link, evidence, and human-review notes.
-12. After opening or updating the PR, add `openhands-review` as the final GitHub mutation so code review starts as a separate conversation. Do not add `openhands-qa`; the review work cell owns that handoff. A parent-child supervisor may explicitly override this when it owns downstream orchestration itself.
+0. Understand the issue and identify the highest-value uncertainty. For every Jira-triggered story, complete at least one native read-only sub-agent investigation and synthesize its findings before creating artifacts or editing files.
+1. Read `README.md`, `AGENTS.md`, and the relevant repository guidance, then synthesize any delegated findings.
+2. Use the skill references to create the OpenSpec-style proposal, design, task list, spec delta, assumptions, and human gates appropriate to the request.
+3. Validate the change artifacts with `python3 skills/sdlc-story/scripts/validate_open_spec.py <change-folder>`.
+4. Implement the smallest safe change that satisfies the spec delta and add focused tests.
+5. Run the narrowest useful validation first, expanding only when risk or repository guidance requires it.
+6. Open a draft PR with the source issue, evidence waypoints, validation results, assumptions, and human-review notes.
+7. After opening or updating the PR, add `openhands-review` as the final GitHub mutation so code review starts as a separate conversation. Do not add `openhands-qa`; the review work cell owns that handoff. A parent-child supervisor may explicitly override this when it owns downstream orchestration itself.
 
 ## Evidence Waypoints
 
