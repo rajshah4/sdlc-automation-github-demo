@@ -57,15 +57,15 @@ Sparse issues are the primary demo path. The ticket should not need repo names, 
 
 ## Delegation and Context Gathering
 
-Before editing, identify what is uncertain about the request and what evidence would reduce that uncertainty. For a sparse or non-trivial story, use the native `task` tool when available to delegate one or more independent, read-only investigations. Choose the sub-agent roles, prompts, and investigation boundaries from the actual request rather than following a fixed decomposition.
+Before creating change artifacts or editing files, identify what is uncertain about the request and what evidence would reduce that uncertainty. Every Jira-triggered story must launch at least one read-only sub-agent through the native `task` tool, normally using the `code-explorer` type. Choose each sub-agent's role, prompt, scope, and evidence request from the actual story rather than following a fixed decomposition.
 
-Useful perspectives often include product requirements, repository documentation or logs, current code behavior, and focused test coverage. Separate them only when independent investigation will produce better evidence. Use no more than two sub-agents concurrently, and give each only the issue context it needs; never forward raw webhook payloads, secrets, credentials, environment values, or unrelated comments.
+Start with the highest-value independent investigation. Add a second concurrent sub-agent only when another perspective will materially improve the evidence; useful perspectives can include product requirements, repository documentation or logs, current code behavior, and focused test coverage. Use no more than two sub-agents, and give each only the issue context it needs. Never forward raw webhook payloads, secrets, credentials, environment values, or unrelated comments.
 
-Sub-agents gather evidence and return concrete paths, relevant behavior, risks, confidence, and unanswered questions. They must not edit files, mutate git, install packages, call external services, create PRs, or update Jira. The parent owns synthesis and every mutation. If the `task` tool is unavailable, a delegation fails, or the request is too small to benefit, continue with bounded direct exploration and state that choice briefly.
+Sub-agents gather evidence and return concrete paths, relevant behavior, risks, confidence, and unanswered questions. They must not edit files, mutate git, install packages, call external services, create PRs, or update Jira. The parent owns synthesis and every mutation. If the native `task` tool is unavailable or every delegated investigation fails, stop before creating artifacts or editing files and report the blocker instead of silently replacing delegation with direct work. For non-Jira requests, the parent may use bounded direct exploration when delegation would not add value.
 
 ## Workflow
 
-0. Understand the issue, identify uncertainty, and gather only the context needed to act confidently. Delegate independent read-only investigation when it adds value; otherwise use `skills/sdlc-context-reuse/SKILL.md` or bounded direct exploration.
+0. Understand the issue and identify the highest-value uncertainty. For every Jira-triggered story, complete at least one native read-only sub-agent investigation and synthesize its findings before creating artifacts or editing files.
 1. Read `README.md`, `AGENTS.md`, and the relevant repository guidance, then synthesize any delegated findings.
 2. Use the skill references to create the OpenSpec-style proposal, design, task list, spec delta, assumptions, and human gates appropriate to the request.
 3. Validate the change artifacts with `python3 skills/sdlc-story/scripts/validate_open_spec.py <change-folder>`.
