@@ -31,6 +31,7 @@ def create_adoption_order(
 ) -> AdoptionOrder:
     """Create a reviewable adoption order summary."""
     pet = _find_pet(pet_id)
+    adopter_email = adopter_email.strip()
     if pet.status != "available":
         raise ValueError("pet is not available for adoption")
     if "@" not in adopter_email:
