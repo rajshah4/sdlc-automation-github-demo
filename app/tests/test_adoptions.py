@@ -29,3 +29,24 @@ def test_create_adoption_order_rejects_invalid_email() -> None:
 def test_create_adoption_order_rejects_negative_donation() -> None:
     with pytest.raises(ValueError, match="donation"):
         create_adoption_order("pet-100", "casey@example.com", donation_cents=-1)
+
+
+def test_create_adoption_order_trims_leading_whitespace() -> None:
+    order = create_adoption_order(" pet-100", "casey@example.com")
+    assert order.pet_id == "pet-100"
+
+
+def test_create_adoption_order_trims_trailing_whitespace() -> None:
+    order = create_adoption_order("pet-100 ", "casey@example.com")
+    assert order.pet_id == "pet-100"
+
+
+def test_create_adoption_order_trims_both_whitespace() -> None:
+    order = create_adoption_order("  pet-100  ", "casey@example.com")
+    assert order.pet_id == "pet-100"
+
+
+def test_create_adoption_order_rejects_invalid_pet_after_trim() -> None:
+    with pytest.raises(ValueError, match="pet_id was not found"):
+        create_adoption_order(" pet-999 ", "casey@example.com")
+
