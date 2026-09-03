@@ -8,6 +8,7 @@ while humans keep authority through issues, PRs, labels, comments, reviews, and
 merge decisions.
 
 The target app is intentionally small: a Petstore catalog and adoption service.
+The Petstore project is used to demonstrate an event-driven software delivery workflow.
 That keeps the demo easy to follow while still producing real artifacts: code
 diffs, tests, UI checks, review comments, and PRs.
 
