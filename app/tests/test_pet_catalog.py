@@ -3,6 +3,15 @@ import pytest
 from petstore_app.catalog import search_pets
 
 
+def test_default_search_excludes_pending_pets() -> None:
+    """Regression test for KAN-233: pending pets must not appear in default search."""
+    results = search_pets()
+
+    pet_ids = [pet.id for pet in results]
+    assert "pet-103" not in pet_ids, "Nova (pet-103) is pending and should not appear in default search"
+    assert all(pet.status == "available" for pet in results), "Default search should only return available pets"
+
+
 def test_search_pets_filters_by_species_and_status() -> None:
     results = search_pets(species="dog")
 
